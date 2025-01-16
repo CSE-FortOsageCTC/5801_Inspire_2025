@@ -12,7 +12,7 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import java.sql.Driver;
 import java.util.List;
 
-import com.choreo.lib.ChoreoTrajectory;
+import choreo.trajectory.*;
 import com.ctre.phoenix6.configs.Pigeon2Configuration;
 import com.ctre.phoenix6.hardware.Pigeon2;
 
@@ -116,7 +116,7 @@ public class Swerve extends SubsystemBase{
         limeLightSwerveEstimator.updateWithTime(Timer.getFPGATimestamp(), getGyroYaw(), getModPos);
     }
 
-    public void setTrajectory(ChoreoTrajectory traj) {
+    public void setTrajectory(Trajectory<SwerveSample> traj) {
         field.getObject("traj").setTrajectory(TrajectoryGenerator.generateTrajectory(List.of(traj.getPoses()), new TrajectoryConfig(10000, 10000)));
     }
 
@@ -298,7 +298,7 @@ public class Swerve extends SubsystemBase{
     }
 
     public Rotation2d getGyroYaw() {
-        return Rotation2d.fromDegrees(gyro.getYaw().getValue());
+        return Rotation2d.fromDegrees(gyro.getYaw().getValueAsDouble());
     }
 
     public Rotation2d getGyroRot2d(){
@@ -309,7 +309,7 @@ public class Swerve extends SubsystemBase{
         return gyro.getRoll().getValueAsDouble();
     }
     public double correctedYaw() {
-        return (((gyro.getYaw().getValue() - gyroOffset) % 360) + 360) % 360;
+        return (((gyro.getYaw().getValueAsDouble() - gyroOffset) % 360) + 360) % 360;
     }
 
     public void resetModulesToAbsolute(){
@@ -442,7 +442,7 @@ public class Swerve extends SubsystemBase{
     public void periodic(){
         //swerveOdometry.update(getGyroYaw(), getModulePositions());
         SmartDashboard.putNumber("Corrected gyro", correctedYaw());
-        SmartDashboard.putNumber("gyro", gyro.getYaw().getValue());
+        SmartDashboard.putNumber("gyro", gyro.getYaw().getValueAsDouble());
 
         updatePoseEstimator();
 
