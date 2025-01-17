@@ -6,24 +6,26 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 
 /**
  * this class retrieves limelight values from the networktable
  */
-public class FloorLimelight extends SubsystemBase {
+public class LimeLightSubsystem extends SubsystemBase {
 
     private NetworkTableEntry botPoseEntry;
+    private Pose2d botPose;
     private NetworkTable table;
     private NetworkTableEntry tid, tv, tx, ty, ta, ts;
     public NetworkTableEntry ts0, ts1, ts2;
-    private static FloorLimelight limelight;
+    private double lastBotPoseTimestamp;
+    private static LimeLightSubsystem limelight;
 
-    public static FloorLimelight getInstance() {
+    public static LimeLightSubsystem getInstance() {
         if (limelight == null) {
-            limelight = new FloorLimelight();
+            limelight = new LimeLightSubsystem();
         }
         return limelight;
     }
@@ -31,8 +33,9 @@ public class FloorLimelight extends SubsystemBase {
     /**
      * Constructs Limelight Class
      */
-    private FloorLimelight() {
-        table = NetworkTableInstance.getDefault().getTable("limelight-floor");
+    private LimeLightSubsystem() {
+        botPose = new Pose2d();
+        table = NetworkTableInstance.getDefault().getTable("limelight-sky");
         table.getEntry("pipeline").setNumber(0);
         botPoseEntry = table.getEntry("botpose");
         tx = table.getEntry("tx");
@@ -69,9 +72,7 @@ public class FloorLimelight extends SubsystemBase {
      */
     public double getX() {
         tx = table.getEntry("tx");
-        double x = tx.getDouble(0.0);
-        //SmartDashboard.putNumber("Limelight X", x);
-        return x;
+        return tx.getDouble(0.0);
     }
 
     /**
@@ -117,19 +118,13 @@ public class FloorLimelight extends SubsystemBase {
      * retrieves limelight values and prints them onto the log and smartdashboard
      */
     public void outputValues(){
-        table = NetworkTableInstance.getDefault().getTable("limelight-floor");
+        table = NetworkTableInstance.getDefault().getTable("limelight");
         System.out.println(getAprilValue());
         System.out.println(hasTag());
         System.out.println(getX());
         System.out.println(getY());
         System.out.println(getSkew());
         System.out.println(getArea());
-        // SmartDashboard.putNumber("April Tag  Value", getAprilValue());
-        // SmartDashboard.putBoolean("has Tag  ", hasTag());
-        // SmartDashboard.putNumber("X value   ", getX());
-        // SmartDashboard.putNumber("Y value ", getY());
-        // SmartDashboard.putNumber("Skew Value ", getSkew());
-        // SmartDashboard.putNumber("Area Value ", getArea());
         
     }
     
@@ -138,9 +133,24 @@ public class FloorLimelight extends SubsystemBase {
      *  Returns 0 for all values if no Apriltag detected
      */
     public Pose2d getBotPose() {
-        botPoseEntry = table.getEntry("botpose");
-        double[] botpose = botPoseEntry.getDoubleArray(new double[6]);
-        Pose2d visionPose = new Pose2d(botpose[0], botpose[1], new Rotation2d(botpose[5]));
-        return visionPose;
+        return botPose;
+    }
+
+    public void UpdateBotPose(){
+        botPoseEntry = table.getEntry("botpose_wpiblue");
+        double[] botpose = botPoseEntry.getDoubleArray(new double[7]);
+        Pose2d visionPose = new Pose2d(botpose[0], botpose[1], Rotation2d.fromDegrees((botpose[5] + 360) % 360));
+        this.lastBotPoseTimestamp = Timer.getFPGATimestamp() - (botpose[6] / 1000);
+        botPose = visionPose;
+    }
+
+
+    public double getLastBotPoseTimestamp(){
+        return this.lastBotPoseTimestamp;
+    }
+
+    @Override
+    public void periodic(){
+        UpdateBotPose();
     }
 }
