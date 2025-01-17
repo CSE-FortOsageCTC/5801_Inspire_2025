@@ -7,7 +7,6 @@ import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 
@@ -126,12 +125,6 @@ public class LimeLightSubsystem extends SubsystemBase {
         System.out.println(getY());
         System.out.println(getSkew());
         System.out.println(getArea());
-        // SmartDashboard.putNumber("April Tag  Value", getAprilValue());
-        // SmartDashboard.putBoolean("has Tag  ", hasTag());
-        // SmartDashboard.putNumber("X value   ", getX());
-        // SmartDashboard.putNumber("Y value ", getY());
-        // SmartDashboard.putNumber("Skew Value ", getSkew());
-        // SmartDashboard.putNumber("Area Value ", getArea());
         
     }
     

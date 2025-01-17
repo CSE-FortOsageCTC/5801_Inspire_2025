@@ -1,31 +1,24 @@
 package frc.robot.subsystems;
 
-import frc.robot.SwerveModule;
-import frc.robot.AutoRotateUtil;
-import frc.robot.Constants;
-
-import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
-import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
-import edu.wpi.first.math.kinematics.SwerveModulePosition;
-
-import java.sql.Driver;
 import java.util.List;
 
-import choreo.trajectory.*;
 import com.ctre.phoenix6.configs.Pigeon2Configuration;
 import com.ctre.phoenix6.hardware.Pigeon2;
 
-import edu.wpi.first.math.Pair;
+import choreo.trajectory.SwerveSample;
+import choreo.trajectory.Trajectory;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.filter.Debouncer;
-import edu.wpi.first.math.filter.Debouncer.DebounceType;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
+import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
+import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import edu.wpi.first.math.trajectory.TrajectoryGenerator;
@@ -34,12 +27,15 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StructArrayPublisher;
 import edu.wpi.first.networktables.StructPublisher;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.AlignPosition;
+import frc.robot.AutoRotateUtil;
+import frc.robot.Constants;
+import frc.robot.SwerveModule;
 
 
 
@@ -57,7 +53,6 @@ public class Swerve extends SubsystemBase{
     public PIDController xTranslationPidController;
     public LimeLightSubsystem f_Limelight;
     public AutoRotateUtil s_AutoRotateUtil;
-    private Pair<Double, Double> speakerCoordinate;
     public Debouncer pieceSeenDebouncer;
     public Field2d field;
     public StructPublisher<Pose3d> publisher;
@@ -67,9 +62,6 @@ public class Swerve extends SubsystemBase{
 
     public boolean readyToPickUp = false;
     public DriveParams autoPickupDriveParams;
-
-    private double xDiffSum = 0;
-    private double yDiffSum = 0;
 
     public static Swerve getInstance() {
         if (swerve == null) {
@@ -244,39 +236,16 @@ public class Swerve extends SubsystemBase{
     }
 
     public Pose2d getLimelightBotPose(){
-        
-        //Pose2d currentPose = getEstimatedPosition();
         if ((DriverStation.isDisabled() || !DriverStation.isAutonomous()) && f_Limelight.getArea() >= 0.18) {
             Pose2d visionPose = f_Limelight.getBotPose();
-
-            // if ((visionPose.getX() != 0 && visionPose.getY() != 0 && Math.abs(currentPose.getX() - visionPose.getX()) < 1 && Math.abs(currentPose.getY() - visionPose.getY()) < 1) || RobotState.isDisabled()) {
-                updateWithVision(visionPose, f_Limelight.getLastBotPoseTimestamp());
-               // return visionPose;
-            // } else {
-            //     return currentPose;
-            // }
+            updateWithVision(visionPose, f_Limelight.getLastBotPoseTimestamp());
         }
-        //SmartDashboard.putNumber("Current Position X", currentPose.getX());
         return getEstimatedPosition();
-        // Pose2d botPose = f_Limelight.getBotPose(); 
-        // double botX = botPose.getX();
-        // double botY = botPose.getY();
-
-        // if (botX == 0 && botY == 0){
-        //     botPose = getEstimatedPosition();
-        //     System.out.println(botPose);
-        // }
-        // else{
-        //     updateWithVision(botPose, f_Limelight.getLastBotPoseTimestamp());
-        //     System.out.println(botPose);
-        // }
-        // return botPose;
     }
 
     public void setPose(Pose2d pose) {
         swerveEstimator.resetPosition(getGyroYaw(), getModulePositions(), pose);
         limeLightSwerveEstimator.resetPosition(getGyroYaw(), getModulePositions(), pose);
-        // swerveEstimator.resetPosition(getGyroYaw(), getModulePositions(), pose);
     }
 
     public Rotation2d getHeading(){
@@ -293,7 +262,6 @@ public class Swerve extends SubsystemBase{
     public void zeroHeading(){
         Rotation2d gyroYaw = getGyroYaw();
         swerveEstimator.resetPosition(gyroYaw, getModulePositions(), new Pose2d(getPose().getTranslation(), new Rotation2d()));
-        //limeLightSwerveEstimator.resetPosition(gyroYaw, getModulePositions(), new Pose2d(limeLightSwerveEstimator.getEstimatedPosition().getTranslation(), new Rotation2d()));
         gyroOffset = gyroYaw.getDegrees();
     }
 
@@ -329,28 +297,6 @@ public class Swerve extends SubsystemBase{
     
     public void driveRobotRelative(ChassisSpeeds robotRelativeSpeeds){
 
-        // SmartDashboard.putNumber("omega radians per second", robotRelativeSpeeds.omegaRadiansPerSecond);
-        // SmartDashboard.putNumber("x speed", robotRelativeSpeeds.vxMetersPerSecond);
-        // SmartDashboard.putNumber("y speed", robotRelativeSpeeds.vyMetersPerSecond);
-
-        
-        
-        // robotRelativeSpeeds.vxMetersPerSecond *= -1;
-        // robotRelativeSpeeds.vyMetersPerSecond *= -1; 
-        // if (AlignPosition.getPosition() == AlignPosition.SpeakerPos){
-        //     robotRelativeSpeeds.omegaRadiansPerSecond = rotateToSpeaker();
-        // }
-        
-        // else if (AlignPosition.getPosition() == AlignPosition.AutoPickup){
-        //     robotRelativeSpeeds.omegaRadiansPerSecond = rotateToNote();        
-        // }
-
-        // else
-        // {
-        //     //robotRelativeSpeeds.omegaRadiansPerSecond =  0;
-        //     robotRelativeSpeeds.omegaRadiansPerSecond *=  -1;
-        // }
-
         robotRelativeSpeeds.omegaRadiansPerSecond *= -1;
 
         ChassisSpeeds discreteSpeeds = ChassisSpeeds.discretize(robotRelativeSpeeds, .02);
@@ -369,18 +315,10 @@ public class Swerve extends SubsystemBase{
         if (AlignPosition.getAlignPose() != null){
             xDiff = botPose.getX() - AlignPosition.getAlignPose().getX(); // gets distance of x between robot and target
             yDiff = botPose.getY() - AlignPosition.getAlignPose().getY();}
-       
-        // ChassisSpeeds speeds = Constants.Swerve.swerveKinematics.toChassisSpeeds(getModuleStates());
-        // double distance = Math.sqrt(Math.pow(xDiff, 2) + Math.pow(yDiff, 2));
-        // distance = getVelocityCorrectionDistance(distance, speeds);
-        // yDiff += getVelocityCorrection(distance, speeds);
 
-        double angle = Units.radiansToDegrees(Math.atan2(yDiff, xDiff)) + 0;
-        //double angle = (Units.radiansToDegrees(Math.atan2(yDiff, xDiff)+180)+360)%360;
+        double angle = Units.radiansToDegrees(Math.atan2(yDiff, xDiff));
 
         double output = (((angle - correctedYaw())) + 360) % 360;
-        //SmartDashboard.putNumber("Speaker Diff Output", output);
-
         s_AutoRotateUtil.updateTargetAngle(output); 
         
         return s_AutoRotateUtil.calculateRotationSpeed();
@@ -448,8 +386,6 @@ public class Swerve extends SubsystemBase{
 
         for(SwerveModule mod : mSwerveMods){
             SmartDashboard.putNumber("Mod " + mod.moduleNumber + " CANcoder", mod.getCANcoder().getDegrees());
-            // SmartDashboard.putNumber("Mod " + mod.moduleNumber + " Angle", mod.getPosition().angle.getDegrees());
-            // SmartDashboard.putNumber("Mod " + mod.moduleNumber + " Velocity", mod.getState().speedMetersPerSecond);    
         }
         Pose2d estimatedPose = swerveEstimator.getEstimatedPosition();
         poseA = new Pose3d(getLimelightBotPose());
@@ -458,7 +394,6 @@ public class Swerve extends SubsystemBase{
 
         double odometryX = estimatedPose.getX();
         double odometryY = estimatedPose.getY();
-        Pose2d botPose = getAutoLimelightBotPose();
         field.setRobotPose(estimatedPose);
         SmartDashboard.putData("Field", field);
         SmartDashboard.putNumber("Odometry X", odometryX);

@@ -4,12 +4,8 @@ package frc.robot;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import frc.robot.subsystems.Swerve;
 
 public class AutoRotateUtil {
-
-    private final Swerve s_Swerve = null;
 
     private final PIDController pidController;
 
@@ -56,11 +52,8 @@ public class AutoRotateUtil {
     if (headingError < -180) {
         headingError += 360;
     }
-    //SmartDashboard.putNumber("Heading Error Swerve", headingError);
-    //double speed = pidController.calculate(headingError, 0);
+
     double feedForward = 0.5;
-    //speed = MathUtil.clamp(speed, -1, 1);
-    //SmartDashboard.putNumber("Speed", speed);
 
     if (Math.abs(headingError) > Constants.feedForwardAngle) {
         return (headingError < 0) ? feedForward : -feedForward;
@@ -72,15 +65,12 @@ public class AutoRotateUtil {
     * Updates degrees robot needs to rotate
     */ 
    public void updateTargetAngle(double angle) {
-    //System.out.println(angle);
     m_angle = angle;
 
    }
 
    public boolean isFinished () {
     return pidController.atSetpoint();
-    //double speed = pidController.calculate(s_Swerve.getYawDouble());
-    //return speed < 0.1;
    }
 
    public void end() {
