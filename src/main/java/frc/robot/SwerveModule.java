@@ -53,8 +53,9 @@ public class SwerveModule {
     }
 
     public void setDesiredState(SwerveModuleState desiredState, boolean isOpenLoop){
-        SwerveModuleState swerveState = new SwerveModuleState(desiredState.speedMetersPerSecond, desiredState.angle);
-        swerveState.optimize(getState().angle); 
+        // SwerveModuleState swerveState = new SwerveModuleState(desiredState.speedMetersPerSecond, desiredState.angle);
+        // swerveState.optimize(getState().angle); 
+        desiredState = SwerveModuleState.optimize(desiredState, getState().angle); 
         mAngleMotor.setControl(anglePosition.withPosition(desiredState.angle.getRotations()));
         setSpeed(desiredState, isOpenLoop);
     }
