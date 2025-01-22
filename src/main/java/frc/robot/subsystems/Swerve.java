@@ -60,6 +60,10 @@ public class Swerve extends SubsystemBase{
     public Pose3d poseA = new Pose3d();
     public Pose3d poseB = new Pose3d();
 
+    private final PIDController autoXController = new PIDController(10.0, 0.0, 0.0);
+    private final PIDController autoYController = new PIDController(10.0, 0.0, 0.0);
+    private final PIDController autoHeadingController = new PIDController(7.5, 0.0, 0.0);
+
     public boolean readyToPickUp = false;
     public DriveParams autoPickupDriveParams;
 
@@ -162,13 +166,20 @@ public class Swerve extends SubsystemBase{
         }
     }    
 
-    public void autoDrive(Translation2d translation, double rotation, boolean fieldRelative, boolean isOpenLoop) {
-        if (readyToPickUp) {
-            drive(autoPickupDriveParams.translation, autoPickupDriveParams.rotation, autoPickupDriveParams.fieldRelative, autoPickupDriveParams.isOpenLoop);
-        } else {
-            drive(translation, rotation, fieldRelative, isOpenLoop);
-        }
-        System.out.println(readyToPickUp);
+    public void autoDrive(SwerveSample sample) {
+        // Get the current pose of the robot
+        Pose2d pose = getPose();
+        
+
+        // Generate the next speeds for the robot
+        ChassisSpeeds speeds = new ChassisSpeeds(
+            sample.vx + autoXController.calculate(pose.getX(), sample.x),
+            sample.vy + autoYController.calculate(pose.getY(), sample.y),
+            sample.omega + autoHeadingController.calculate(pose.getRotation().getRadians(), sample.heading)
+        );
+
+        // Apply the generated speeds
+        drive(new Translation2d(speeds.vxMetersPerSecond, speeds.vyMetersPerSecond), speeds.omegaRadiansPerSecond, true, true);
     }
 
     public void setAutoDriveParams(Translation2d translation, double rotation, boolean fieldRelative, boolean isOpenLoop) {
