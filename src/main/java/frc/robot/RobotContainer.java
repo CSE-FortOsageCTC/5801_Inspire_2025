@@ -35,14 +35,15 @@ public class RobotContainer {
   private final JoystickButton zeroGyro = new JoystickButton(driver, XboxController.Button.kY.value);
 
   /* Subsystems */
-  private final Swerve s_Swerve = new Swerve();
+  // private final Swerve s_Swerve = new Swerve();
+  private final ElevatorSubsystem elevatorSubsystem = ElevatorSubsystem.getInstance();
 
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
     boolean fieldRelative = true;
     boolean openLoop = true;
-    s_Swerve.setDefaultCommand(new TeleopSwerve(s_Swerve, driver, translationAxis, strafeAxis, rotationAxis, fieldRelative, openLoop, throttle));
+    // s_Swerve.setDefaultCommand(new TeleopSwerve(s_Swerve, driver, translationAxis, strafeAxis, rotationAxis, fieldRelative, openLoop, throttle));
 
     // Configure the button bindings
     configureButtonBindings();
@@ -56,7 +57,7 @@ public class RobotContainer {
    */
   private void configureButtonBindings() {
     /* Driver Buttons */
-    zeroGyro.onTrue(new InstantCommand(() -> s_Swerve.zeroGyro()));
+    // zeroGyro.onTrue(new InstantCommand(() -> s_Swerve.zeroGyro()));
   }
 
   /**
@@ -66,6 +67,7 @@ public class RobotContainer {
    */
   public Command getAutonomousCommand() {
     // An ExampleCommand will run in autonomous
-    return new exampleAuto(s_Swerve);
+    //return new exampleAuto(s_Swerve);
+    return null;
   }
 }

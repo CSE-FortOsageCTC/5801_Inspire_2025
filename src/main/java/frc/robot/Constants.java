@@ -52,7 +52,7 @@ public final class Constants {
         public static final boolean driveEnableCurrentLimit = true;
 
         /* Angle Motor PID Values */
-        public static final double angleKP = 0.6;
+        public static final double angleKP = 0.1;
         public static final double angleKI = 0.0;
         public static final double angleKD = 12.0;
         public static final double angleKF = 0.0;
@@ -141,5 +141,25 @@ public final class Constants {
             new TrapezoidProfile.Constraints(
                 kMaxAngularSpeedRadiansPerSecond, kMaxAngularSpeedRadiansPerSecondSquared);
       }
+
+      public enum ElevatorPosition {
+        Travel(0, 0, 0),
+        L1(0, 0, 0),
+        L2(0, 0, 0),
+        L3(0, 0, 0),
+        L4(0, 65, 0);
+
+        public double armAngle;
+        public double telescope;
+        public double wristAngle;
+
+        ElevatorPosition(double armAngle, double telescope, double wristAngle) {
+            this.armAngle = armAngle;
+            this.telescope = telescope;
+            this.wristAngle = wristAngle;
+
+            // do stuff with positions here
+        }
+    }
 
 }
