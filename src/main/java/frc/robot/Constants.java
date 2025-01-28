@@ -144,10 +144,11 @@ public final class Constants {
 
       public enum ElevatorPosition {
         Travel(0, 0, 0),
-        L1(0, 0, 0),
-        L2(0, 0, 0),
-        L3(0, 0, 0),
-        L4(0, 65, 0);
+        L1(0, 16.25, 0),
+        L2(0, 32.5, 0),
+        L3(0, 48.75, 0),
+        L4(0, 65, 0),
+        HumanP(0,0,0);
 
         public double armAngle;
         public double telescope;
