@@ -36,7 +36,7 @@ public class ElevatorSubsystem extends SubsystemBase{
             pidController.reset(getElevatorEncoder());
         }
         
-        double calculation = MathUtil.clamp(pidController.calculate(getElevatorEncoder(), position.telescope), -0.5, 0.5);
+        double calculation = MathUtil.clamp(pidController.calculate(getElevatorEncoder(), position.telescope), -1, 1);
         elevatorMaster.set(calculation);
         SmartDashboard.putNumber("PID Output", calculation);
         lastElevatorPosition = position;
