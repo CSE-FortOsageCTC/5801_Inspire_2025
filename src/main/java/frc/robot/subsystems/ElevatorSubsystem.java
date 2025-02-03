@@ -2,7 +2,7 @@ package frc.robot.subsystems;
 
 import com.revrobotics.spark.SparkMax;
 
-import frc.robot.Constants.ElevatorPosition;
+import frc.robot.Constants.ArmPosition;
 
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 
@@ -21,7 +21,7 @@ public class ElevatorSubsystem extends SubsystemBase{
 
     private static ElevatorSubsystem elevatorSubsystem;
 
-    private static ElevatorPosition lastElevatorPosition = ElevatorPosition.Travel;
+    private static ArmPosition lastElevatorPosition = ArmPosition.Travel;
 
     private ElevatorSubsystem(){
         elevatorMaster = new SparkMax(50, MotorType.kBrushless);
@@ -31,7 +31,7 @@ public class ElevatorSubsystem extends SubsystemBase{
         pidController.setTolerance(0.1);
     }
 
-    public void setPosition(ElevatorPosition position){
+    public void setPosition(ArmPosition position){
         if (position != lastElevatorPosition) {
             pidController.reset(getElevatorEncoder());
         }
@@ -55,6 +55,10 @@ public class ElevatorSubsystem extends SubsystemBase{
             elevatorSubsystem = new ElevatorSubsystem();
         }
         return elevatorSubsystem;
+    }
+
+    public ArmPosition getArmPosition() {
+        return lastElevatorPosition;
     }
 
     @Override

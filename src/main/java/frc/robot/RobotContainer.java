@@ -5,15 +5,28 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.GenericHID;
+
+import static edu.wpi.first.units.Units.MetersPerSecond;
+
+import choreo.auto.AutoChooser;
+import choreo.auto.AutoFactory;
+
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 
-import frc.robot.autos.*;
 import frc.robot.commands.*;
 import frc.robot.subsystems.*;
+
+import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
+import frc.robot.commands.DefaultTeleop;
+import frc.robot.generated.TunerConstants;
+//import frc.robot.subsystems.ChoreoSubsystem;
+import frc.robot.subsystems.CommandSwerveDrivetrain;
+
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -22,6 +35,7 @@ import frc.robot.subsystems.*;
  * subsystems, commands, and button mappings) should be declared here.
  */
 public class RobotContainer {
+
   /* Controllers */
   private final Joystick driver = new Joystick(0);
   private final Joystick operator = new Joystick(1);
@@ -54,17 +68,33 @@ public class RobotContainer {
 
 
   /*commands */
-  private final ElevatorDefault elevatorDefaultCommand = new ElevatorDefault(operator);
+  private final ArmDefault armDefaultCommand = new ArmDefault(driver, operator);
+  public CommandSwerveDrivetrain driveTrain = TunerConstants.createDrivetrain();
+  //private ChoreoSubsystem s_choreoSubsystem;
 
+  private final Telemetry logger = new Telemetry(TunerConstants.kSpeedAt12Volts.in(MetersPerSecond));
+
+  private final AutoFactory autoFactory;
+  private final AutoRoutines autoRoutines;
+  private final AutoChooser autoChooser = new AutoChooser();
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
     boolean fieldRelative = true;
     boolean openLoop = true;
+    autoFactory = driveTrain.createAutoFactory();
+    autoRoutines = new AutoRoutines(autoFactory);
+
+    autoChooser.addRoutine("TestAuto", autoRoutines::simplePathAuto);
+    SmartDashboard.putData("Auto Chooser", autoChooser);
     // s_Swerve.setDefaultCommand(new TeleopSwerve(s_Swerve, driver, translationAxis, strafeAxis, rotationAxis, fieldRelative, openLoop, throttle));
 
     // Configure the button bindings
     configureButtonBindings();
+
+  // The robot's subsystems and commands are defined here...
+  
+
   }
 
   /**
@@ -80,7 +110,8 @@ public class RobotContainer {
     elevatorDownButton.whileTrue(new InstantCommand(() -> elevatorSubsystem.setSpeed(-0.4)));
     elevatorUpButton.onFalse(new InstantCommand(() -> elevatorSubsystem.setSpeed(0)));
     elevatorDownButton.onFalse(new InstantCommand(() -> elevatorSubsystem.setSpeed(0)));
-    elevatorSubsystem.setDefaultCommand(elevatorDefaultCommand);
+    elevatorSubsystem.setDefaultCommand(armDefaultCommand);
+
 
     wristUpButton.whileTrue(new InstantCommand(() -> manipulatorSubsystem.setWristSpeed(0.1)));
     wristDownButton.whileTrue(new InstantCommand(() -> manipulatorSubsystem.setWristSpeed(-0.1)));
@@ -92,6 +123,11 @@ public class RobotContainer {
     wheelForwardButton.onFalse(new InstantCommand(() -> manipulatorSubsystem.setWheelSpeed(0)));
     wheelBackwardButton.onFalse(new InstantCommand(() -> manipulatorSubsystem.setWheelSpeed(0)));
 
+    driveTrain.setDefaultCommand(new DefaultTeleop(driver, operator, driveTrain));
+
+    // Initialize Driver Button Functions
+
+    driveTrain.registerTelemetry(logger::telemeterize);
   }
 
   /**
@@ -100,8 +136,8 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
-    // An ExampleCommand will run in autonomous
-    //return new exampleAuto(s_Swerve);
-    return null;
+    /* Run the routine selected from the auto chooser */
+    return autoChooser.selectedCommand();
+
   }
 }

@@ -35,7 +35,7 @@ public class LimeLightSubsystem extends SubsystemBase {
      */
     private LimeLightSubsystem() {
         botPose = new Pose2d();
-        table = NetworkTableInstance.getDefault().getTable("limelight-sky");
+        table = NetworkTableInstance.getDefault().getTable("limelight-front");
         table.getEntry("pipeline").setNumber(0);
         botPoseEntry = table.getEntry("botpose");
         tx = table.getEntry("tx");
