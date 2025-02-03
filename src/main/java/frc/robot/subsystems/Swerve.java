@@ -35,6 +35,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.AlignPosition;
 import frc.robot.AutoRotateUtil;
 import frc.robot.Constants;
+import frc.robot.LimelightHelpers;
 import frc.robot.SwerveModule;
 
 
@@ -409,6 +410,25 @@ public class Swerve extends SubsystemBase{
         SmartDashboard.putData("Field", field);
         SmartDashboard.putNumber("Odometry X", odometryX);
         SmartDashboard.putNumber("Odometry Y", odometryY);
+        
+        boolean doRejectUpdate = false;
+        LimelightHelpers.SetRobotOrientation("limelight-front", swerveEstimator.getEstimatedPosition().getRotation().rotateBy(new Rotation2d().fromDegrees(180)).getDegrees(), 0, 0, 0, 0, 0);
+        LimelightHelpers.PoseEstimate mt2 = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2("limelight-front");
+        if(Math.abs(gyro.getAngularVelocityZWorld().getValueAsDouble()) > 720) // if our angular velocity is greater than 720 degrees per second, ignore vision updates
+        {
+          doRejectUpdate = true;
+        }
+        if(mt2 == null || mt2.tagCount == 0)
+        {
+          doRejectUpdate = true;
+        }
+        if(!doRejectUpdate)
+        {
+            swerveEstimator.setVisionMeasurementStdDevs(VecBuilder.fill(.7,.7,9999999));
+            swerveEstimator.addVisionMeasurement(
+                mt2.pose,
+                mt2.timestampSeconds);
+        }
     }
 
     public class DriveParams {
