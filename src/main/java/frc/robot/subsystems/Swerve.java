@@ -109,7 +109,7 @@ public class Swerve extends SubsystemBase{
             
         // }
 
-        swerveEstimator.updateWithTime(Timer.getFPGATimestamp(), getGyroYaw().rotateBy(new Rotation2d().fromDegrees(180)), getModPos);
+        swerveEstimator.updateWithTime(Timer.getFPGATimestamp(), getGyroYaw(), getModPos);
         //limeLightSwerveEstimator.updateWithTime(Timer.getFPGATimestamp(), getGyroYaw(), getModPos);
     }
 
