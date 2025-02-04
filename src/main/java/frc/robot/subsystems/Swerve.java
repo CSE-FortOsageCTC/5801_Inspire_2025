@@ -46,7 +46,7 @@ public class Swerve extends SubsystemBase{
     public SwerveModule[] mSwerveMods;
     public Pigeon2 gyro;
     private SwerveDrivePoseEstimator swerveEstimator;
-    private SwerveDrivePoseEstimator limeLightSwerveEstimator;
+    //private SwerveDrivePoseEstimator limeLightSwerveEstimator;
     private static Swerve swerve;
     public double gyroOffset;
     public PIDController rotationPidController;
@@ -97,10 +97,10 @@ public class Swerve extends SubsystemBase{
 
         // swerveOdometry = new SwerveDriveOdometry(Constants.Swerve.swerveKinematics, getGyroYaw(), getModulePositions());
         swerveEstimator = new SwerveDrivePoseEstimator(Constants.Swerve.swerveKinematics, getGyroRot2d(), getModulePositions(), new Pose2d(0, 0, new Rotation2d()));
-        limeLightSwerveEstimator = new SwerveDrivePoseEstimator(Constants.Swerve.swerveKinematics, getGyroRot2d(), getModulePositions(), new Pose2d(0, 0, new Rotation2d()));
+        //limeLightSwerveEstimator = new SwerveDrivePoseEstimator(Constants.Swerve.swerveKinematics, getGyroRot2d(), getModulePositions(), new Pose2d(0, 0, new Rotation2d()));
 
         swerveEstimator.setVisionMeasurementStdDevs(VecBuilder.fill(0.5, 0.5, Units.degreesToRadians(.5)));
-        limeLightSwerveEstimator.setVisionMeasurementStdDevs(VecBuilder.fill(0.5, 0.5, Units.degreesToRadians(.5)));
+        //limeLightSwerveEstimator.setVisionMeasurementStdDevs(VecBuilder.fill(0.5, 0.5, Units.degreesToRadians(.5)));
 
     }
     public void updatePoseEstimator() {
@@ -109,8 +109,8 @@ public class Swerve extends SubsystemBase{
             
         // }
 
-        swerveEstimator.updateWithTime(Timer.getFPGATimestamp(), getGyroYaw(), getModPos);
-        limeLightSwerveEstimator.updateWithTime(Timer.getFPGATimestamp(), getGyroYaw(), getModPos);
+        swerveEstimator.updateWithTime(Timer.getFPGATimestamp(), getGyroYaw().rotateBy(new Rotation2d().fromDegrees(180)), getModPos);
+        //limeLightSwerveEstimator.updateWithTime(Timer.getFPGATimestamp(), getGyroYaw(), getModPos);
     }
 
     public void setTrajectory(Trajectory<SwerveSample> traj) {
@@ -136,13 +136,13 @@ public class Swerve extends SubsystemBase{
     public void updateWithVision(Pose2d pose2d, double timestamp){
         Pose2d test = new Pose2d(pose2d.getTranslation(), Rotation2d.fromDegrees(correctedYaw()));
         swerveEstimator.addVisionMeasurement(test, timestamp);
-        limeLightSwerveEstimator.addVisionMeasurement(test, timestamp);
+        //limeLightSwerveEstimator.addVisionMeasurement(test, timestamp);
         //setHeading(Rotation2d.fromDegrees(gyroOffset-180));
         // swerveEstimator.resetPosition(getGyroYaw(), getModulePositions(), test);
     }
     public void updateWithVisionLLEsitmator(Pose2d pose2d, double timestamp){
         Pose2d test = new Pose2d(pose2d.getTranslation(), Rotation2d.fromDegrees(correctedYaw()));
-        limeLightSwerveEstimator.addVisionMeasurement(test, timestamp);
+        //limeLightSwerveEstimator.addVisionMeasurement(test, timestamp);
         //setHeading(Rotation2d.fromDegrees(gyroOffset-180));
         // swerveEstimator.resetPosition(getGyroYaw(), getModulePositions(), test);
     }
@@ -219,33 +219,33 @@ public class Swerve extends SubsystemBase{
         // return swerveEstimator.getEstimatedPosition();
     }
 
-    public Pose2d getAutoLimelightBotPose(){
-        if (f_Limelight.getArea() >= 0.17) {
-            // ChassisSpeeds speeds = Constants.Swerve.swerveKinematics.toChassisSpeeds(getModuleStates());
-            // if (Math.abs(speeds.vxMetersPerSecond) < .25 && Math.abs(speeds.vyMetersPerSecond) < 1){
-            //     Pose2d visionPose = f_Limelight.getBotPose();
-            //     updateWithVisionLLEsitmator(visionPose, f_Limelight.getLastBotPoseTimestamp());
-            // }
-            Pose2d visionPose = f_Limelight.getBotPose();
-            updateWithVisionLLEsitmator(visionPose, f_Limelight.getLastBotPoseTimestamp());
-        }
+    // public Pose2d getAutoLimelightBotPose(){
+    //     if (f_Limelight.getArea() >= 0.17) {
+    //         // ChassisSpeeds speeds = Constants.Swerve.swerveKinematics.toChassisSpeeds(getModuleStates());
+    //         // if (Math.abs(speeds.vxMetersPerSecond) < .25 && Math.abs(speeds.vyMetersPerSecond) < 1){
+    //         //     Pose2d visionPose = f_Limelight.getBotPose();
+    //         //     updateWithVisionLLEsitmator(visionPose, f_Limelight.getLastBotPoseTimestamp());
+    //         // }
+    //         Pose2d visionPose = f_Limelight.getBotPose();
+    //         updateWithVisionLLEsitmator(visionPose, f_Limelight.getLastBotPoseTimestamp());
+    //     }
         
-        return limeLightSwerveEstimator.getEstimatedPosition();
-    }
+    //     return limeLightSwerveEstimator.getEstimatedPosition();
+    // }
 
-    public Pose2d getTeleopLimelightBotPose(){
-        if (f_Limelight.getArea() >= 0.17) {
-            // ChassisSpeeds speeds = Constants.Swerve.swerveKinematics.toChassisSpeeds(getModuleStates());
-            // if (Math.abs(speeds.vxMetersPerSecond) < .25 && Math.abs(speeds.vyMetersPerSecond) < 1){
-            //     Pose2d visionPose = f_Limelight.getBotPose();
-            //     updateWithVisionLLEsitmator(visionPose, f_Limelight.getLastBotPoseTimestamp());
-            // }
-            Pose2d visionPose = f_Limelight.getBotPose();
-            updateWithVisionLLEsitmator(visionPose, f_Limelight.getLastBotPoseTimestamp());
-        }
+    // public Pose2d getTeleopLimelightBotPose(){
+    //     if (f_Limelight.getArea() >= 0.17) {
+    //         // ChassisSpeeds speeds = Constants.Swerve.swerveKinematics.toChassisSpeeds(getModuleStates());
+    //         // if (Math.abs(speeds.vxMetersPerSecond) < .25 && Math.abs(speeds.vyMetersPerSecond) < 1){
+    //         //     Pose2d visionPose = f_Limelight.getBotPose();
+    //         //     updateWithVisionLLEsitmator(visionPose, f_Limelight.getLastBotPoseTimestamp());
+    //         // }
+    //         Pose2d visionPose = f_Limelight.getBotPose();
+    //         updateWithVisionLLEsitmator(visionPose, f_Limelight.getLastBotPoseTimestamp());
+    //     }
         
-        return limeLightSwerveEstimator.getEstimatedPosition();
-    }
+    //     return limeLightSwerveEstimator.getEstimatedPosition();
+    // }
 
     public Pose2d getLimelightBotPose(){
         if ((DriverStation.isDisabled() || !DriverStation.isAutonomous()) && f_Limelight.getArea() >= 0.18) {
@@ -257,7 +257,7 @@ public class Swerve extends SubsystemBase{
 
     public void setPose(Pose2d pose) {
         swerveEstimator.resetPosition(getGyroYaw(), getModulePositions(), pose);
-        limeLightSwerveEstimator.resetPosition(getGyroYaw(), getModulePositions(), pose);
+        //limeLightSwerveEstimator.resetPosition(getGyroYaw(), getModulePositions(), pose);
     }
 
     public Rotation2d getHeading(){
@@ -267,7 +267,7 @@ public class Swerve extends SubsystemBase{
     public void setHeading(Rotation2d heading){
         Rotation2d gyroYaw = getGyroYaw();
         swerveEstimator.resetPosition(gyroYaw, getModulePositions(), new Pose2d(getPose().getTranslation(), heading));
-        limeLightSwerveEstimator.resetPosition(gyroYaw, getModulePositions(), new Pose2d(limeLightSwerveEstimator.getEstimatedPosition().getTranslation(), heading));
+        //limeLightSwerveEstimator.resetPosition(gyroYaw, getModulePositions(), new Pose2d(limeLightSwerveEstimator.getEstimatedPosition().getTranslation(), heading));
         gyroOffset = gyroYaw.getDegrees() - heading.getDegrees();
     }
 
@@ -320,21 +320,21 @@ public class Swerve extends SubsystemBase{
         }
     }
 
-    public double rotateToPos(){
-        double xDiff = 0;
-        double yDiff = 0;
-        Pose2d botPose = DriverStation.isAutonomousEnabled()? getAutoLimelightBotPose():getTeleopLimelightBotPose();
-        if (AlignPosition.getAlignPose() != null){
-            xDiff = botPose.getX() - AlignPosition.getAlignPose().getX(); // gets distance of x between robot and target
-            yDiff = botPose.getY() - AlignPosition.getAlignPose().getY();}
+    // public double rotateToPos(){
+    //     double xDiff = 0;
+    //     double yDiff = 0;
+    //     Pose2d botPose = DriverStation.isAutonomousEnabled()? getAutoLimelightBotPose():getTeleopLimelightBotPose();
+    //     if (AlignPosition.getAlignPose() != null){
+    //         xDiff = botPose.getX() - AlignPosition.getAlignPose().getX(); // gets distance of x between robot and target
+    //         yDiff = botPose.getY() - AlignPosition.getAlignPose().getY();}
 
-        double angle = Units.radiansToDegrees(Math.atan2(yDiff, xDiff));
+    //     double angle = Units.radiansToDegrees(Math.atan2(yDiff, xDiff));
 
-        double output = (((angle - correctedYaw())) + 360) % 360;
-        s_AutoRotateUtil.updateTargetAngle(output); 
+    //     double output = (((angle - correctedYaw())) + 360) % 360;
+    //     s_AutoRotateUtil.updateTargetAngle(output); 
         
-        return s_AutoRotateUtil.calculateRotationSpeed();
-    }
+    //     return s_AutoRotateUtil.calculateRotationSpeed();
+    // }
 
     public double rotateToAmp() {
         double headingError = AlignPosition.getAlignPose().getRotation().getDegrees() - correctedYaw();
@@ -400,7 +400,7 @@ public class Swerve extends SubsystemBase{
             SmartDashboard.putNumber("Mod " + mod.moduleNumber + " CANcoder", mod.getCANcoder().getDegrees());
         }
         Pose2d estimatedPose = swerveEstimator.getEstimatedPosition();
-        poseA = new Pose3d(getLimelightBotPose());
+        poseA = new Pose3d(estimatedPose);
         publisher.set(poseA);
         arrayPublisher.set(new Pose3d[] {poseA, poseB});
 
@@ -412,7 +412,7 @@ public class Swerve extends SubsystemBase{
         SmartDashboard.putNumber("Odometry Y", odometryY);
         
         boolean doRejectUpdate = false;
-        LimelightHelpers.SetRobotOrientation("limelight-front", swerveEstimator.getEstimatedPosition().getRotation().rotateBy(new Rotation2d().fromDegrees(180)).getDegrees(), 0, 0, 0, 0, 0);
+        LimelightHelpers.SetRobotOrientation("limelight-front", swerveEstimator.getEstimatedPosition().getRotation().getDegrees(), 0, 0, 0, 0, 0);
         LimelightHelpers.PoseEstimate mt2 = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2("limelight-front");
         if(Math.abs(gyro.getAngularVelocityZWorld().getValueAsDouble()) > 720) // if our angular velocity is greater than 720 degrees per second, ignore vision updates
         {
@@ -424,10 +424,12 @@ public class Swerve extends SubsystemBase{
         }
         if(!doRejectUpdate)
         {
-            swerveEstimator.setVisionMeasurementStdDevs(VecBuilder.fill(.7,.7,9999999));
+            swerveEstimator.setVisionMeasurementStdDevs(VecBuilder.fill(0.7,0.7,9999999));
             swerveEstimator.addVisionMeasurement(
                 mt2.pose,
                 mt2.timestampSeconds);
+            SmartDashboard.putNumber("MT2 X", mt2.pose.getX());
+            SmartDashboard.putNumber("MT2 Y", mt2.pose.getY());
         }
     }
 

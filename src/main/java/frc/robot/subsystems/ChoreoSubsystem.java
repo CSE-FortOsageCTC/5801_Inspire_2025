@@ -59,7 +59,7 @@ public class ChoreoSubsystem extends SubsystemBase{
 
     private boolean getFlipped() {
         Optional<DriverStation.Alliance> alliance = DriverStation.getAlliance();
-        // System.out.println(alliance);
+        System.out.println(alliance);
         return alliance.isPresent() && alliance.get().equals(Alliance.Red);
     }
 
@@ -84,7 +84,7 @@ public class ChoreoSubsystem extends SubsystemBase{
         
     }
 
-    public AutoRoutine pickupAndScoreAuto() {
+public AutoRoutine pickupAndScoreAuto() {
     AutoRoutine routine = autoFactory.newRoutine("testAuto");
 
     // Load the routine's trajectories
