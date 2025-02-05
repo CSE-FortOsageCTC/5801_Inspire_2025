@@ -7,6 +7,7 @@ import com.ctre.phoenix6.hardware.Pigeon2;
 
 import choreo.trajectory.SwerveSample;
 import choreo.trajectory.Trajectory;
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
@@ -83,6 +84,8 @@ public class Swerve extends SubsystemBase{
         f_Limelight = LimeLightSubsystem.getInstance();
         s_AutoRotateUtil = new AutoRotateUtil(0);
         field = new Field2d();
+
+        autoHeadingController.enableContinuousInput(-Math.PI, Math.PI);
         
         publisher = NetworkTableInstance.getDefault().getStructTopic("MyPose", Pose3d.struct).publish();
         arrayPublisher = NetworkTableInstance.getDefault().getStructArrayTopic("MyPoseArray", Pose3d.struct).publish();
@@ -176,7 +179,7 @@ public class Swerve extends SubsystemBase{
         ChassisSpeeds speeds = new ChassisSpeeds(
             sample.vx + autoXController.calculate(pose.getX(), sample.x),
             sample.vy + autoYController.calculate(pose.getY(), sample.y),
-            sample.omega + autoHeadingController.calculate(pose.getRotation().getRadians(), sample.heading)
+            sample.omega + autoHeadingController.calculate(MathUtil.angleModulus(pose.getRotation().getRadians()), MathUtil.angleModulus(sample.heading))
         );
 
         // Apply the generated speeds
