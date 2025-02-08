@@ -61,6 +61,8 @@ public class Swerve extends SubsystemBase{
     public StructArrayPublisher<Pose3d> arrayPublisher;
     public Pose3d poseA = new Pose3d();
     public Pose3d poseB = new Pose3d();
+    public PIDController translationController = new PIDController(0, 0, 0);
+    public PIDController rotationController = new PIDController(0, 0, 0);
 
     private final PIDController autoXController = new PIDController(10.0, 0.0, 0.0);
     private final PIDController autoYController = new PIDController(10.0, 0.0, 0.0);
@@ -329,24 +331,16 @@ public class Swerve extends SubsystemBase{
         }
     }
 
-    // public double rotateToPos(){
-    //     double xDiff = 0;
-    //     double yDiff = 0;
-    //     Pose2d botPose = DriverStation.isAutonomousEnabled()? getAutoLimelightBotPose():getTeleopLimelightBotPose();
-    //     if (AlignPosition.getAlignPose() != null){
-    //         xDiff = botPose.getX() - AlignPosition.getAlignPose().getX(); // gets distance of x between robot and target
-    //         yDiff = botPose.getY() - AlignPosition.getAlignPose().getY();}
+    public double rotateToPos(double angle){
 
-    //     double angle = Units.radiansToDegrees(Math.atan2(yDiff, xDiff));
-
-    //     double output = (((angle - correctedYaw())) + 360) % 360;
-    //     s_AutoRotateUtil.updateTargetAngle(output); 
+        double output = (((angle - swerveEstimator.getEstimatedPosition().getRotation().getDegrees())) + 360) % 360;
+        s_AutoRotateUtil.updateTargetAngle(output); 
         
-    //     return s_AutoRotateUtil.calculateRotationSpeed();
-    // }
+        return s_AutoRotateUtil.calculateRotationSpeed();
+    }
 
     public double rotateToAmp() {
-        double headingError = AlignPosition.getAlignPose().getRotation().getDegrees() - correctedYaw();
+        double headingError = AlignPosition.getAlignOffset().getRotation().getDegrees() - correctedYaw();
 
         s_AutoRotateUtil.updateTargetAngle(headingError);
         
@@ -391,6 +385,30 @@ public class Swerve extends SubsystemBase{
         else{
             return new Translation2d(0,0);
         }
+    }
+
+    public void alignAprilTag(boolean isLeft) {
+
+        double tagID = f_Limelight.getAprilValue();
+
+        SmartDashboard.putNumber("April Tag Looking", tagID);
+
+        // pigeon 2 gyro is the value for rotation
+        // press the button and align a variable distance from the actual april tag forward and side to side and do that
+        if (isLeft) {
+            AlignPosition.setPosition(AlignPosition.LeftOffset);
+            rotateToPos(AlignPosition.getAlignOffset().getRotation().getDegrees());
+            
+        } else {
+            AlignPosition.setPosition(AlignPosition.RightOffset);
+            rotateToPos(AlignPosition.getAlignOffset().getRotation().getDegrees());
+        }
+        
+
+
+        
+
+
     }
 
     public void resetAutoRotateUtil(){

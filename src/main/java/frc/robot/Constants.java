@@ -31,6 +31,9 @@ public final class Constants {
 
     public static final double stageHeightMeters = 4; // 2.54
 
+    public static final double limelightScoringOffsetInches = 7;
+    public static final double limelightScoringDistance = 10;
+
     public static final class Swerve {
         public static final int pigeonID = 10;
 
