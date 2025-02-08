@@ -90,7 +90,7 @@ public class Swerve extends SubsystemBase{
         publisher = NetworkTableInstance.getDefault().getStructTopic("MyPose", Pose3d.struct).publish();
         arrayPublisher = NetworkTableInstance.getDefault().getStructArrayTopic("MyPoseArray", Pose3d.struct).publish();
 
-        
+
         mSwerveMods = new SwerveModule[] {
             new SwerveModule(0, Constants.Swerve.Mod0.constants),
             new SwerveModule(1, Constants.Swerve.Mod1.constants),
@@ -112,7 +112,7 @@ public class Swerve extends SubsystemBase{
             
         // }
 
-        swerveEstimator.updateWithTime(Timer.getFPGATimestamp(), getGyroYaw(), getModPos);
+        swerveEstimator.updateWithTime(Timer.getFPGATimestamp(), getGyroRot2d(), getModPos);
         //limeLightSwerveEstimator.updateWithTime(Timer.getFPGATimestamp(), getGyroYaw(), getModPos);
     }
 
@@ -183,7 +183,7 @@ public class Swerve extends SubsystemBase{
         );
 
         // Apply the generated speeds
-        drive(new Translation2d(speeds.vxMetersPerSecond, speeds.vyMetersPerSecond), speeds.omegaRadiansPerSecond, true, true);
+        drive(new Translation2d(-speeds.vxMetersPerSecond, -speeds.vyMetersPerSecond), speeds.omegaRadiansPerSecond, true, true);
     }
 
     public void setAutoDriveParams(Translation2d translation, double rotation, boolean fieldRelative, boolean isOpenLoop) {
@@ -259,29 +259,35 @@ public class Swerve extends SubsystemBase{
     }
 
     public void setPose(Pose2d pose) {
-        swerveEstimator.resetPosition(getGyroYaw(), getModulePositions(), pose);
+        swerveEstimator.resetPosition(getGyroRot2d(), getModulePositions(), pose);
         //limeLightSwerveEstimator.resetPosition(getGyroYaw(), getModulePositions(), pose);
     }
 
     public Rotation2d getHeading(){
-        return swerveEstimator.getEstimatedPosition().getRotation();
+        return getGyroYaw();//swerveEstimator.getEstimatedPosition().getRotation();
     }
 
     public void setHeading(Rotation2d heading){
         Rotation2d gyroYaw = getGyroYaw();
-        swerveEstimator.resetPosition(gyroYaw, getModulePositions(), new Pose2d(getPose().getTranslation(), heading));
+        //swerveEstimator.resetPosition(gyroYaw, getModulePositions(), new Pose2d(getPose().getTranslation(), heading));
         //limeLightSwerveEstimator.resetPosition(gyroYaw, getModulePositions(), new Pose2d(limeLightSwerveEstimator.getEstimatedPosition().getTranslation(), heading));
         gyroOffset = gyroYaw.getDegrees() - heading.getDegrees();
+        //gyro.setYaw(gyroOffset);
     }
 
     public void zeroHeading(){
-        Rotation2d gyroYaw = getGyroYaw();
-        swerveEstimator.resetPosition(gyroYaw, getModulePositions(), new Pose2d(getPose().getTranslation(), new Rotation2d()));
-        gyroOffset = gyroYaw.getDegrees();
+        Rotation2d gyroYaw = getGyroRot2d();//getGyroYaw();
+        //swerveEstimator.resetPosition(gyroYaw, getModulePositions(), new Pose2d(getPose().getTranslation(), new Rotation2d()));
+        gyroOffset = -gyroYaw.getDegrees();
+        //gyro.setYaw(0);
+        //swerveEstimator.resetPosition(getGyroRot2d(), getModulePositions(), swerveEstimator.getEstimatedPosition());
+        // LimelightHelpers.SetIMUMode("limelight-front", 1);
+        // LimelightHelpers.SetRobotOrientation("limelight-front", swerveEstimator.getEstimatedPosition().getRotation().getDegrees(), 0, 0, 0, 0 ,0);
+        
     }
 
     public Rotation2d getGyroYaw() {
-        return Rotation2d.fromDegrees(gyro.getYaw().getValueAsDouble());
+        return Rotation2d.fromDegrees(gyro.getYaw().getValueAsDouble()).rotateBy(new Rotation2d().fromDegrees(gyroOffset));
     }
 
     public Rotation2d getGyroRot2d(){
@@ -415,7 +421,14 @@ public class Swerve extends SubsystemBase{
         SmartDashboard.putNumber("Odometry Y", odometryY);
         
         boolean doRejectUpdate = false;
-        LimelightHelpers.SetRobotOrientation("limelight-front", swerveEstimator.getEstimatedPosition().getRotation().getDegrees(), 0, 0, 0, 0, 0);
+        if (DriverStation.isEnabled()) {
+            LimelightHelpers.SetIMUMode("limelight-front", 2);
+        } else if (DriverStation.isDisabled()) {
+            LimelightHelpers.SetIMUMode("limelight-front", 1);
+            LimelightHelpers.SetRobotOrientation("limelight-front", swerveEstimator.getEstimatedPosition().getRotation().getDegrees(), 0, 0, 0, 0, 0);
+        }
+        
+        // LimelightHelpers.SetRobotOrientation("limelight-front", swerveEstimator.getEstimatedPosition().getRotation().getDegrees(), 0, 0, 0, 0, 0);
         LimelightHelpers.PoseEstimate mt2 = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2("limelight-front");
         if(Math.abs(gyro.getAngularVelocityZWorld().getValueAsDouble()) > 720) // if our angular velocity is greater than 720 degrees per second, ignore vision updates
         {
@@ -427,12 +440,14 @@ public class Swerve extends SubsystemBase{
         }
         if(!doRejectUpdate)
         {
-            swerveEstimator.setVisionMeasurementStdDevs(VecBuilder.fill(0.7,0.7,9999999));
+            
+            swerveEstimator.setVisionMeasurementStdDevs(VecBuilder.fill(0.7,0.7,0.7));
             swerveEstimator.addVisionMeasurement(
                 mt2.pose,
                 mt2.timestampSeconds);
             SmartDashboard.putNumber("MT2 X", mt2.pose.getX());
             SmartDashboard.putNumber("MT2 Y", mt2.pose.getY());
+
         }
     }
 

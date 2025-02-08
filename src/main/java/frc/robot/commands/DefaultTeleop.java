@@ -80,7 +80,7 @@ public class DefaultTeleop extends Command{
         }
 
         //if (AlignPosition.getPosition().equals(AlignPosition.Manual)) {
-            rotationVal = rotationLimiter.calculate(-rotationAxis) * (throttleLimiter.calculate(throttleAxis));
+            rotationVal = rotationLimiter.calculate(rotationAxis) * (throttleLimiter.calculate(throttleAxis));
             robotCentricSup = true;
         // } else if (AlignPosition.getPosition().equals(AlignPosition.SpeakerPos) || AlignPosition.getPosition().equals(AlignPosition.StagePos)){
         //     rotationVal = s_DefaultTeleop.s_Swerve.rotateToPos(); // s_AutoRotateUtil.calculateRotationSpeed();
@@ -99,7 +99,7 @@ public class DefaultTeleop extends Command{
     
         double throttleCalc = throttleLimiter.calculate(throttleAxis);
 
-        Translation2d translation = new Translation2d(-translationVal, -strafeVal).times(-Constants.Swerve.maxSpeed * throttleCalc);
+        Translation2d translation = new Translation2d(translationVal, strafeVal).times(-Constants.Swerve.maxSpeed * throttleCalc);
         
         s_Swerve.drive(translation,  rotationVal * (driver.getRawButton(back)? Constants.Swerve.panicRotation:Constants.Swerve.maxAngularVelocity), robotCentricSup, true);
 
