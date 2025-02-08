@@ -1,6 +1,8 @@
 package frc.robot.subsystems;
 
 import com.revrobotics.spark.SparkMax;
+import com.reduxrobotics.sensors.canandcolor.Canandcolor;
+import com.reduxrobotics.sensors.canandcolor.CanandcolorSettings;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 
 import edu.wpi.first.math.MathUtil;
@@ -12,8 +14,11 @@ import frc.robot.Constants.ArmPosition;
 
 public class ManipulatorSubsystem extends SubsystemBase{
 
-    private static SparkMax intakeWheel;
-    private static SparkMax intakeWrist;
+    private static SparkMax intakeCoralWheel;
+    private static SparkMax intakeCoralWrist;
+    private static SparkMax intakeAlgaeWheel;
+
+    private Canandcolor canandcolor;
 
     private static ManipulatorSubsystem manipulatorSubsystem;
 
@@ -21,12 +26,22 @@ public class ManipulatorSubsystem extends SubsystemBase{
 
     private static ProfiledPIDController pidController;
 
+    private CanandcolorSettings settings = new CanandcolorSettings();
+
     private ManipulatorSubsystem() {
-        intakeWheel = new SparkMax(56, MotorType.kBrushless);
-        intakeWrist = new SparkMax(55, MotorType.kBrushless);
+        intakeCoralWheel = new SparkMax(56, MotorType.kBrushless);
+        intakeCoralWrist = new SparkMax(55, MotorType.kBrushless);
+
+        intakeAlgaeWheel = new SparkMax(60, MotorType.kBrushless);
 
         pidController = new ProfiledPIDController(0, 0, 0, new TrapezoidProfile.Constraints(70, 70));
         pidController.setTolerance(0.1);
+
+        canandcolor = new Canandcolor(30);
+
+        settings.setLampLEDBrightness(0.1);
+        
+        canandcolor.setSettings(settings);
     }
 
     public static ManipulatorSubsystem getInstance(){
@@ -37,12 +52,16 @@ public class ManipulatorSubsystem extends SubsystemBase{
         return manipulatorSubsystem;
     }
 
-    public void setWristSpeed(double speed){
-        intakeWrist.set(speed);
+    public void setCoralWristSpeed(double speed){
+        intakeCoralWrist.set(speed);
     }
     
-    public void setWheelSpeed(double speed){
-        intakeWheel.set(speed);
+    public void setCoralWheelSpeed(double speed){
+        intakeCoralWheel.set(speed);
+    }
+
+    public void setAlgaeWheelSpeed(double speed){
+        intakeAlgaeWheel.set(speed);
     }
 
     public void setPosition(ArmPosition position){
@@ -51,16 +70,40 @@ public class ManipulatorSubsystem extends SubsystemBase{
         }
         
         double calculation = MathUtil.clamp(pidController.calculate(getWristEncoder(), position.telescope), -1, 1);
-        intakeWrist.set(calculation);
+        intakeCoralWrist.set(calculation);
         SmartDashboard.putNumber("PID Output", calculation);
         lastPosition = position;
     }
 
     private double getWristEncoder(){
-        return intakeWrist.getEncoder().getPosition();
+        return intakeCoralWrist.getEncoder().getPosition();
     }
 
     public ArmPosition getArmPosition() {
         return lastPosition;
+    }
+
+    public double getProximity() {
+        return canandcolor.getProximity();
+    }
+
+    public Double getHSVHue() {
+        return canandcolor.getHSVHue();
+    }
+
+    public Double getHSVSaturation() {
+        return canandcolor.getHSVSaturation();
+    }
+
+    public Double getHSVValue() {
+        return canandcolor.getHSVValue();
+    }
+
+    @Override
+    public void periodic(){
+        SmartDashboard.putNumber("CAC Proximity", getProximity());
+        SmartDashboard.putNumber("CAC Hue", getHSVHue());
+        SmartDashboard.putNumber("CAC Saturation", getHSVSaturation());
+        SmartDashboard.putNumber("CAC Value", getHSVValue());
     }
 }

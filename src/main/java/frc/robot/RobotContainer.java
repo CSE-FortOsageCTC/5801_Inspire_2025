@@ -47,13 +47,13 @@ public class RobotContainer {
   private final int throttle = XboxController.Axis.kRightTrigger.value;
 
   /* Driver Buttons */
-//private final JoystickButton zeroGyro = new JoystickButton(driver, XboxController.Button.kY.value);
-  private final JoystickButton elevatorUpButton = new JoystickButton(driver, XboxController.Button.kLeftBumper.value);
-  private final JoystickButton elevatorDownButton = new JoystickButton(driver, XboxController.Button.kRightBumper.value);
-  private final JoystickButton wristUpButton = new JoystickButton(driver, XboxController.Button.kY.value);
-  private final JoystickButton wristDownButton = new JoystickButton(driver, XboxController.Button.kX.value);
-  private final JoystickButton wheelForwardButton = new JoystickButton(driver, XboxController.Button.kB.value);
-  private final JoystickButton wheelBackwardButton = new JoystickButton(driver, XboxController.Button.kA.value);
+  // private final JoystickButton zeroGyro = new JoystickButton(driver, XboxController.Button.kY.value);
+  // private final JoystickButton elevatorUpButton = new JoystickButton(driver, XboxController.Button.kLeftBumper.value);
+  // private final JoystickButton elevatorDownButton = new JoystickButton(driver, XboxController.Button.kRightBumper.value);
+  // private final JoystickButton wristUpButton = new JoystickButton(driver, XboxController.Button.kY.value);
+  // private final JoystickButton wristDownButton = new JoystickButton(driver, XboxController.Button.kX.value);
+  private final JoystickButton coralWheelForwardButton = new JoystickButton(driver, XboxController.Button.kB.value);
+  private final JoystickButton coralWheelBackwardButton = new JoystickButton(driver, XboxController.Button.kA.value);
 
   /* Operator Buttons */
   //private final JoystickButton moveToL1 = new JoystickButton(operator, XboxController.Button.kA.value);
@@ -65,6 +65,7 @@ public class RobotContainer {
   // private final Swerve s_Swerve = new Swerve();
   private final ElevatorSubsystem elevatorSubsystem = ElevatorSubsystem.getInstance();
   private final ManipulatorSubsystem manipulatorSubsystem = ManipulatorSubsystem.getInstance();
+  private final CanAndColorSubsystem canAndColorSubsystem = CanAndColorSubsystem.getInstance();
 
 
   /*commands */
@@ -106,22 +107,22 @@ public class RobotContainer {
   private void configureButtonBindings() {
     /* Driver Buttons */
     // zeroGyro.onTrue(new InstantCommand(() -> s_Swerve.zeroGyro()));
-    elevatorUpButton.whileTrue(new InstantCommand(() -> elevatorSubsystem.setSpeed(0.4)));
-    elevatorDownButton.whileTrue(new InstantCommand(() -> elevatorSubsystem.setSpeed(-0.4)));
-    elevatorUpButton.onFalse(new InstantCommand(() -> elevatorSubsystem.setSpeed(0)));
-    elevatorDownButton.onFalse(new InstantCommand(() -> elevatorSubsystem.setSpeed(0)));
+    // elevatorUpButton.whileTrue(new InstantCommand(() -> elevatorSubsystem.setSpeed(0.4)));
+    // elevatorDownButton.whileTrue(new InstantCommand(() -> elevatorSubsystem.setSpeed(-0.4)));
+    // elevatorUpButton.onFalse(new InstantCommand(() -> elevatorSubsystem.setSpeed(0)));
+    // elevatorDownButton.onFalse(new InstantCommand(() -> elevatorSubsystem.setSpeed(0)));
     elevatorSubsystem.setDefaultCommand(armDefaultCommand);
 
 
-    wristUpButton.whileTrue(new InstantCommand(() -> manipulatorSubsystem.setWristSpeed(0.1)));
-    wristDownButton.whileTrue(new InstantCommand(() -> manipulatorSubsystem.setWristSpeed(-0.1)));
-    wheelForwardButton.whileTrue(new InstantCommand(() -> manipulatorSubsystem.setWheelSpeed(0.1)));
-    wheelBackwardButton.whileTrue(new InstantCommand(() -> manipulatorSubsystem.setWheelSpeed(-0.1)));
+    // wristUpButton.whileTrue(new InstantCommand(() -> manipulatorSubsystem.setCoralWristSpeed(0.1)));
+    // wristDownButton.whileTrue(new InstantCommand(() -> manipulatorSubsystem.setCoralWristSpeed(-0.1)));
+    coralWheelForwardButton.whileTrue(new InstantCommand(() -> manipulatorSubsystem.setCoralWheelSpeed(0.1)));
+    coralWheelBackwardButton.whileTrue(new InstantCommand(() -> manipulatorSubsystem.setCoralWheelSpeed(-0.1)));
 
-    wristUpButton.onFalse(new InstantCommand(() -> manipulatorSubsystem.setWristSpeed(0)));
-    wristDownButton.onFalse(new InstantCommand(() -> manipulatorSubsystem.setWristSpeed(0)));
-    wheelForwardButton.onFalse(new InstantCommand(() -> manipulatorSubsystem.setWheelSpeed(0)));
-    wheelBackwardButton.onFalse(new InstantCommand(() -> manipulatorSubsystem.setWheelSpeed(0)));
+    // wristUpButton.onFalse(new InstantCommand(() -> manipulatorSubsystem.setCoralWristSpeed(0)));
+    // wristDownButton.onFalse(new InstantCommand(() -> manipulatorSubsystem.setCoralWristSpeed(0)));
+    coralWheelForwardButton.onFalse(new InstantCommand(() -> manipulatorSubsystem.setCoralWheelSpeed(0)));
+    coralWheelBackwardButton.onFalse(new InstantCommand(() -> manipulatorSubsystem.setCoralWheelSpeed(0)));
 
     driveTrain.setDefaultCommand(new DefaultTeleop(driver, operator, driveTrain));
 

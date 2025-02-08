@@ -25,8 +25,6 @@ public class ArmDefault extends Command{
         this.elevatorSubsystem = ElevatorSubsystem.getInstance();
         this.manipulatorSubsystem = ManipulatorSubsystem.getInstance();
 
-
-
         addRequirements(elevatorSubsystem, manipulatorSubsystem);
     }
     @Override
@@ -72,24 +70,32 @@ public class ArmDefault extends Command{
             }
 
             if (driver.getRawButton(XboxController.Button.kX.value)) {
-                manipulatorSubsystem.setWristSpeed(-0.3);
+                manipulatorSubsystem.setCoralWristSpeed(-0.3);
                 isManualWrist = true;
             } else if (driver.getRawButton(XboxController.Button.kY.value)) {
-                manipulatorSubsystem.setWristSpeed(0.3);
+                manipulatorSubsystem.setCoralWristSpeed(0.3);
                 isManualWrist = true;
-            } else if (manipulatorSubsystem.getArmPosition().equals(ArmPosition.Manual)) {
-                manipulatorSubsystem.setWristSpeed(0);
+            } else if (!ArmPosition.Manual.equals(manipulatorSubsystem.getArmPosition())) {
+                manipulatorSubsystem.setCoralWristSpeed(0);
             }
 
-            if (!elevatorSubsystem.getArmPosition().equals(ArmPosition.Manual)) {
+            if (!ArmPosition.Manual.equals(elevatorSubsystem.getArmPosition())) {
                 elevatorSubsystem.setPosition(ArmPosition.Travel);
             }
 
-            if (!manipulatorSubsystem.getArmPosition().equals(ArmPosition.Manual)) {
+            if (!ArmPosition.Manual.equals(manipulatorSubsystem.getArmPosition())) {
                 manipulatorSubsystem.setPosition(ArmPosition.Travel);
             }
             
-    
+            if (operator.getRawButton(XboxController.Button.kRightBumper.value) && manipulatorSubsystem.getProximity() >= 0.17){
+                manipulatorSubsystem.setAlgaeWheelSpeed(0.3);
+            } else if (manipulatorSubsystem.getProximity() >= 0.20 && manipulatorSubsystem.getProximity() <= 0.28 && !operator.getRawButton(XboxController.Button.kLeftBumper.value)){
+                manipulatorSubsystem.setAlgaeWheelSpeed(0.3);
+            } else if (operator.getRawButton(XboxController.Button.kLeftBumper.value)){
+                manipulatorSubsystem.setAlgaeWheelSpeed(-0.3);
+            } else {
+                manipulatorSubsystem.setAlgaeWheelSpeed(0);
+            }
         }
     }
 }
