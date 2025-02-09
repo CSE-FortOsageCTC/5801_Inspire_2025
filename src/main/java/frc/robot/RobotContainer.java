@@ -65,8 +65,6 @@ public class RobotContainer {
   // private final Swerve s_Swerve = new Swerve();
   private final ElevatorSubsystem elevatorSubsystem = ElevatorSubsystem.getInstance();
   private final ManipulatorSubsystem manipulatorSubsystem = ManipulatorSubsystem.getInstance();
-  private final CanAndColorSubsystem canAndColorSubsystem = CanAndColorSubsystem.getInstance();
-
 
   /*commands */
   private final ArmDefault armDefaultCommand = new ArmDefault(driver, operator);
