@@ -54,6 +54,7 @@ public class ManipulatorSubsystem extends SubsystemBase{
 
     public void setCoralWristSpeed(double speed){
         intakeCoralWrist.set(speed);
+        lastPosition = ArmPosition.Manual;
     }
     
     public void setCoralWheelSpeed(double speed){
@@ -105,5 +106,7 @@ public class ManipulatorSubsystem extends SubsystemBase{
         SmartDashboard.putNumber("CAC Hue", getHSVHue());
         SmartDashboard.putNumber("CAC Saturation", getHSVSaturation());
         SmartDashboard.putNumber("CAC Value", getHSVValue());
+
+        pidController.setP(0.2);
     }
 }

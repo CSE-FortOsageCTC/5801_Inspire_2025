@@ -44,6 +44,7 @@ public class ElevatorSubsystem extends SubsystemBase{
 
     public void setSpeed(double speed){
         elevatorMaster.set(speed);
+        lastElevatorPosition = ArmPosition.Manual;
     }
 
     private double getElevatorEncoder(){
