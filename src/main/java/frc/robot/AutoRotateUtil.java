@@ -74,7 +74,6 @@ public class AutoRotateUtil {
    }
 
    public void end() {
-    System.out.println("it ended");
     pidController.reset();
    }
 

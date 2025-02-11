@@ -33,6 +33,7 @@ public class DefaultTeleop extends Command{
     private SlewRateLimiter rotationLimiter = new SlewRateLimiter(5.0); 
     private SlewRateLimiter throttleLimiter = new SlewRateLimiter(2);
     private Pose2d alignPose;
+    private boolean isAprilAligning = false;
 
 
     public DefaultTeleop(Joystick driver, Joystick operator) {
@@ -62,7 +63,6 @@ public class DefaultTeleop extends Command{
         double yAxis = alliance.equals(Alliance.Red) ? driver.getRawAxis(translationSup) : -driver.getRawAxis(translationSup);
         double xAxis = alliance.equals(Alliance.Red) ? driver.getRawAxis(strafeSup) : -driver.getRawAxis(strafeSup);
         double rotationAxis = driver.getRawAxis(rotationSup);
-        alignPose = AlignPosition.getAlignOffset();
         SmartDashboard.putString("Teleop Alignment", alignPose == null ? "" : alignPose.toString());
 
         double translationVal = MathUtil.applyDeadband(yAxis, Constants.stickDeadband);
@@ -83,9 +83,7 @@ public class DefaultTeleop extends Command{
         double throttleCalc = throttleLimiter.calculate(throttleAxis);
 
         Translation2d translation = new Translation2d(translationVal, strafeVal).times(-Constants.Swerve.maxSpeed * throttleCalc);
-        if (driver.getPOV() == 90) {
-            s_Swerve.alignAprilTag(false);
-        }
+
         s_Swerve.drive(translation,  rotationVal * (driver.getRawButton(back)? Constants.Swerve.panicRotation:Constants.Swerve.maxAngularVelocity), robotCentricSup, true);
 
 

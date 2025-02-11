@@ -10,6 +10,7 @@ import choreo.trajectory.Trajectory;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -23,6 +24,7 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import edu.wpi.first.math.trajectory.TrajectoryGenerator;
+import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StructArrayPublisher;
@@ -32,6 +34,7 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.ProfiledPIDCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.AlignPosition;
 import frc.robot.AutoRotateUtil;
@@ -61,8 +64,11 @@ public class Swerve extends SubsystemBase{
     public StructArrayPublisher<Pose3d> arrayPublisher;
     public Pose3d poseA = new Pose3d();
     public Pose3d poseB = new Pose3d();
-    public PIDController translationController = new PIDController(0, 0, 0);
-    public PIDController rotationController = new PIDController(0, 0, 0);
+    //public ProfiledPIDController translationXController = new ProfiledPIDController(10, 0, 0, new TrapezoidProfile.Constraints(1, .5));
+    //public ProfiledPIDController translationYController = new ProfiledPIDController(10, 0, 0, new TrapezoidProfile.Constraints(1, .5));
+
+    public PIDController translationXController = new PIDController(0.1, 0, 0);
+    public PIDController translationYController = new PIDController(0.1, 0, 0);
 
     private final PIDController autoXController = new PIDController(10.0, 0.0, 0.0);
     private final PIDController autoYController = new PIDController(10.0, 0.0, 0.0);
@@ -88,6 +94,9 @@ public class Swerve extends SubsystemBase{
         field = new Field2d();
 
         autoHeadingController.enableContinuousInput(-Math.PI, Math.PI);
+
+        translationXController.setTolerance(0.1);
+        translationYController.setTolerance(0.1);
         
         publisher = NetworkTableInstance.getDefault().getStructTopic("MyPose", Pose3d.struct).publish();
         arrayPublisher = NetworkTableInstance.getDefault().getStructArrayTopic("MyPoseArray", Pose3d.struct).publish();
@@ -331,7 +340,26 @@ public class Swerve extends SubsystemBase{
         }
     }
 
-    public double rotateToPos(double angle){
+    public Translation2d translateToApril() {
+        double speedX;
+        double speedY;
+        if (!translationXController.atSetpoint()) {
+            speedX = translationXController.calculate(swerveEstimator.getEstimatedPosition().getX(), AlignPosition.getAlignOffset().getX());
+        } else {
+            speedX = 0;
+        }
+        
+        if (!translationYController.atSetpoint()) {
+            speedY = translationYController.calculate(swerveEstimator.getEstimatedPosition().getY(), AlignPosition.getAlignOffset().getY());
+        } else {
+            speedY = 0;
+        }
+
+        return new Translation2d(speedX, speedY);
+
+    }
+
+    public double rotateToApril(double angle){
 
         double output = (((angle - swerveEstimator.getEstimatedPosition().getRotation().getDegrees())) + 360) % 360;
         s_AutoRotateUtil.updateTargetAngle(output); 
@@ -339,13 +367,13 @@ public class Swerve extends SubsystemBase{
         return s_AutoRotateUtil.calculateRotationSpeed();
     }
 
-    public double rotateToAmp() {
-        double headingError = AlignPosition.getAlignOffset().getRotation().getDegrees() - correctedYaw();
+    // public double rotateToAmp() {
+    //     double headingError = AlignPosition.getAlignOffset().getRotation().getDegrees() - correctedYaw();
 
-        s_AutoRotateUtil.updateTargetAngle(headingError);
+    //     s_AutoRotateUtil.updateTargetAngle(headingError);
         
-        return s_AutoRotateUtil.calculateRotationSpeed();
-    }
+    //     return s_AutoRotateUtil.calculateRotationSpeed();
+    // }
 
     public double rotateToNote(){
         boolean noteInView = f_Limelight.hasTag();
@@ -397,18 +425,16 @@ public class Swerve extends SubsystemBase{
         // press the button and align a variable distance from the actual april tag forward and side to side and do that
         if (isLeft) {
             AlignPosition.setPosition(AlignPosition.LeftOffset);
-            rotateToPos(AlignPosition.getAlignOffset().getRotation().getDegrees());
-            
         } else {
             AlignPosition.setPosition(AlignPosition.RightOffset);
-            rotateToPos(AlignPosition.getAlignOffset().getRotation().getDegrees());
         }
-        
 
+    }
 
-        
-
-
+    public void resetAlignApril() {
+        translationXController.reset();
+        translationYController.reset();
+        s_AutoRotateUtil.reset();
     }
 
     public void resetAutoRotateUtil(){
