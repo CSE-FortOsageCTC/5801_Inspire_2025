@@ -55,6 +55,8 @@ public class ChoreoSubsystem extends SubsystemBase{
             getFlipped(),
             s_Swerve
         );
+
+        autoFactory.bind("hi", new InstantCommand(() -> System.out.println("this is the bind")));
     }
 
     private boolean getFlipped() {
@@ -90,19 +92,22 @@ public AutoRoutine pickupAndScoreAuto() {
     // Load the routine's trajectories
     AutoTrajectory pickupTraj = routine.trajectory("TestAuto");
 
+      
+
     // When the routine begins, reset odometry and start the first trajectory 
     routine.active().onTrue(
         Commands.sequence(
             pickupTraj.resetOdometry(),
+            new InstantCommand(() -> s_Swerve.setHeading(pickupTraj.getInitialPose().get().getRotation())), //rotateBy(180);
             pickupTraj.cmd()
         )
     );
 
     // Starting at the event marker named "intake", run the intake 
-    pickupTraj.atTime("intake").onTrue(new InstantCommand(() -> System.out.println("hi guys")));
+    pickupTraj.atTime("hi").onTrue(new InstantCommand(() -> System.out.println("this is the atTime")));
 
     // When the trajectory is done, start the next trajectory
-    pickupTraj.done().onTrue(new InstantCommand(() -> System.out.println("bye guys")));
+    pickupTraj.done().onTrue(new InstantCommand(() -> System.out.println("this is the end of the trajectory")));
 
     return routine;
 }

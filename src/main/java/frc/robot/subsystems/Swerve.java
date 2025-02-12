@@ -72,7 +72,7 @@ public class Swerve extends SubsystemBase{
 
     private final PIDController autoXController = new PIDController(10.0, 0.0, 0.0);
     private final PIDController autoYController = new PIDController(10.0, 0.0, 0.0);
-    private final PIDController autoHeadingController = new PIDController(7.5, 0.0, 0.0);
+    private final PIDController autoHeadingController = new PIDController(8.0, 0.0, 0.0);
 
     public boolean readyToPickUp = false;
     public DriveParams autoPickupDriveParams;
@@ -193,8 +193,11 @@ public class Swerve extends SubsystemBase{
             sample.omega + autoHeadingController.calculate(MathUtil.angleModulus(pose.getRotation().getRadians()), MathUtil.angleModulus(sample.heading))
         );
 
+        SmartDashboard.putNumber("auto Measurement", MathUtil.angleModulus(pose.getRotation().getRadians()));
+        SmartDashboard.putNumber("auto Setpoint", MathUtil.angleModulus(sample.heading));
+
         // Apply the generated speeds
-        drive(new Translation2d(-speeds.vxMetersPerSecond, -speeds.vyMetersPerSecond), speeds.omegaRadiansPerSecond, true, true);
+        drive(new Translation2d(speeds.vxMetersPerSecond, -speeds.vyMetersPerSecond), speeds.omegaRadiansPerSecond, true, true);
     }
 
     public void setAutoDriveParams(Translation2d translation, double rotation, boolean fieldRelative, boolean isOpenLoop) {
@@ -280,7 +283,7 @@ public class Swerve extends SubsystemBase{
 
     public void setHeading(Rotation2d heading){
         Rotation2d gyroYaw = getGyroYaw();
-        //swerveEstimator.resetPosition(gyroYaw, getModulePositions(), new Pose2d(getPose().getTranslation(), heading));
+        swerveEstimator.resetPosition(gyroYaw, getModulePositions(), new Pose2d(getPose().getTranslation(), heading));
         //limeLightSwerveEstimator.resetPosition(gyroYaw, getModulePositions(), new Pose2d(limeLightSwerveEstimator.getEstimatedPosition().getTranslation(), heading));
         gyroOffset = gyroYaw.getDegrees() - heading.getDegrees();
         //gyro.setYaw(gyroOffset);
@@ -298,7 +301,7 @@ public class Swerve extends SubsystemBase{
     }
 
     public Rotation2d getGyroYaw() {
-        return Rotation2d.fromDegrees(gyro.getYaw().getValueAsDouble()).rotateBy(new Rotation2d().fromDegrees(gyroOffset));
+        return Rotation2d.fromDegrees(gyro.getYaw().getValueAsDouble()).rotateBy(Rotation2d.fromDegrees(gyroOffset));
     }
 
     public Rotation2d getGyroRot2d(){
@@ -444,14 +447,14 @@ public class Swerve extends SubsystemBase{
     @Override
     public void periodic(){
         //swerveOdometry.update(getGyroYaw(), getModulePositions());
-        SmartDashboard.putNumber("Corrected gyro", correctedYaw());
-        SmartDashboard.putNumber("gyro", gyro.getYaw().getValueAsDouble());
+        // SmartDashboard.putNumber("Corrected gyro", correctedYaw());
+        // SmartDashboard.putNumber("gyro", gyro.getYaw().getValueAsDouble());
 
         updatePoseEstimator();
 
-        for(SwerveModule mod : mSwerveMods){
-            SmartDashboard.putNumber("Mod " + mod.moduleNumber + " CANcoder", mod.getCANcoder().getDegrees());
-        }
+        // for(SwerveModule mod : mSwerveMods){
+        //     // SmartDashboard.putNumber("Mod " + mod.moduleNumber + " CANcoder", mod.getCANcoder().getDegrees());
+        // }
         Pose2d estimatedPose = swerveEstimator.getEstimatedPosition();
         poseA = new Pose3d(estimatedPose);
         publisher.set(poseA);
@@ -469,7 +472,7 @@ public class Swerve extends SubsystemBase{
             LimelightHelpers.SetIMUMode("limelight-front", 2);
         } else if (DriverStation.isDisabled()) {
             LimelightHelpers.SetIMUMode("limelight-front", 1);
-            LimelightHelpers.SetRobotOrientation("limelight-front", swerveEstimator.getEstimatedPosition().getRotation().getDegrees(), 0, 0, 0, 0, 0);
+            LimelightHelpers.SetRobotOrientation("limelight-front", -swerveEstimator.getEstimatedPosition().getRotation().getDegrees(), 0, 0, 0, 0, 0);
         }
         
         // LimelightHelpers.SetRobotOrientation("limelight-front", swerveEstimator.getEstimatedPosition().getRotation().getDegrees(), 0, 0, 0, 0, 0);
@@ -489,8 +492,8 @@ public class Swerve extends SubsystemBase{
             swerveEstimator.addVisionMeasurement(
                 mt2.pose,
                 mt2.timestampSeconds);
-            SmartDashboard.putNumber("MT2 X", mt2.pose.getX());
-            SmartDashboard.putNumber("MT2 Y", mt2.pose.getY());
+            //SmartDashboard.putNumber("MT2 X", mt2.pose.getX());
+            //SmartDashboard.putNumber("MT2 Y", mt2.pose.getY());
 
         }
     }

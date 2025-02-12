@@ -63,7 +63,7 @@ public enum AlignPosition {
     }
 
     public static Pose2d getAlignOffset() {
-        SmartDashboard.putString("April Align Offset", "(" + alignOffset.getX() + ", " + alignOffset.getY() + ")");
+        // SmartDashboard.putString("April Align Offset", "(" + alignOffset.getX() + ", " + alignOffset.getY() + ")");
         return alignOffset;
     }
 

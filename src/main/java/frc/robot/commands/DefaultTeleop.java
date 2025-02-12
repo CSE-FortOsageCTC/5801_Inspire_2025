@@ -63,7 +63,7 @@ public class DefaultTeleop extends Command{
         double yAxis = alliance.equals(Alliance.Red) ? driver.getRawAxis(translationSup) : -driver.getRawAxis(translationSup);
         double xAxis = alliance.equals(Alliance.Red) ? driver.getRawAxis(strafeSup) : -driver.getRawAxis(strafeSup);
         double rotationAxis = driver.getRawAxis(rotationSup);
-        SmartDashboard.putString("Teleop Alignment", alignPose == null ? "" : alignPose.toString());
+        // SmartDashboard.putString("Teleop Alignment", alignPose == null ? "" : alignPose.toString());
 
         double translationVal = MathUtil.applyDeadband(yAxis, Constants.stickDeadband);
         double strafeVal = MathUtil.applyDeadband(xAxis, Constants.stickDeadband);
