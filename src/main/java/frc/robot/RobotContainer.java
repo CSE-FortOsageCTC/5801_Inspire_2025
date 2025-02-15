@@ -49,6 +49,8 @@ public class RobotContainer {
     s_Swerve = Swerve.getInstance();
     s_choreoSubsystem = ChoreoSubsystem.getInstance();
 
+    AlignPosition noPos = AlignPosition.NoPos;
+
     // Configure the trigger bindings
     configureBindings();
 
