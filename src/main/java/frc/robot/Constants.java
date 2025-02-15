@@ -13,7 +13,6 @@ import frc.lib.util.COTSTalonFXSwerveConstants;
 import frc.lib.util.SwerveModuleConstants;
 
 public final class Constants {
-    // hi guys :)
     public static final double stickDeadband = 0.1;
 
     public static final class Swerve {
