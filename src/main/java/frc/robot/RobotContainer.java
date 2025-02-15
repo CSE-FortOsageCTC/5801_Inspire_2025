@@ -11,8 +11,11 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.POVButton;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import frc.robot.commands.AlignToApril;
+import frc.robot.commands.ArmDefault;
 import frc.robot.commands.DefaultTeleop;
 import frc.robot.subsystems.ChoreoSubsystem;
+import frc.robot.subsystems.ElevatorSubsystem;
+import frc.robot.subsystems.ManipulatorSubsystem;
 import frc.robot.subsystems.Swerve;
 
 /**
@@ -25,7 +28,8 @@ public class RobotContainer {
   // The robot's subsystems and commands are defined here...
   private Swerve s_Swerve;
   private ChoreoSubsystem s_choreoSubsystem;
-
+  private final ElevatorSubsystem elevatorSubsystem = ElevatorSubsystem.getInstance();
+  private final ManipulatorSubsystem manipulatorSubsystem = ManipulatorSubsystem.getInstance();
   private final Joystick driver = new Joystick(0);
   private final Joystick operator = new Joystick(1);
 
@@ -40,7 +44,7 @@ public class RobotContainer {
   private final JoystickButton driver_Back_Function = new JoystickButton(driver, XboxController.Button.kBack.value);
   private final JoystickButton driver_LeftBumper_Function = new JoystickButton(driver, XboxController.Button.kLeftBumper.value);
   private final JoystickButton driver_RightBumper_Function = new JoystickButton(driver, XboxController.Button.kRightBumper.value);
-
+  private final ArmDefault armDefaultCommand = new ArmDefault(driver, operator);
   private final POVButton driverLeftDpad = new POVButton(driver, 270);
   private final POVButton driverRightDpad = new POVButton(driver, 90);
 
@@ -68,7 +72,7 @@ public class RobotContainer {
 
   private void configureBindings() {
      s_Swerve.setDefaultCommand(new DefaultTeleop(driver, operator));
-
+     elevatorSubsystem.setDefaultCommand(armDefaultCommand);
      // Initialize Driver Button Functions
      driver_Start_ZeroHeading.onTrue(new InstantCommand(() -> s_Swerve.zeroHeading()));
      driverLeftDpad.whileTrue(new AlignToApril(driver, true));
