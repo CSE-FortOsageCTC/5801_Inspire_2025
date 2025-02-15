@@ -31,11 +31,15 @@ public final class Constants {
 
     public static final double stageHeightMeters = 4; // 2.54
 
+    public static final double limelightScoringOffsetInches = 7;
+    public static final double limelightScoringDistance = 25;
+
     public static final class Swerve {
         public static final int pigeonID = 10;
 
         public static final COTSTalonFXSwerveConstants chosenModule =  //TODO: This must be tuned to specific robot
-        COTSTalonFXSwerveConstants.SDS.MK4.Falcon500(COTSTalonFXSwerveConstants.SDS.MK4.driveRatios.L2);
+        // COTSTalonFXSwerveConstants.SDS.MK4i.KrakenX60(COTSTalonFXSwerveConstants.SDS.MK4i.driveRatios.L2);
+        COTSTalonFXSwerveConstants.SDS.MK4i.KrakenX60(COTSTalonFXSwerveConstants.SDS.MK4i.driveRatios.L2);
 
         /* Drivetrain Constants */
         public static final double trackWidth = Units.inchesToMeters(21.5); //TODO: This must be tuned to specific robot
@@ -124,7 +128,9 @@ public final class Constants {
             public static final int driveMotorID = 1;
             public static final int angleMotorID = 2;
             public static final int canCoderID = 12;
-            public static final Rotation2d angleOffset = Rotation2d.fromDegrees(-66.884765625);
+
+            // TODO: BEVELS TO THE RIGHT
+            public static final Rotation2d angleOffset = Rotation2d.fromDegrees(-47.373046875); //134.47265625 //133.06640625
             public static final SwerveModuleConstants constants = 
                 new SwerveModuleConstants(driveMotorID, angleMotorID, canCoderID, angleOffset);
         }
@@ -134,7 +140,9 @@ public final class Constants {
             public static final int driveMotorID = 3;
             public static final int angleMotorID = 4;
             public static final int canCoderID = 14;
-            public static final Rotation2d angleOffset = Rotation2d.fromDegrees(-125.068359375);
+
+            // TODO: BEVELS TO THE RIGHT
+            public static final Rotation2d angleOffset = Rotation2d.fromDegrees(57.39257812500001); //-120.41015624999999 // -122.6953125
             public static final SwerveModuleConstants constants = 
                 new SwerveModuleConstants(driveMotorID, angleMotorID, canCoderID, angleOffset);
         }
@@ -144,7 +152,9 @@ public final class Constants {
             public static final int driveMotorID = 5;
             public static final int angleMotorID = 6;
             public static final int canCoderID = 16;
-            public static final Rotation2d angleOffset = Rotation2d.fromDegrees(3.076171875);
+
+            // TODO: BEVELS TO THE RIGHT
+            public static final Rotation2d angleOffset = Rotation2d.fromDegrees(-35.244140625); //144.4921875 // 144.31640625
             public static final SwerveModuleConstants constants = 
                 new SwerveModuleConstants(driveMotorID, angleMotorID, canCoderID, angleOffset);
         }
@@ -154,7 +164,9 @@ public final class Constants {
             public static final int driveMotorID = 7;
             public static final int angleMotorID = 8;
             public static final int canCoderID = 18;
-            public static final Rotation2d angleOffset = Rotation2d.fromDegrees(97.294921875);
+
+            // TODO: BEVELS TO THE RIGHT
+            public static final Rotation2d angleOffset = Rotation2d.fromDegrees(-99.052734375); //75.41015625 // 80.947265625
             public static final SwerveModuleConstants constants = 
                 new SwerveModuleConstants(driveMotorID, angleMotorID, canCoderID, angleOffset);
         }
@@ -174,6 +186,26 @@ public final class Constants {
         public static final TrapezoidProfile.Constraints kThetaControllerConstraints =
             new TrapezoidProfile.Constraints(
                 kMaxAngularSpeedRadiansPerSecond, kMaxAngularSpeedRadiansPerSecondSquared);
+    }
+
+    public enum ElevatorPosition {
+        Travel(0, 0, 0),
+        L1(0, 0, 0),
+        L2(0, 0, 0),
+        L3(0, 0, 0),
+        L4(0, 0, 0);
+
+        public double armAngle;
+        public double telescope;
+        public double wristAngle;
+
+        ElevatorPosition(double armAngle, double telescope, double wristAngle) {
+            this.armAngle = armAngle;
+            this.telescope = telescope;
+            this.wristAngle = wristAngle;
+
+            // do stuff with positions here
+        }
     }
 
 }

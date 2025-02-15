@@ -33,6 +33,7 @@ public class DefaultTeleop extends Command{
     private SlewRateLimiter rotationLimiter = new SlewRateLimiter(5.0); 
     private SlewRateLimiter throttleLimiter = new SlewRateLimiter(2);
     private Pose2d alignPose;
+    private boolean isAprilAligning = false;
 
 
     public DefaultTeleop(Joystick driver, Joystick operator) {
@@ -59,11 +60,10 @@ public class DefaultTeleop extends Command{
     @Override
     public void execute() { 
         Alliance alliance = DriverStation.getAlliance().get();
-        double yAxis = alliance.equals(Alliance.Red) ? -driver.getRawAxis(translationSup) : driver.getRawAxis(translationSup);
-        double xAxis = alliance.equals(Alliance.Red) ? -driver.getRawAxis(strafeSup) : driver.getRawAxis(strafeSup);
+        double yAxis = alliance.equals(Alliance.Red) ? driver.getRawAxis(translationSup) : -driver.getRawAxis(translationSup);
+        double xAxis = alliance.equals(Alliance.Red) ? driver.getRawAxis(strafeSup) : -driver.getRawAxis(strafeSup);
         double rotationAxis = driver.getRawAxis(rotationSup);
-        alignPose = AlignPosition.getAlignPose();
-        SmartDashboard.putString("Teleop Alignment", alignPose == null ? "" : alignPose.toString());
+        // SmartDashboard.putString("Teleop Alignment", alignPose == null ? "" : alignPose.toString());
 
         double translationVal = MathUtil.applyDeadband(yAxis, Constants.stickDeadband);
         double strafeVal = MathUtil.applyDeadband(xAxis, Constants.stickDeadband);
@@ -75,33 +75,16 @@ public class DefaultTeleop extends Command{
         throttleAxis = (Math.abs(throttleAxis) < Constants.stickDeadband) ? .2 : throttleAxis;
         rotationAxis = (Math.abs(rotationAxis) < Constants.stickDeadband) ? 0 : rotationAxis;
 
-        if (rotationAxis != 0) {
-            AlignPosition.setPosition(AlignPosition.Manual);
-        }
-
-        //if (AlignPosition.getPosition().equals(AlignPosition.Manual)) {
-            rotationVal = rotationLimiter.calculate(rotationAxis) * (throttleLimiter.calculate(throttleAxis));
-            robotCentricSup = true;
-        // } else if (AlignPosition.getPosition().equals(AlignPosition.SpeakerPos) || AlignPosition.getPosition().equals(AlignPosition.StagePos)){
-        //     rotationVal = s_DefaultTeleop.s_Swerve.rotateToPos(); // s_AutoRotateUtil.calculateRotationSpeed();
-        //     robotCentricSup = true;
-        // } else if (AlignPosition.getPosition().equals(AlignPosition.AmpPos)) {
-        //     rotationVal = s_DefaultTeleop.s_Swerve.rotateToAmp();
-        //     robotCentricSup = true;
-            
-        // } else if (AlignPosition.getPosition().equals(AlignPosition.AutoPickup)) {
-        //    rotationVal = s_DefaultTeleop.s_Swerve.rotateToNote();
-        //    robotCentricSup = false;
-        // } else {
-        //     rotationVal = rotationLimiter.calculate(rotationAxis) * (throttleLimiter.calculate(throttleAxis));
-        //     robotCentricSup = true;
-        // }
+        
+        rotationVal = rotationLimiter.calculate(rotationAxis) * (throttleLimiter.calculate(throttleAxis));
+        robotCentricSup = true;
+        
     
         double throttleCalc = throttleLimiter.calculate(throttleAxis);
 
         Translation2d translation = new Translation2d(translationVal, strafeVal).times(-Constants.Swerve.maxSpeed * throttleCalc);
-        
-        s_Swerve.drive(translation,  rotationVal * (driver.getRawButton(back)? Constants.Swerve.panicRotation:Constants.Swerve.maxAngularVelocity), robotCentricSup, true);
+
+        s_Swerve.teleopDrive(translation,  rotationVal * (driver.getRawButton(back)? Constants.Swerve.panicRotation:Constants.Swerve.maxAngularVelocity), robotCentricSup, true);
 
 
     }
