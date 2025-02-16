@@ -207,5 +207,28 @@ public final class Constants {
             // do stuff with positions here
         }
     }
+    public enum ArmPosition {
+        Travel(0, 0, 0),
+        L1(0, 16.25, 0),
+        L2(0, 32.5, 0),
+        L3(0, 48.75, 0),
+        L4(0, 65, 0),
+        HumanP(0,0,0),
+        Climb1(0, 0, 0),
+        Climb2(0, 0, 0),
+        Manual(-1, -1, -1);
+
+        public double armAngle;
+        public double telescope;
+        public double wristAngle;
+
+        ArmPosition(double armAngle, double telescope, double wristAngle) {
+            this.armAngle = armAngle;
+            this.telescope = telescope;
+            this.wristAngle = wristAngle;
+
+            // do stuff with positions here
+        }
+    }
 
 }
