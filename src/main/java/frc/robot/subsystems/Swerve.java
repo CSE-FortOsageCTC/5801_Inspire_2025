@@ -89,7 +89,7 @@ public class Swerve extends SubsystemBase{
         gyro = new Pigeon2(Constants.Swerve.pigeonID);
         gyro.getConfigurator().apply(new Pigeon2Configuration());
         //gyro.setYaw(0);
-        f_Limelight = LimeLightSubsystem.getInstance();
+        f_Limelight = LimeLightSubsystem.getRightInstance();
         s_AutoRotateUtil = new AutoRotateUtil(0);
         field = new Field2d();
 
@@ -495,16 +495,16 @@ public class Swerve extends SubsystemBase{
         //     LimelightHelpers.SetRobotOrientation("limelight-front", -swerveEstimator.getEstimatedPosition().getRotation().getDegrees(), 0, 0, 0, 0, 0);
         // }
 
-        LimelightHelpers.SetIMUMode("limelight-front", 0);
-            LimelightHelpers.SetRobotOrientation("limelight-front", swerveEstimator.getEstimatedPosition().getRotation().getDegrees(), 0, 0, 0, 0, 0);
+        LimelightHelpers.SetIMUMode(Constants.limelightRight, 0);
+        LimelightHelpers.SetRobotOrientation(Constants.limelightRight, swerveEstimator.getEstimatedPosition().getRotation().getDegrees(), 0, 0, 0, 0, 0);
         
         // LimelightHelpers.SetRobotOrientation("limelight-front", swerveEstimator.getEstimatedPosition().getRotation().getDegrees(), 0, 0, 0, 0, 0);
-        LimelightHelpers.PoseEstimate mt2 = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2("limelight-front");
+        LimelightHelpers.PoseEstimate mt2Right = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(Constants.limelightRight);
         if(Math.abs(gyro.getAngularVelocityZWorld().getValueAsDouble()) > 720) // if our angular velocity is greater than 720 degrees per second, ignore vision updates
         {
           doRejectUpdate = true;
         }
-        if(mt2 == null || mt2.tagCount == 0)
+        if(mt2Right == null || mt2Right.tagCount == 0)
         {
           doRejectUpdate = true;
         }
@@ -513,8 +513,33 @@ public class Swerve extends SubsystemBase{
             
             swerveEstimator.setVisionMeasurementStdDevs(VecBuilder.fill(0.7,0.7,0.7));
             swerveEstimator.addVisionMeasurement(
-                mt2.pose,
-                mt2.timestampSeconds);
+                mt2Right.pose,
+                mt2Right.timestampSeconds);
+            //SmartDashboard.putNumber("MT2 X", mt2.pose.getX());
+            //SmartDashboard.putNumber("MT2 Y", mt2.pose.getY());
+
+        }
+
+        LimelightHelpers.SetIMUMode(Constants.limelightLeft, 0);
+        LimelightHelpers.SetRobotOrientation(Constants.limelightLeft, swerveEstimator.getEstimatedPosition().getRotation().getDegrees(), 0, 0, 0, 0, 0);
+        
+        // LimelightHelpers.SetRobotOrientation("limelight-front", swerveEstimator.getEstimatedPosition().getRotation().getDegrees(), 0, 0, 0, 0, 0);
+        LimelightHelpers.PoseEstimate mt2Left = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(Constants.limelightLeft);
+        if(Math.abs(gyro.getAngularVelocityZWorld().getValueAsDouble()) > 720) // if our angular velocity is greater than 720 degrees per second, ignore vision updates
+        {
+          doRejectUpdate = true;
+        }
+        if(mt2Left == null || mt2Left.tagCount == 0)
+        {
+          doRejectUpdate = true;
+        }
+        if(!doRejectUpdate)
+        {
+            
+            swerveEstimator.setVisionMeasurementStdDevs(VecBuilder.fill(0.7,0.7,0.7));
+            swerveEstimator.addVisionMeasurement(
+                mt2Left.pose,
+                mt2Left.timestampSeconds);
             //SmartDashboard.putNumber("MT2 X", mt2.pose.getX());
             //SmartDashboard.putNumber("MT2 Y", mt2.pose.getY());
 

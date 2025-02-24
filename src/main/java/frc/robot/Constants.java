@@ -23,6 +23,9 @@ public final class Constants {
     public static final int conePipeline = 1;
     public static final int cubePipeline = 2;
 
+    public static final String limelightRight = "limelight-right";
+    public static final String limelightLeft = "limelight-left";
+
     public static final boolean isRedAlliance = DriverStation.getAlliance().get().equals(Alliance.Red) ? true : false;
 
     public static final double feedForwardAngle = 30;
@@ -188,46 +191,45 @@ public final class Constants {
                 kMaxAngularSpeedRadiansPerSecond, kMaxAngularSpeedRadiansPerSecondSquared);
     }
 
-    public enum ElevatorPosition {
-        Travel(0, 0, 0),
-        L1(0, 0, 0),
-        L2(0, 0, 0),
-        L3(0, 0, 0),
-        L4(0, 0, 0);
+    public static final double wristUpperLimit = 0; 
+    public static final double wristLowerLimit = 0;
+    public static final double pivotUpperLimit = 0;
+    public static final double pivotLowerLimit = -53; 
+    public static final double extensionUpperLimit = 0;
+    public static final double extensionLowerLimit = -19.8;
 
-        public double armAngle;
-        public double telescope;
-        public double wristAngle;
 
-        ElevatorPosition(double armAngle, double telescope, double wristAngle) {
-            this.armAngle = armAngle;
-            this.telescope = telescope;
-            this.wristAngle = wristAngle;
-
-            // do stuff with positions here
-        }
-    }
     public enum ArmPosition {
-        Travel(0, 0, 0),
-        L1(0, 16.25, 0),
-        L2(0, 32.5, 0),
-        L3(0, 48.75, 0),
-        L4(0, 65, 0),
-        HumanP(0,0,0),
+        Travel(-1, -.5, -1),
+        L1(-37.697998046875, -0.36669921875, -1),
+        L2(-46.215087890625, -4.75634765625, -1),
+        L3(-49.781982421875, -11.61181640625, -1),
+        L4(-54.327392578125, -19.61962890625, -1),
+        //HighAlgae(0, 0, 0),
+        //LowAlgae(0, 0, 0),
+        HumanP(-44.772216796875, -1.88671875, -1),
         Climb1(0, 0, 0),
         Climb2(0, 0, 0),
         Manual(-1, -1, -1);
 
-        public double armAngle;
-        public double telescope;
-        public double wristAngle;
+        public double pivot;
+        public double extension;
+        public double manipulator;
 
-        ArmPosition(double armAngle, double telescope, double wristAngle) {
-            this.armAngle = armAngle;
-            this.telescope = telescope;
-            this.wristAngle = wristAngle;
+        public static ArmPosition currentPosition = ArmPosition.Manual;
 
-            // do stuff with positions here
+        ArmPosition(double pivot, double extension, double manipulator) {
+            this.pivot = pivot;
+            this.extension = extension;
+            this.manipulator = manipulator;
+        }
+
+        public static ArmPosition getPosition() {
+            return currentPosition;
+        }
+
+        public static void setPosition(ArmPosition position) {
+            currentPosition = position;
         }
     }
 

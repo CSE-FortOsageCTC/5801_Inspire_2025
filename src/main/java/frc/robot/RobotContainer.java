@@ -10,11 +10,12 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.POVButton;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
+import frc.robot.Constants.ArmPosition;
 import frc.robot.commands.AlignToApril;
 import frc.robot.commands.ArmDefault;
 import frc.robot.commands.DefaultTeleop;
 import frc.robot.subsystems.ChoreoSubsystem;
-import frc.robot.subsystems.ElevatorSubsystem;
+import frc.robot.subsystems.ExtensionSubsystem;
 import frc.robot.subsystems.ManipulatorSubsystem;
 import frc.robot.subsystems.Swerve;
 
@@ -28,7 +29,7 @@ public class RobotContainer {
   // The robot's subsystems and commands are defined here...
   private Swerve s_Swerve;
   private ChoreoSubsystem s_choreoSubsystem;
-  private final ElevatorSubsystem elevatorSubsystem = ElevatorSubsystem.getInstance();
+  private final ExtensionSubsystem elevatorSubsystem = ExtensionSubsystem.getInstance();
   private final ManipulatorSubsystem manipulatorSubsystem = ManipulatorSubsystem.getInstance();
   private final Joystick driver = new Joystick(0);
   private final Joystick operator = new Joystick(1);
@@ -48,12 +49,17 @@ public class RobotContainer {
   private final POVButton driverLeftDpad = new POVButton(driver, 270);
   private final POVButton driverRightDpad = new POVButton(driver, 90);
 
+  private final JoystickButton operatorX = new JoystickButton(operator, XboxController.Button.kX.value);
+  private final JoystickButton operatorY = new JoystickButton(operator, XboxController.Button.kY.value);
+  private final JoystickButton operatorA = new JoystickButton(operator, XboxController.Button.kA.value);
+  private final JoystickButton operatorB = new JoystickButton(operator, XboxController.Button.kB.value);
+
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
     s_Swerve = Swerve.getInstance();
     s_choreoSubsystem = ChoreoSubsystem.getInstance();
 
-    AlignPosition noPos = AlignPosition.NoPos;
+    
 
     // Configure the trigger bindings
     configureBindings();
@@ -77,6 +83,16 @@ public class RobotContainer {
      driver_Start_ZeroHeading.onTrue(new InstantCommand(() -> s_Swerve.zeroHeading()));
      driverLeftDpad.whileTrue(new AlignToApril(driver, true));
      driverRightDpad.whileTrue(new AlignToApril(driver, false));
+
+     operatorA.onTrue(new InstantCommand(() -> ArmPosition.setPosition(ArmPosition.L1)));
+     operatorX.onTrue(new InstantCommand(() -> ArmPosition.setPosition(ArmPosition.L2)));
+     operatorB.onTrue(new InstantCommand(() -> ArmPosition.setPosition(ArmPosition.L3)));
+     operatorY.onTrue(new InstantCommand(() -> ArmPosition.setPosition(ArmPosition.L4)));
+
+     operatorA.onFalse(new InstantCommand(() -> ArmPosition.setPosition(ArmPosition.Travel)));
+     operatorX.onFalse(new InstantCommand(() -> ArmPosition.setPosition(ArmPosition.Travel)));
+     operatorB.onFalse(new InstantCommand(() -> ArmPosition.setPosition(ArmPosition.Travel)));
+     operatorY.onFalse(new InstantCommand(() -> ArmPosition.setPosition(ArmPosition.Travel)));
   }
 
   /**
