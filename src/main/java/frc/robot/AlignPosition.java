@@ -23,7 +23,7 @@ public enum AlignPosition {
     private static double tagX;
     private static double tagY;
     private static AprilTagFieldLayout fieldLayout = AprilTagFieldLayout.loadField(AprilTagFields.k2025ReefscapeWelded);
-    private static LimeLightSubsystem s_LimeLightSubsystem = LimeLightSubsystem.getInstance();
+    private static LimeLightSubsystem s_LimeLightSubsystem = LimeLightSubsystem.getRightInstance();
     private static Swerve s_Swerve = Swerve.getInstance();
     
     public static AlignPosition getPosition(){

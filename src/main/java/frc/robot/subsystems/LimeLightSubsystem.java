@@ -8,6 +8,7 @@ import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
 import frc.robot.LimelightHelpers;
 
 
@@ -22,21 +23,31 @@ public class LimeLightSubsystem extends SubsystemBase {
     private NetworkTableEntry tid, tv, tx, ty, ta, ts;
     public NetworkTableEntry ts0, ts1, ts2;
     private double lastBotPoseTimestamp;
-    private static LimeLightSubsystem limelight;
+    private static LimeLightSubsystem limelightRight;
+    private static LimeLightSubsystem limelightLeft;
+    private String limelightString;
 
-    public static LimeLightSubsystem getInstance() {
-        if (limelight == null) {
-            limelight = new LimeLightSubsystem();
+    public static LimeLightSubsystem getRightInstance() {
+        if (limelightRight == null) {
+            limelightRight = new LimeLightSubsystem(false);
         }
-        return limelight;
+        return limelightRight;
+    }
+
+    public static LimeLightSubsystem getLeftInstance() {
+        if (limelightLeft == null) {
+            limelightLeft = new LimeLightSubsystem(true);
+        }
+        return limelightLeft;
     }
 
     /**
      * Constructs Limelight Class
      */
-    private LimeLightSubsystem() {
+    private LimeLightSubsystem(boolean isLeft) {
+        limelightString = isLeft? Constants.limelightLeft:Constants.limelightRight;
         botPose = new Pose2d();
-        table = NetworkTableInstance.getDefault().getTable("limelight-front");
+        table = NetworkTableInstance.getDefault().getTable(limelightString);
         table.getEntry("pipeline").setNumber(0);
         botPoseEntry = table.getEntry("botpose");
         tx = table.getEntry("tx");
@@ -121,7 +132,7 @@ public class LimeLightSubsystem extends SubsystemBase {
      * retrieves limelight values and prints them onto the log and smartdashboard
      */
     public void outputValues(){
-        table = NetworkTableInstance.getDefault().getTable("limelight");
+        table = NetworkTableInstance.getDefault().getTable(limelightString);
         System.out.println(getAprilValue());
         System.out.println(hasTag());
         System.out.println(getX());
