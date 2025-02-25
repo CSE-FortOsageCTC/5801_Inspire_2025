@@ -65,21 +65,22 @@ public class PivotSubsystem extends SubsystemBase{
 
         pivotMaster.setPosition(pivotEncoder.get() * -53.8);
 
-        pidController = new ProfiledPIDController(0, 0, 0, new TrapezoidProfile.Constraints(10, 10));
+        pidController = new ProfiledPIDController(0, 0, 0, new TrapezoidProfile.Constraints(100, 80));
         pidController.setTolerance(0.1);
     }
 
     private void privSetSpeed(double speed){
-        if (atLimit()) {
+        boolean isPositive = speed > 0;
+        if (atLimit(isPositive)) {
             speed = 0;
         }
 
         pivotMaster.set(speed);
     }
 
-    private boolean atLimit(){
+    private boolean atLimit(boolean positive){
         double encoder = getPivotEncoder();
-        return encoder >= Constants.pivotUpperLimit || encoder <= Constants.pivotLowerLimit;
+        return (positive && encoder >= Constants.pivotUpperLimit) || (!positive && encoder <= Constants.pivotLowerLimit);
     }
 
     private boolean nearLimit() {
@@ -124,7 +125,7 @@ public class PivotSubsystem extends SubsystemBase{
     public void periodic(){
         SmartDashboard.putNumber("Pivot Kraken Encoder", getPivotEncoder());
         SmartDashboard.putNumber("Pivot Absolute Encoder", pivotEncoder.get());
-        pidController.setPID(0.1, 0, 0);
+        pidController.setPID(0.3, 0, 0);
 
         servo.set(1); 
     }

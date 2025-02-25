@@ -34,8 +34,8 @@ public final class Constants {
 
     public static final double stageHeightMeters = 4; // 2.54
 
-    public static final double limelightScoringOffsetInches = 7;
-    public static final double limelightScoringDistance = 25;
+    public static final double limelightScoringOffsetInches = 12; // how far back from the reef
+    public static final double limelightScoringDistance = 40; // horizontal facing reef 
 
     public static final class Swerve {
         public static final int pigeonID = 10;
@@ -191,25 +191,27 @@ public final class Constants {
                 kMaxAngularSpeedRadiansPerSecond, kMaxAngularSpeedRadiansPerSecondSquared);
     }
 
-    public static final double wristUpperLimit = 0; 
+    public static final double wristUpperLimitExtended = 31.6;
+    public static final double wristUpperLimitRetracted = 26.2; 
     public static final double wristLowerLimit = 0;
     public static final double pivotUpperLimit = 0;
-    public static final double pivotLowerLimit = -53; 
+    public static final double pivotLowerLimit = -57.5; 
     public static final double extensionUpperLimit = 0;
     public static final double extensionLowerLimit = -19.8;
 
 
     public enum ArmPosition {
         Travel(-1, -.5, -1),
-        L1(-37.697998046875, -0.36669921875, -1),
-        L2(-46.215087890625, -4.75634765625, -1),
-        L3(-49.781982421875, -11.61181640625, -1),
-        L4(-54.327392578125, -19.61962890625, -1),
+        L1(-47.540283203125, -0.138671875, 27.59521484375),
+        L2(-45.821533203125, 0.0234375, 27.001953125),
+        L3(-52.379150390625, -6.91552734375, 28.43408203125),
+        L4(-56.11962890625, -19.19580078125, 29.76220703125)),
         //HighAlgae(0, 0, 0),
         //LowAlgae(0, 0, 0),
-        HumanP(-44.772216796875, -1.88671875, -1),
+        HumanP(-45.8837890625, -0.26220703125, 6.15087890625),
         Climb1(0, 0, 0),
         Climb2(0, 0, 0),
+        StartingConfig(-30.032470703125, 0, 0.2509765625),
         Manual(-1, -1, -1);
 
         public double pivot;

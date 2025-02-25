@@ -31,7 +31,7 @@ public class GoToArmPosition extends Command{
     public void execute() {
         pivotSubsystem.setPosition();
         extensionSubsystem.setPosition();
-        manipulatorSubsystem.setPosition(position);
+        manipulatorSubsystem.setPosition();
     }
 
     @Override

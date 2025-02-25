@@ -75,6 +75,10 @@ public class ExtensionSubsystem extends SubsystemBase{
         return pidController.atSetpoint();
     }
 
+    public static boolean isExtended() {
+        return extensionSubsystem.getExtensionEncoder() < -5.0;
+    }
+
     public void setSetpoint(double setpoint){
         ArmPosition.setPosition(ArmPosition.Manual);
         lastExtensionPosition = ArmPosition.Manual;

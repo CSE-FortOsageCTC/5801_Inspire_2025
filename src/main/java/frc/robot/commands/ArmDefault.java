@@ -95,7 +95,7 @@ public class ArmDefault extends Command{
                 } else if (driver.getRawButton(XboxController.Button.kY.value)) {
                     manipulatorSubsystem.setWristSpeed(0.05);
                     isManualWrist = true;
-                } else{//else if (ArmPosition.Manual.equals(manipulatorSubsystem.getArmPosition())) {
+                } else if (ArmPosition.Manual.equals(ArmPosition.getPosition())) {
                     manipulatorSubsystem.setWristSpeed(0);
                 }
 
@@ -103,29 +103,31 @@ public class ArmDefault extends Command{
                     System.out.println("(" + pivotSubsystem.getPivotEncoder() + ", " + extensionSubsystem.getExtensionEncoder() + ", " + manipulatorSubsystem.getWristEncoder() +")");
                 }
 
-                if (driver.getRawButton(XboxController.Button.kA.value)) {
+                if (driver.getRawButton(XboxController.Button.kA.value) && !manipulatorSubsystem.hasPiece()) { // intake
                     manipulatorSubsystem.setIntakeSpeed(-1);
                     isManualWrist = true;
-                } else if (driver.getRawButton(XboxController.Button.kB.value)) {
+                } else if (driver.getRawButton(XboxController.Button.kB.value)) { // outtake
                     manipulatorSubsystem.setIntakeSpeed(1);
                     isManualWrist = true;
-                } else if (ArmPosition.Manual.equals(manipulatorSubsystem.getArmPosition())) {
+                } else {
                     manipulatorSubsystem.setIntakeSpeed(0);
                 }
     
-                if (operator.getRawButton(XboxController.Button.kLeftBumper.value)) { // up on d-pad
+                if (operator.getRawButton(XboxController.Button.kLeftBumper.value)) {
                     pivotSubsystem.setSpeed(-0.1);
                     isManualPivot = true;
-                } else if (operator.getRawButton(XboxController.Button.kRightBumper.value)) { // down on d-pad
+                } else if (operator.getRawButton(XboxController.Button.kRightBumper.value)) {
                     pivotSubsystem.setSpeed(0.1);
                     isManualPivot = true;
-                } else if (ArmPosition.Manual.equals(pivotSubsystem.getArmPosition())) {
+                } else if (ArmPosition.Manual.equals(ArmPosition.getPosition())) {
                     pivotSubsystem.setSpeed(0);
                 }
 
                 extensionSubsystem.setPosition();
 
                 pivotSubsystem.setPosition();
+                
+                manipulatorSubsystem.setPosition();
     
                 // if (!ArmPosition.Manual.equals(manipulatorSubsystem.getArmPosition())) {
                 //     manipulatorSubsystem.setPosition(ArmPosition.Travel);

@@ -53,6 +53,9 @@ public class RobotContainer {
   private final JoystickButton operatorY = new JoystickButton(operator, XboxController.Button.kY.value);
   private final JoystickButton operatorA = new JoystickButton(operator, XboxController.Button.kA.value);
   private final JoystickButton operatorB = new JoystickButton(operator, XboxController.Button.kB.value);
+  private final JoystickButton operatorStart = new JoystickButton(operator, XboxController.Button.kStart.value);
+  private final JoystickButton operatorLeftStickDown = new JoystickButton(operator, XboxController.Button.kLeftStick.value);
+  private final JoystickButton operatorRightStickDown = new JoystickButton(operator, XboxController.Button.kRightStick.value);
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
@@ -88,11 +91,14 @@ public class RobotContainer {
      operatorX.onTrue(new InstantCommand(() -> ArmPosition.setPosition(ArmPosition.L2)));
      operatorB.onTrue(new InstantCommand(() -> ArmPosition.setPosition(ArmPosition.L3)));
      operatorY.onTrue(new InstantCommand(() -> ArmPosition.setPosition(ArmPosition.L4)));
+     operatorStart.onTrue(new InstantCommand(() -> ArmPosition.setPosition(ArmPosition.Travel)));
+     operatorLeftStickDown.onTrue(new InstantCommand(() -> ArmPosition.setPosition(ArmPosition.StartingConfig)));
+     operatorRightStickDown.onTrue(new InstantCommand(() -> ArmPosition.setPosition(ArmPosition.HumanP)));
 
-     operatorA.onFalse(new InstantCommand(() -> ArmPosition.setPosition(ArmPosition.Travel)));
-     operatorX.onFalse(new InstantCommand(() -> ArmPosition.setPosition(ArmPosition.Travel)));
-     operatorB.onFalse(new InstantCommand(() -> ArmPosition.setPosition(ArmPosition.Travel)));
-     operatorY.onFalse(new InstantCommand(() -> ArmPosition.setPosition(ArmPosition.Travel)));
+    //  operatorA.onFalse(new InstantCommand(() -> ArmPosition.setPosition(ArmPosition.Travel)));
+    //  operatorX.onFalse(new InstantCommand(() -> ArmPosition.setPosition(ArmPosition.Travel)));
+    //  operatorB.onFalse(new InstantCommand(() -> ArmPosition.setPosition(ArmPosition.Travel)));
+    //  operatorY.onFalse(new InstantCommand(() -> ArmPosition.setPosition(ArmPosition.Travel)));
   }
 
   /**
