@@ -57,8 +57,6 @@ public enum AlignPosition {
             }
         }
 
-    
-
         return alignPosition;
     }
 
@@ -90,18 +88,21 @@ public enum AlignPosition {
 
         switch(alignPosition){
             case LeftOffset:
-                alignOffset = new Pose2d(tagX - (Math.sin(rotationRadians) * Units.inchesToMeters(Constants.limelightScoringOffsetInches)), tagY - (Math.cos(rotationRadians) * Units.inchesToMeters(Constants.limelightScoringOffsetInches)), Rotation2d.fromDegrees(rotationRadians));
+                alignOffset = new Pose2d(tagX + (Math.cos(Units.degreesToRadians(rotationRadians - 15)) * Units.inchesToMeters(Constants.limelightScoringOffsetInches)), tagY + (Math.sin(Units.degreesToRadians(rotationRadians - 15)) * Units.inchesToMeters(Constants.limelightScoringDistance)), Rotation2d.fromDegrees(rotationRadians));
                 break;
             case CenterOffset:
                 alignOffset = new Pose2d(Units.inchesToMeters(tagX), Units.inchesToMeters(tagY), Rotation2d.fromDegrees(rotationRadians));
                 break;
             case RightOffset:
-                alignOffset = new Pose2d(tagX + (Math.sin(rotationRadians) * Units.inchesToMeters(Constants.limelightScoringOffsetInches)), tagY + (Math.cos(rotationRadians) * Units.inchesToMeters(Constants.limelightScoringOffsetInches)), Rotation2d.fromDegrees(rotationRadians));
+                alignOffset = new Pose2d(tagX + (Math.cos(Units.degreesToRadians(rotationRadians + 15)) * Units.inchesToMeters(Constants.limelightScoringOffsetInches)), tagY + (Math.sin(Units.degreesToRadians(rotationRadians + 15)) * Units.inchesToMeters(Constants.limelightScoringDistance)), Rotation2d.fromDegrees(rotationRadians));
                 break;
             case NoPos:
                 alignOffset = s_Swerve.getEstimatedPosition();
                 break;
         }
+
+        SmartDashboard.putNumber("Translated April X", alignOffset.getX());
+        SmartDashboard.putNumber("Translated April Y", alignOffset.getY());
 
     }
         
