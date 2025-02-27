@@ -40,7 +40,7 @@ public class RobotContainer {
   private final JoystickButton driver_A_Function = new JoystickButton(driver, XboxController.Button.kA.value);
   private final JoystickButton driver_B_Function = new JoystickButton(driver, XboxController.Button.kB.value);
   private final JoystickButton driver_X_Function = new JoystickButton(driver, XboxController.Button.kX.value);
-  private final JoystickButton ddriver_Y_Function = new JoystickButton(driver, XboxController.Button.kY.value);
+  private final JoystickButton driver_Y_Function = new JoystickButton(driver, XboxController.Button.kY.value);
   private final JoystickButton driver_Start_ZeroHeading = new JoystickButton(driver, XboxController.Button.kStart.value);
   private final JoystickButton driver_Back_Function = new JoystickButton(driver, XboxController.Button.kBack.value);
   private final JoystickButton driver_LeftBumper_Function = new JoystickButton(driver, XboxController.Button.kLeftBumper.value);
@@ -71,21 +71,22 @@ public class RobotContainer {
       autoChooser = new AutoChooser();
 
         // Add options to the chooser
-        autoChooser.addRoutine("Example Routine", s_choreoSubsystem::pickupAndScoreAuto);
+        autoChooser.addRoutine("onePiece", s_choreoSubsystem::onePieceAuto);
+        autoChooser.addRoutine("three piece", s_choreoSubsystem::threePieceAuto);
         // autoChooser.addCmd("Example Auto Command", this::exampleAutoCommand);
 
         // Put the auto chooser on the dashboard
-        SmartDashboard.putData("hi guys", autoChooser);
+        SmartDashboard.putData("Auto Chooser", autoChooser);
   }
 
 
   private void configureBindings() {
      s_Swerve.setDefaultCommand(new DefaultTeleop(driver, operator));
-     elevatorSubsystem.setDefaultCommand(armDefaultCommand);
+     manipulatorSubsystem.setDefaultCommand(armDefaultCommand);
      // Initialize Driver Button Functions
      driver_Start_ZeroHeading.onTrue(new InstantCommand(() -> s_Swerve.zeroHeading()));
-     driverLeftDpad.whileTrue(new AlignToApril(driver, true));
-     driverRightDpad.whileTrue(new AlignToApril(driver, false));
+     driverLeftDpad.whileTrue(new AlignToApril(true));
+     driverRightDpad.whileTrue(new AlignToApril(false));
 
      operatorA.onTrue(new InstantCommand(() -> ArmPosition.setPosition(ArmPosition.L1)));
      operatorX.onTrue(new InstantCommand(() -> ArmPosition.setPosition(ArmPosition.L2)));

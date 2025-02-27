@@ -49,7 +49,7 @@ public class ExtensionSubsystem extends SubsystemBase{
 
         manualSetpoint = getExtensionEncoder();
 
-        pidController = new ProfiledPIDController(0, 0, 0, new TrapezoidProfile.Constraints(200, 80));
+        pidController = new ProfiledPIDController(0.25, 0, 0, new TrapezoidProfile.Constraints(200, 80));
         pidController.setTolerance(0.1);
     }
 
@@ -123,8 +123,8 @@ public class ExtensionSubsystem extends SubsystemBase{
 
     @Override
     public void periodic(){
-        SmartDashboard.putNumber("Extension Encoder", getExtensionEncoder());
-        SmartDashboard.putNumber("Extension Manual Setpoint", manualSetpoint);
-        pidController.setPID(0.25, 0, 0);
+        //SmartDashboard.putNumber("Extension Encoder", getExtensionEncoder());
+        //SmartDashboard.putNumber("Extension Manual Setpoint", manualSetpoint);
+        //pidController.setPID(0.25, 0, 0);
     }
 }

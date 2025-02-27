@@ -16,9 +16,6 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.Constants.ArmPosition;
 
-import com.reduxrobotics.sensors.canandcolor.Canandcolor;
-import com.reduxrobotics.sensors.canandcolor.CanandcolorSettings;
-
 public class ManipulatorSubsystem extends SubsystemBase{
 
     private static SparkMax intakeWheel;
@@ -26,8 +23,8 @@ public class ManipulatorSubsystem extends SubsystemBase{
 
     //private static DutyCycleEncoder wristEncoder;
 
-    private static Canandcolor canandcolor;
-    private CanandcolorSettings cacSettings;
+    // private static Canandcolor canandcolor;
+    // private CanandcolorSettings cacSettings;
 
     private static ManipulatorSubsystem manipulatorSubsystem;
 
@@ -41,18 +38,17 @@ public class ManipulatorSubsystem extends SubsystemBase{
 
         intakeWrist.setNeutralMode(NeutralModeValue.Brake);
 
-        //wristEncoder = new DutyCycleEncoder(0);
         intakeWrist.setPosition(0);
 
-        pidController = new ProfiledPIDController(0, 0, 0, new TrapezoidProfile.Constraints(100, 75));
+        pidController = new ProfiledPIDController(0.3, 0, 0, new TrapezoidProfile.Constraints(100, 75));
         pidController.setTolerance(0.1);
 
-        canandcolor = new Canandcolor(30);
-        cacSettings = new CanandcolorSettings();
+        // canandcolor = new Canandcolor(30);
+        // cacSettings = new CanandcolorSettings();
 
-        cacSettings.setLampLEDBrightness(0.1);
+        // cacSettings.setLampLEDBrightness(0.2);
         
-        canandcolor.setSettings(cacSettings);
+        // canandcolor.setSettings(cacSettings);
     }
 
     public static ManipulatorSubsystem getInstance(){
@@ -108,24 +104,25 @@ public class ManipulatorSubsystem extends SubsystemBase{
         return lastPosition;
     }
 
-    public double getProximity() {
-        return canandcolor.getProximity();
-    }
+    // public double getProximity() {
+    //     return canandcolor.getProximity();
+    // }
 
-    public boolean hasPiece() {
-        return canandcolor.getProximity() < 0.1;
-    }
+    // public boolean hasPiece() {
+    //     return canandcolor.getProximity() < 0.1;
+    // }
 
-    public Double getHSVHue() {
-        return canandcolor.getHSVHue();
-    }
+    // public Double getHSVHue() {
+    //     return canandcolor.getHSVHue();
+    // }
 
     @Override
     public void periodic(){
-        SmartDashboard.putNumber("Wrist Kraken Encoder", getWristEncoder());
+        //SmartDashboard.putNumber("Wrist Kraken Encoder", getWristEncoder());
         //SmartDashboard.putNumber("Wrist Absolute Encoder", wristEncoder.get());
-        pidController.setP(0.3);
+        //SmartDashboard.putNumber("HSV CanAndColor", getHSVHue());
+        //pidController.setP(0.3);
 
-        SmartDashboard.putNumber("Proximity", getProximity());
+        //SmartDashboard.putNumber("Proximity", getProximity());
     }
 }

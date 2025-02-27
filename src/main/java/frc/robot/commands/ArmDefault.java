@@ -35,51 +35,6 @@ public class ArmDefault extends Command{
 
     @Override
     public void execute(){
-
-        // if (DriverStation.isAutonomous()) {
-            
-            // if (!ArmPosition.Manual.equals(elevatorSubsystem.getArmPosition())) {
-            //     elevatorSubsystem.setPosition(ArmPosition.Travel);
-            // }
-
-            // if (!ArmPosition.Manual.equals(manipulatorSubsystem.getArmPosition())) {
-            //     manipulatorSubsystem.setPosition(ArmPosition.Travel);
-            // }
-
-            // if (!ArmPosition.Manual.equals(pivotSubsystem.getArmPosition())) {
-            //     pivotSubsystem.setPosition(ArmPosition.Travel);
-            // }
-
-        // } else if (DriverStation.isTeleopEnabled()) {
-        //     if (operator.getRawButton(XboxController.Button.kA.value)){
-        //         //elevatorSubsystem.setPosition(ArmPosition.L1);
-        //         //pivotSubsystem.setPosition(ArmPosition.L1);
-        //         manipulatorSubsystem.setPosition(ArmPosition.L1);
-        //         isManualElevator = false;
-        //         isManualWrist = false;
-    
-        //     } else if (operator.getRawButton(XboxController.Button.kX.value)){
-        //         //elevatorSubsystem.setPosition(ArmPosition.L2);
-        //         //pivotSubsystem.setPosition(ArmPosition.L2);
-        //         manipulatorSubsystem.setPosition(ArmPosition.L2);
-        //         isManualElevator = false;
-        //         isManualWrist = false;
-    
-        //     } else if (operator.getRawButton(XboxController.Button.kB.value)){
-        //         //elevatorSubsystem.setPosition(ArmPosition.L3);
-        //         //pivotSubsystem.setPosition(ArmPosition.L3);
-        //         manipulatorSubsystem.setPosition(ArmPosition.L3);
-        //         isManualElevator = false;
-        //         isManualWrist = false;
-    
-        //     } else if (operator.getRawButton(XboxController.Button.kY.value)){
-        //         //elevatorSubsystem.setPosition(ArmPosition.L4);
-        //         //pivotSubsystem.setPosition(ArmPosition.L4);
-        //         manipulatorSubsystem.setPosition(ArmPosition.L4);
-        //         isManualElevator = false;
-        //         isManualWrist = false;
-    
-        //     } else {
                 
                 if (operator.getPOV() == 0) {
                     extensionSubsystem.setSetpoint(extensionSubsystem.getManualSetpoint() - 0.1);
@@ -103,7 +58,7 @@ public class ArmDefault extends Command{
                     System.out.println("(" + pivotSubsystem.getPivotEncoder() + ", " + extensionSubsystem.getExtensionEncoder() + ", " + manipulatorSubsystem.getWristEncoder() +")");
                 }
 
-                if (driver.getRawButton(XboxController.Button.kA.value) && !manipulatorSubsystem.hasPiece()) { // intake
+                if (driver.getRawButton(XboxController.Button.kA.value)) { // intake
                     manipulatorSubsystem.setIntakeSpeed(-1);
                     isManualWrist = true;
                 } else if (driver.getRawButton(XboxController.Button.kB.value)) { // outtake
