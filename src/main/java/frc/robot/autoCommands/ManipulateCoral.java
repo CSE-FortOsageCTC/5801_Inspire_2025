@@ -29,20 +29,21 @@ public class ManipulateCoral extends Command{
 
     @Override
     public void execute() {
-        
-        manipulatorSubsystem.setIntakeSpeed(speed);
-        
-        timer ++;
+        if (!intaking){
+            // timer++;
+        }
+        timer++;
+        //manipulatorSubsystem.setIntakeSpeed(speed);
     }
 
     @Override
     public boolean isFinished() {
-        return timer >= 50;
+        return timer >= 50; //|| (manipulatorSubsystem.hasPiece() && intaking);
     }
 
     @Override
     public void end(boolean isFinished) {
-        manipulatorSubsystem.setIntakeSpeed(0);
+        //manipulatorSubsystem.setIntakeSpeed(0);
     }
 
 

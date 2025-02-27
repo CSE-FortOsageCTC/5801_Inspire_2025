@@ -67,8 +67,8 @@ public class Swerve extends SubsystemBase{
     //public ProfiledPIDController translationXController = new ProfiledPIDController(10, 0, 0, new TrapezoidProfile.Constraints(1, .5));
     //public ProfiledPIDController translationYController = new ProfiledPIDController(10, 0, 0, new TrapezoidProfile.Constraints(1, .5));
 
-    public PIDController translationXController = new PIDController(0.1, 0, 0);
-    public PIDController translationYController = new PIDController(0.1, 0, 0);
+    public PIDController translationXController = new PIDController(0.15, 0, 0);
+    public PIDController translationYController = new PIDController(0.15, 0, 0);
 
     private final PIDController autoXController = new PIDController(10.0, 0.0, 0.0);
     private final PIDController autoYController = new PIDController(10.0, 0.0, 0.0);
@@ -213,9 +213,9 @@ public class Swerve extends SubsystemBase{
             sample.omega + autoHeadingController.calculate(MathUtil.angleModulus(pose.getRotation().getRadians()), MathUtil.angleModulus(sample.heading))
         );
 
-        SmartDashboard.putNumber("auto Measurement", MathUtil.angleModulus(pose.getRotation().getRadians()));
-        SmartDashboard.putNumber("auto Setpoint", MathUtil.angleModulus(sample.heading));
-
+        //SmartDashboard.putNumber("auto Measurement", MathUtil.angleModulus(pose.getRotation().getRadians()));
+        //SmartDashboard.putNumber("auto Setpoint", MathUtil.angleModulus(sample.heading));
+        
         // Apply the generated speeds
         drive(new Translation2d(speeds.vxMetersPerSecond, speeds.vyMetersPerSecond), -speeds.omegaRadiansPerSecond, true, true);
     }

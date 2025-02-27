@@ -9,16 +9,14 @@ import frc.robot.subsystems.Swerve;
 
 public class AlignToApril extends Command{
     
-    private Joystick driver;
     private boolean isLeft;
     private Swerve s_Swerve;
 
     private Translation2d translation;
     private double rotation;
 
-    public AlignToApril(Joystick driver, boolean isleft) {
+    public AlignToApril(boolean isleft) {
 
-        this.driver = driver;
         this.isLeft = isleft;
         s_Swerve = Swerve.getInstance();
 

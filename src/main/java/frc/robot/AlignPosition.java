@@ -19,7 +19,7 @@ public enum AlignPosition {
 
     private static AlignPosition alignPosition;
     private static Pose2d alignOffset;
-    private static double rotationRadians;
+    private static double rotationDegrees;
     private static double tagX;
     private static double tagY;
     private static AprilTagFieldLayout fieldLayout = AprilTagFieldLayout.loadField(AprilTagFields.k2025ReefscapeWelded);
@@ -39,17 +39,18 @@ public enum AlignPosition {
 
             tagX = fieldLayout.getTagPose(tagID).get().getTranslation().toTranslation2d().getX();
             tagY = fieldLayout.getTagPose(tagID).get().getTranslation().toTranslation2d().getY();
-            rotationRadians = fieldLayout.getTagPose(tagID).get().getRotation().toRotation2d().getRadians();
+            rotationDegrees = fieldLayout.getTagPose(tagID).get().getRotation().toRotation2d().getRadians();
+            SmartDashboard.putNumber("AprilTag Rotation Degrees", rotationDegrees);
 
             switch(alignPosition){
                 case LeftOffset:
-                    alignOffset = new Pose2d((tagX * 2) - (Math.sin(rotationRadians) * Units.inchesToMeters(Constants.limelightScoringOffsetInches) + (Math.cos(rotationRadians) * Units.inchesToMeters(Constants.limelightScoringDistance))), (tagY * 2) - (Math.cos(rotationRadians) * Units.inchesToMeters(Constants.limelightScoringOffsetInches) + (Math.sin(rotationRadians) * Units.inchesToMeters(Constants.limelightScoringDistance))), Rotation2d.fromRadians(rotationRadians));
+                    alignOffset = new Pose2d((tagX * 2) - (Math.sin(rotationDegrees) * Units.inchesToMeters(Constants.scoringDx) + (Math.cos(rotationDegrees) * Units.inchesToMeters(Constants.scoringDy))), (tagY * 2) - (Math.cos(rotationDegrees) * Units.inchesToMeters(Constants.scoringDx) + (Math.sin(rotationDegrees) * Units.inchesToMeters(Constants.scoringDy))), Rotation2d.fromRadians(rotationDegrees));
                     break;
                 case CenterOffset:
-                    alignOffset = new Pose2d(Units.inchesToMeters(tagX), Units.inchesToMeters(tagY), Rotation2d.fromDegrees(rotationRadians));
+                    alignOffset = new Pose2d(Units.inchesToMeters(tagX), Units.inchesToMeters(tagY), Rotation2d.fromDegrees(rotationDegrees));
                     break;
                 case RightOffset:
-                    alignOffset = new Pose2d((tagX * 2) + (Math.sin(rotationRadians) * Units.inchesToMeters(Constants.limelightScoringOffsetInches) + (Math.cos(rotationRadians) * Units.inchesToMeters(Constants.limelightScoringDistance))), (tagY * 2) + (Math.cos(rotationRadians) * Units.inchesToMeters(Constants.limelightScoringOffsetInches) + (Math.sin(rotationRadians) * Units.inchesToMeters(Constants.limelightScoringDistance))), Rotation2d.fromRadians(rotationRadians));
+                    alignOffset = new Pose2d((tagX * 2) + (Math.sin(rotationDegrees) * Units.inchesToMeters(Constants.scoringDx) + (Math.cos(rotationDegrees) * Units.inchesToMeters(Constants.scoringDy))), (tagY * 2) + (Math.cos(rotationDegrees) * Units.inchesToMeters(Constants.scoringDx) + (Math.sin(rotationDegrees) * Units.inchesToMeters(Constants.scoringDy))), Rotation2d.fromRadians(rotationDegrees));
                     break;
                 case NoPos:
                     alignOffset = s_Swerve.getEstimatedPosition();
@@ -79,22 +80,31 @@ public enum AlignPosition {
 
         tagX = fieldLayout.getTagPose(tagID).get().getTranslation().toTranslation2d().getX();
         tagY = fieldLayout.getTagPose(tagID).get().getTranslation().toTranslation2d().getY();
-        rotationRadians = fieldLayout.getTagPose(tagID).get().getRotation().toRotation2d().getDegrees();
+        rotationDegrees = fieldLayout.getTagPose(tagID).get().getRotation().toRotation2d().getDegrees();
         SmartDashboard.putNumber("Tag X", tagX);
         SmartDashboard.putNumber("Tag Y", tagY);
-        SmartDashboard.putNumber("Tag Rotation", rotationRadians);
+        SmartDashboard.putNumber("Tag Rotation", rotationDegrees);
 
-        
-
+        double distance = Math.sqrt((Constants.scoringDx * Constants.scoringDx) + (Constants.scoringDy * Constants.scoringDy));
+        double theta = 60;//(2*Math.PI) - Math.atan2(Constants.scoringDy, Constants.scoringDx);
+        double xResult;
+        double yResult;
         switch(alignPosition){
             case LeftOffset:
-                alignOffset = new Pose2d(tagX + (Math.cos(Units.degreesToRadians(rotationRadians - 15)) * Units.inchesToMeters(Constants.limelightScoringOffsetInches)), tagY + (Math.sin(Units.degreesToRadians(rotationRadians - 15)) * Units.inchesToMeters(Constants.limelightScoringDistance)), Rotation2d.fromDegrees(rotationRadians));
+
+                xResult = tagX + ((Constants.scoringDy * Math.cos(Units.degreesToRadians(rotationDegrees))) - (Constants.scoringDx * Math.sin(Units.degreesToRadians(rotationDegrees))));
+                yResult = tagY + ((Constants.scoringDy * Math.sin(Units.degreesToRadians(rotationDegrees))) + (Constants.scoringDx * Math.cos(Units.degreesToRadians(rotationDegrees))));
+                alignOffset = new Pose2d(xResult, yResult, Rotation2d.fromDegrees(rotationDegrees));
                 break;
             case CenterOffset:
-                alignOffset = new Pose2d(Units.inchesToMeters(tagX), Units.inchesToMeters(tagY), Rotation2d.fromDegrees(rotationRadians));
+                alignOffset = new Pose2d(Units.inchesToMeters(tagX), Units.inchesToMeters(tagY), Rotation2d.fromDegrees(rotationDegrees));
                 break;
             case RightOffset:
-                alignOffset = new Pose2d(tagX + (Math.cos(Units.degreesToRadians(rotationRadians + 15)) * Units.inchesToMeters(Constants.limelightScoringOffsetInches)), tagY + (Math.sin(Units.degreesToRadians(rotationRadians + 15)) * Units.inchesToMeters(Constants.limelightScoringDistance)), Rotation2d.fromDegrees(rotationRadians));
+
+                xResult = tagX + (Math.cos(Units.degreesToRadians(rotationDegrees) - theta) * distance);
+                yResult = tagY + (Math.sin(Units.degreesToRadians(rotationDegrees) - theta) * distance);
+                alignOffset = new Pose2d(xResult, yResult, Rotation2d.fromDegrees(rotationDegrees));
+                // alignOffset = new Pose2d(tagX + (Math.cos(Units.degreesToRadians(rotationDegrees + 15)) * Units.inchesToMeters(Constants.scoringDx)), tagY + (Math.sin(Units.degreesToRadians(rotationDegrees + 15)) * Units.inchesToMeters(Constants.scoringDy)), Rotation2d.fromDegrees(rotationDegrees));
                 break;
             case NoPos:
                 alignOffset = s_Swerve.getEstimatedPosition();

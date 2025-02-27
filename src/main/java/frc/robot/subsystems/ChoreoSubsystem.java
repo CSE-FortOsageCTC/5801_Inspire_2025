@@ -12,6 +12,9 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.Constants.ArmPosition;
+import frc.robot.autoCommands.ManipulateCoral;
+import frc.robot.commands.AlignToApril;
 
 import java.sql.Driver;
 import java.util.Optional;
@@ -56,7 +59,7 @@ public class ChoreoSubsystem extends SubsystemBase{
             s_Swerve
         );
 
-        autoFactory.bind("hi", new InstantCommand(() -> System.out.println("this is the bind")));
+        //autoFactory.bind("hi", new InstantCommand(() -> System.out.println("this is the bind")));
     }
 
     private boolean getFlipped() {
@@ -86,28 +89,69 @@ public class ChoreoSubsystem extends SubsystemBase{
         
     }
 
-public AutoRoutine pickupAndScoreAuto() {
-    AutoRoutine routine = autoFactory.newRoutine("testAuto");
+public AutoRoutine onePieceAuto() {
+    System.out.println("this is before the auto routine");
+    AutoRoutine routine = autoFactory.newRoutine("onePiece");
+
+    System.out.println("this is the top of the auto code");
 
     // Load the routine's trajectories
-    AutoTrajectory pickupTraj = routine.trajectory("TestAuto");
-
-      
+    AutoTrajectory traj_startToIJ = routine.trajectory("startToIJ");
 
     // When the routine begins, reset odometry and start the first trajectory 
     routine.active().onTrue(
         Commands.sequence(
-            pickupTraj.resetOdometry(),
-            new InstantCommand(() -> s_Swerve.setHeading(pickupTraj.getInitialPose().get().getRotation())), //rotateBy(180);
-            pickupTraj.cmd()
+            // traj_startToIJ.resetOdometry(),
+            new InstantCommand(() -> s_Swerve.setHeading(traj_startToIJ.getInitialPose().get().getRotation())), //rotateBy(180);
+            traj_startToIJ.cmd(),
+            new AlignToApril(false),
+            new ManipulateCoral(false)
+        )
+    );
+
+    // When the trajectory is done, start the next trajectory
+    traj_startToIJ.done().onTrue(new InstantCommand(() -> ArmPosition.setPosition(ArmPosition.L2)));
+
+    return routine;
+}
+
+public AutoRoutine threePieceAuto() {
+    AutoRoutine routine = autoFactory.newRoutine("threePiece");
+
+    // Load the routine's trajectories
+    AutoTrajectory traj_startToIJ = routine.trajectory("startToIJ");
+    AutoTrajectory traj_IJtoHP = routine.trajectory("IJToHP");
+    AutoTrajectory traj_HPtoAB = routine.trajectory("HPtoAB");
+    AutoTrajectory traj_ABtoHP = routine.trajectory("ABtoHP");
+
+    // When the routine begins, reset odometry and start the first trajectory 
+    routine.active().onTrue(
+        Commands.sequence(
+            // traj_startToIJ.resetOdometry(), //rotateBy(180);
+            new InstantCommand(() -> s_Swerve.setHeading(traj_startToIJ.getInitialPose().get().getRotation())),
+            traj_startToIJ.cmd(),
+            new AlignToApril(false),
+            new ManipulateCoral(false),
+            new InstantCommand(() -> ArmPosition.setPosition(ArmPosition.HumanP)),
+            traj_IJtoHP.cmd(),
+            new ManipulateCoral(true),
+            traj_HPtoAB.cmd(),
+            new AlignToApril(false),
+            new ManipulateCoral(false),
+            new InstantCommand(() -> ArmPosition.setPosition(ArmPosition.HumanP)),
+            traj_ABtoHP.cmd(),
+            new ManipulateCoral(true),
+            traj_HPtoAB.cmd(),
+            new ManipulateCoral(false)
         )
     );
 
     // Starting at the event marker named "intake", run the intake 
-    pickupTraj.atTime("hi").onTrue(new InstantCommand(() -> System.out.println("this is the atTime")));
+    // trajectory.atTime("hi").onTrue(new InstantCommand(() -> System.out.println("this is the atTime")));
 
-    // When the trajectory is done, start the next trajectory
-    pickupTraj.done().onTrue(new InstantCommand(() -> System.out.println("this is the end of the trajectory")));
+    // When the trajectory is done, go to the appropriate arm position
+    traj_startToIJ.done().onTrue(new InstantCommand(() -> ArmPosition.setPosition(ArmPosition.L2)));
+    traj_HPtoAB.done().onTrue(new InstantCommand(() -> ArmPosition.setPosition(ArmPosition.L2)));
 
     return routine;
 }

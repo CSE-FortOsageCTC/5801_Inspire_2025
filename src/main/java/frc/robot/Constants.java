@@ -34,8 +34,8 @@ public final class Constants {
 
     public static final double stageHeightMeters = 4; // 2.54
 
-    public static final double limelightScoringOffsetInches = 12; // how far back from the reef
-    public static final double limelightScoringDistance = 40; // horizontal facing reef 
+    public static final double scoringDx = Units.inchesToMeters(7);
+    public static final double scoringDy = Units.inchesToMeters(50);
 
     public static final class Swerve {
         public static final int pigeonID = 10;
@@ -202,10 +202,10 @@ public final class Constants {
 
     public enum ArmPosition {
         Travel(-1, -.5, -1),
-        L1(-47.540283203125, -0.138671875, 27.59521484375),
-        L2(-45.821533203125, 0.0234375, 27.001953125),
-        L3(-52.379150390625, -6.91552734375, 28.43408203125),
-        L4(-56.11962890625, -19.19580078125, 29.76220703125)),
+        L1(-46.18359375, 0.025390625, 21.2109375),
+        L2(-45.78466796875, 0.0234375, 27.0498046875),
+        L3(-50.96337890625, -9.05859375, 29.41455078125),
+        L4(-55.0830078125, -19.16748046875, 29.30859375),
         //HighAlgae(0, 0, 0),
         //LowAlgae(0, 0, 0),
         HumanP(-45.8837890625, -0.26220703125, 6.15087890625),
