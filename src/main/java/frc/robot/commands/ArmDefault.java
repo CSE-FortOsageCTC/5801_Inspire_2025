@@ -45,13 +45,11 @@ public class ArmDefault extends Command{
                 }
     
                 if (driver.getRawButton(XboxController.Button.kX.value)) {
-                    manipulatorSubsystem.setWristSpeed(-0.05);
+                    manipulatorSubsystem.setSetpoint(manipulatorSubsystem.getManualSetpoint() - .1);
                     isManualWrist = true;
                 } else if (driver.getRawButton(XboxController.Button.kY.value)) {
-                    manipulatorSubsystem.setWristSpeed(0.05);
+                    manipulatorSubsystem.setSetpoint(manipulatorSubsystem.getManualSetpoint() + .1);
                     isManualWrist = true;
-                } else if (ArmPosition.Manual.equals(ArmPosition.getPosition())) {
-                    manipulatorSubsystem.setWristSpeed(0);
                 }
 
                 if (operator.getRawButton(XboxController.Button.kBack.value)) {
@@ -89,6 +87,7 @@ public class ArmDefault extends Command{
                 // }
             }
         }
+    
         
 //     }
 // }

@@ -43,7 +43,7 @@ public class GoToArmPosition extends Command{
     public void end(boolean isFinished) {
         pivotSubsystem.setSpeed(0);
         extensionSubsystem.setSetpoint(0);
-        manipulatorSubsystem.setWristSpeed(0);
+        manipulatorSubsystem.setSetpoint(0);
     }
 
 }

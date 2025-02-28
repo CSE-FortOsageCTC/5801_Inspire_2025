@@ -67,8 +67,8 @@ public class Swerve extends SubsystemBase{
     //public ProfiledPIDController translationXController = new ProfiledPIDController(10, 0, 0, new TrapezoidProfile.Constraints(1, .5));
     //public ProfiledPIDController translationYController = new ProfiledPIDController(10, 0, 0, new TrapezoidProfile.Constraints(1, .5));
 
-    public PIDController translationXController = new PIDController(0.15, 0, 0);
-    public PIDController translationYController = new PIDController(0.15, 0, 0);
+    public PIDController translationXController = new PIDController(0.5, 0, 0);
+    public PIDController translationYController = new PIDController(0.5, 0, 0);
 
     private final PIDController autoXController = new PIDController(10.0, 0.0, 0.0);
     private final PIDController autoYController = new PIDController(10.0, 0.0, 0.0);
@@ -95,8 +95,8 @@ public class Swerve extends SubsystemBase{
 
         autoHeadingController.enableContinuousInput(-Math.PI, Math.PI);
 
-        translationXController.setTolerance(0.1);
-        translationYController.setTolerance(0.1);
+        translationXController.setTolerance(0.01);
+        translationYController.setTolerance(0.01);
         
         publisher = NetworkTableInstance.getDefault().getStructTopic("MyPose", Pose3d.struct).publish();
         arrayPublisher = NetworkTableInstance.getDefault().getStructArrayTopic("MyPoseArray", Pose3d.struct).publish();
@@ -180,7 +180,7 @@ public class Swerve extends SubsystemBase{
             mod.setDesiredState(swerveModuleStates[mod.moduleNumber], isOpenLoop);
         }
     }    
-    public void drive(Translation2d translation, double rotation, boolean fieldRelative, boolean isOpenLoop) {
+    private void drive(Translation2d translation, double rotation, boolean fieldRelative, boolean isOpenLoop) {
         SwerveModuleState[] swerveModuleStates =
             Constants.Swerve.swerveKinematics.toSwerveModuleStates(
                 fieldRelative ? ChassisSpeeds.fromFieldRelativeSpeeds(
@@ -368,6 +368,7 @@ public class Swerve extends SubsystemBase{
         double speedY;
         if (!translationXController.atSetpoint()) {
             speedX = translationXController.calculate(swerveEstimator.getEstimatedPosition().getX(), AlignPosition.getAlignOffset().getX());
+
         } else {
             speedX = 0;
         }

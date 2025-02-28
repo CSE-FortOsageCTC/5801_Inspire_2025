@@ -35,7 +35,7 @@ public final class Constants {
     public static final double stageHeightMeters = 4; // 2.54
 
     public static final double scoringDx = Units.inchesToMeters(7);
-    public static final double scoringDy = Units.inchesToMeters(50);
+    public static final double scoringDy = Units.inchesToMeters(16.5);
 
     public static final class Swerve {
         public static final int pigeonID = 10;

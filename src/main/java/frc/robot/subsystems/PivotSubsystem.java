@@ -27,13 +27,17 @@ public class PivotSubsystem extends SubsystemBase{
     private static TalonFX pivotMaster;
     private static TalonFX pivotFollower;
 
-    private static Servo servo;
+    //private static Servo servo;
     
     private static DutyCycleEncoder pivotEncoder;
 
     private static ProfiledPIDController pidController;
 
     private static PivotSubsystem pivotSubsystem;
+
+    private static ExtensionSubsystem extensionSubsystem;
+
+    private static double setpoint;
 
     private static ArmPosition lastPivotPosition = ArmPosition.Travel;
 
@@ -51,7 +55,9 @@ public class PivotSubsystem extends SubsystemBase{
         pivotMaster.setNeutralMode(NeutralModeValue.Brake);
         pivotFollower.setNeutralMode(NeutralModeValue.Brake);
 
-        servo = new Servo(0);
+        //servo = new Servo(0);
+
+        extensionSubsystem = ExtensionSubsystem.getInstance();
 
         pivotFollower.setControl(new Follower(pivotMaster.getDeviceID(), true));
 
@@ -83,9 +89,9 @@ public class PivotSubsystem extends SubsystemBase{
         return (positive && encoder >= Constants.pivotUpperLimit) || (!positive && encoder <= Constants.pivotLowerLimit);
     }
 
-    private boolean nearLimit() {
-        double encoder = getPivotEncoder();
-        return (Constants.pivotUpperLimit - encoder >= 10) || (Constants.pivotLowerLimit - encoder >= 10);
+    public static boolean nearSetpoint() {
+        double encoder = pivotSubsystem.getPivotEncoder();
+        return Math.abs(encoder - ArmPosition.getPosition().pivot) <= 2.5;
     }
 
     public void setPosition(){
@@ -97,13 +103,25 @@ public class PivotSubsystem extends SubsystemBase{
             return;
         }
 
-        double calculation = MathUtil.clamp(pidController.calculate(getPivotEncoder(), ArmPosition.getPosition().pivot), -1, 1);
-        privSetSpeed(calculation);
-        // SmartDashboard.putNumber("PID Output", calculation);
-        lastPivotPosition = ArmPosition.getPosition();
+        setpoint = ArmPosition.getPosition().pivot;
+
+        boolean isPositive = extensionSubsystem.getExtensionEncoder() - ArmPosition.getPosition().extension >= 0;
+        if (!ExtensionSubsystem.atPosition() && !isPositive) {
+            setpoint = getPivotEncoder();
+        }
+
+        if ((!ExtensionSubsystem.atPosition() && isPositive) || ExtensionSubsystem.atPosition()) {
+            
+            double calculation = MathUtil.clamp(pidController.calculate(getPivotEncoder(), setpoint), -1, 1);
+            privSetSpeed(calculation);
+            // SmartDashboard.putNumber("PID Output", calculation);
+            lastPivotPosition = ArmPosition.getPosition();
+        } else {
+            setpoint = getPivotEncoder();
+        }
     }
 
-    public boolean atPosition() {
+    public static boolean atPosition() {
         return pidController.atSetpoint();
     }
 
