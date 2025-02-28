@@ -14,6 +14,7 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -65,7 +66,18 @@ public class ExtensionSubsystem extends SubsystemBase{
         } else {
             manualSetpoint = getExtensionEncoder();
         }
-        double calculation = MathUtil.clamp(pidController.calculate(getExtensionEncoder(), setpoint), -1, 1);
+
+        if (!PivotSubsystem.nearSetpoint()) {
+            setpoint = 0;
+        }
+
+        double distance = setpoint * Constants.extensionDistanceUnit;
+
+        double pivotRotation = PivotSubsystem.getInstance().getPivotEncoder() * Constants.pivotEncoderToDegrees;
+
+        double clamp = MathUtil.clamp(MathUtil.clamp(setpoint, Constants.extensionLowerLimit, Math.asin(Units.degreesToRadians(pivotRotation))), Constants.extensionLowerLimit, Constants.extensionUpperLimit);
+
+        double calculation = MathUtil.clamp(pidController.calculate(getExtensionEncoder(), clamp), -1, 1);
         privSetSpeed(calculation);
         SmartDashboard.putNumber("PID Output", calculation);
         lastExtensionPosition = ArmPosition.getPosition();
@@ -104,10 +116,10 @@ public class ExtensionSubsystem extends SubsystemBase{
         return (positive && encoder >= Constants.extensionUpperLimit) || (!positive && encoder <= Constants.extensionLowerLimit);
     }
 
-    // private boolean nearLimit(boolean positive) {
-    //     double encoder = getExtensionEncoder();
-    //     return (positive && Constants.extensionUpperLimit - encoder >= 10) || (!positive && Constants.extensionLowerLimit - encoder >= 10);
-    // }
+    public static boolean nearSetpoint() {
+        double encoder = extensionSubsystem.getExtensionEncoder();
+        return Math.abs(encoder - ArmPosition.getPosition().extension) <= 2.5;
+    }
 
     public double getManualSetpoint() {
         return manualSetpoint;

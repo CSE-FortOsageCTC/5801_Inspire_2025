@@ -199,6 +199,11 @@ public final class Constants {
     public static final double extensionUpperLimit = 0;
     public static final double extensionLowerLimit = -19.8;
 
+    public static final double pivotEncoderToDegrees = 0; // for converting encoder ticks to degrees
+    public static final double extensionDistanceUnit = 0; // for converting encoder ticks to irl distance extended from encoder position 0
+
+    public static final double extensionMaxDistanceInches = 82; // fully extended taking into account the manipulator
+
 
     public enum ArmPosition {
         Travel(-1, -.5, -1),

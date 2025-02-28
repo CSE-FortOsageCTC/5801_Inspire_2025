@@ -1,5 +1,7 @@
 package frc.robot.subsystems;
 
+import java.security.cert.Extension;
+
 import com.ctre.phoenix6.controls.ControlRequest;
 import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.hardware.TalonFX;
@@ -83,9 +85,9 @@ public class PivotSubsystem extends SubsystemBase{
         return (positive && encoder >= Constants.pivotUpperLimit) || (!positive && encoder <= Constants.pivotLowerLimit);
     }
 
-    private boolean nearLimit() {
-        double encoder = getPivotEncoder();
-        return (Constants.pivotUpperLimit - encoder >= 10) || (Constants.pivotLowerLimit - encoder >= 10);
+    public static boolean nearSetpoint() {
+        double encoder = pivotSubsystem.getPivotEncoder();
+        return Math.abs(encoder - ArmPosition.getPosition().pivot) <= 5;
     }
 
     public void setPosition(){
@@ -97,10 +99,14 @@ public class PivotSubsystem extends SubsystemBase{
             return;
         }
 
-        double calculation = MathUtil.clamp(pidController.calculate(getPivotEncoder(), ArmPosition.getPosition().pivot), -1, 1);
-        privSetSpeed(calculation);
-        // SmartDashboard.putNumber("PID Output", calculation);
-        lastPivotPosition = ArmPosition.getPosition();
+        if (ExtensionSubsystem.isExtended() && !ExtensionSubsystem.nearSetpoint()) {
+            return;
+        } else if (!ExtensionSubsystem.isExtended() && ExtensionSubsystem.nearSetpoint()) {
+            double calculation = MathUtil.clamp(pidController.calculate(getPivotEncoder(), ArmPosition.getPosition().pivot), -1, 1);
+            privSetSpeed(calculation);
+            // SmartDashboard.putNumber("PID Output", calculation);
+            lastPivotPosition = ArmPosition.getPosition();
+        }
     }
 
     public boolean atPosition() {

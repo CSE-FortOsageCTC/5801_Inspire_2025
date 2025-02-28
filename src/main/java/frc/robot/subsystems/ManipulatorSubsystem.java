@@ -80,16 +80,25 @@ public class ManipulatorSubsystem extends SubsystemBase{
             return;
         }
         
+        if (!ExtensionSubsystem.nearSetpoint()) {
+            setpoint = 0;
+        }
+
         double calculation = MathUtil.clamp(pidController.calculate(getWristEncoder(), setpoint), -1, 1);
         intakeWrist.set(calculation);
         // SmartDashboard.putNumber("PID Output", calculation);
         lastPosition = ArmPosition.getPosition();
     }
 
-    private boolean atLimit(boolean positive){
+    public boolean atLimit(boolean positive){
         double encoder = getWristEncoder();
         return (ExtensionSubsystem.isExtended() && (!positive && encoder >= Constants.wristUpperLimitExtended) || (positive && encoder <= Constants.wristUpperLimitExtended)) 
            || (!ExtensionSubsystem.isExtended() && (!positive && encoder >= Constants.wristUpperLimitRetracted) || (positive && encoder <= Constants.wristUpperLimitRetracted));
+    }
+
+    public static boolean nearSetpoint() {
+        double encoder = manipulatorSubsystem.getWristEncoder();
+        return Math.abs(encoder - ArmPosition.getPosition().manipulator) <= 10;
     }
 
     public boolean atPosition() {
