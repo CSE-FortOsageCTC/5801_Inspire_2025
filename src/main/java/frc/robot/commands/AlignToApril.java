@@ -35,7 +35,7 @@ public class AlignToApril extends Command{
         
         translation = s_Swerve.translateToApril().times(Constants.Swerve.maxSpeed);
         rotation = s_Swerve.rotateToApril(AlignPosition.getAlignOffset().getRotation().getDegrees()) * Constants.Swerve.maxAngularVelocity;
-        s_Swerve.drive(translation, rotation, false, false);
+        s_Swerve.teleopDrive(translation, rotation, true, false);
 
     }
 

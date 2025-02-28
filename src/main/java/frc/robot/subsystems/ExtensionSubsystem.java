@@ -65,18 +65,28 @@ public class ExtensionSubsystem extends SubsystemBase{
         } else {
             manualSetpoint = getExtensionEncoder();
         }
+
+        if (!PivotSubsystem.atPosition()) {
+            setpoint = 0;
+        }
+
         double calculation = MathUtil.clamp(pidController.calculate(getExtensionEncoder(), setpoint), -1, 1);
         privSetSpeed(calculation);
         SmartDashboard.putNumber("PID Output", calculation);
         lastExtensionPosition = ArmPosition.getPosition();
     }
 
-    public boolean atPosition() {
+    public static boolean atPosition() {
         return pidController.atSetpoint();
     }
 
     public static boolean isExtended() {
         return extensionSubsystem.getExtensionEncoder() < -5.0;
+    }
+
+    public static boolean nearSetpoint() {
+        double encoder = extensionSubsystem.getExtensionEncoder();
+        return Math.abs(encoder - ArmPosition.getPosition().extension) <= 2.5;
     }
 
     public void setSetpoint(double setpoint){
@@ -99,9 +109,9 @@ public class ExtensionSubsystem extends SubsystemBase{
         extensionMaster.set(speed);
     }
 
-    private boolean atLimit(boolean positive){
+    private boolean atLimit(boolean goingDown){
         double encoder = getExtensionEncoder();
-        return (positive && encoder >= Constants.extensionUpperLimit) || (!positive && encoder <= Constants.extensionLowerLimit);
+        return (!goingDown && encoder >= Constants.extensionUpperLimit) || (goingDown && encoder <= Constants.extensionLowerLimit);
     }
 
     // private boolean nearLimit(boolean positive) {

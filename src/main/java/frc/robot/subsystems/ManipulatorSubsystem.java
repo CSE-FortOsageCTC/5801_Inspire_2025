@@ -30,6 +30,11 @@ public class ManipulatorSubsystem extends SubsystemBase{
 
     private static ArmPosition lastPosition;
 
+    private double manualSetpoint;
+
+    private double setpoint;
+
+
     private static ProfiledPIDController pidController;
 
     private ManipulatorSubsystem() {
@@ -40,7 +45,7 @@ public class ManipulatorSubsystem extends SubsystemBase{
 
         intakeWrist.setPosition(0);
 
-        pidController = new ProfiledPIDController(0.3, 0, 0, new TrapezoidProfile.Constraints(100, 75));
+        pidController = new ProfiledPIDController(0.25, 0, 0, new TrapezoidProfile.Constraints(100, 75));
         pidController.setTolerance(0.1);
 
         // canandcolor = new Canandcolor(30);
@@ -59,37 +64,64 @@ public class ManipulatorSubsystem extends SubsystemBase{
         return manipulatorSubsystem;
     }
 
-    public void setWristSpeed(double speed){
-        intakeWrist.set(speed);
+    public void setSetpoint(double setpoint){
         ArmPosition.setPosition(ArmPosition.Manual);
         lastPosition = ArmPosition.Manual;
+        manualSetpoint =  MathUtil.clamp(setpoint, Constants.wristLowerLimit, ExtensionSubsystem.isExtended() ? Constants.wristUpperLimitExtended : Constants.wristUpperLimitRetracted);
+        setPosition();
+    }
+
+    private void privSetSpeed(double speed){
+
+        boolean isPositive = speed > 0;
+        
+        if (atLimit(isPositive)) {
+            speed = 0;
+        } 
+
+        intakeWrist.set(speed);
     }
     
     public void setIntakeSpeed(double speed){
         intakeWheel.set(speed);
     }
-
+    
     public void setPosition(){
         if (ArmPosition.getPosition() != lastPosition) {
             pidController.reset(getWristEncoder());
         }
 
-        double setpoint = ArmPosition.getPosition().manipulator;
+        setpoint = ArmPosition.getPosition().manipulator;
 
         if (setpoint == -1) {
-            return;
+            setpoint = manualSetpoint;
+        } else {
+            manualSetpoint = getWristEncoder();
+        }
+
+        if (!ExtensionSubsystem.nearSetpoint()) {
+            setpoint = getWristEncoder();
+        }
+
+        if (!ExtensionSubsystem.isExtended() && getWristEncoder() > Constants.wristUpperLimitRetracted) {
+            manualSetpoint = Constants.wristUpperLimitRetracted - 1;
         }
         
         double calculation = MathUtil.clamp(pidController.calculate(getWristEncoder(), setpoint), -1, 1);
-        intakeWrist.set(calculation);
+        privSetSpeed(calculation);
         // SmartDashboard.putNumber("PID Output", calculation);
         lastPosition = ArmPosition.getPosition();
     }
 
     private boolean atLimit(boolean positive){
         double encoder = getWristEncoder();
-        return (ExtensionSubsystem.isExtended() && (!positive && encoder >= Constants.wristUpperLimitExtended) || (positive && encoder <= Constants.wristUpperLimitExtended)) 
-           || (!ExtensionSubsystem.isExtended() && (!positive && encoder >= Constants.wristUpperLimitRetracted) || (positive && encoder <= Constants.wristUpperLimitRetracted));
+        return (positive && encoder >= (ExtensionSubsystem.isExtended() ? Constants.wristUpperLimitExtended : Constants.wristUpperLimitRetracted))
+            || (!positive && encoder <= Constants.wristLowerLimit);
+    }
+
+    public static boolean nearSetpoint() {
+        double encoder = manipulatorSubsystem.getWristEncoder();
+        return Math.abs(encoder - ArmPosition.getPosition().manipulator) <= 1;
     }
 
     public boolean atPosition() {
@@ -102,6 +134,10 @@ public class ManipulatorSubsystem extends SubsystemBase{
 
     public ArmPosition getArmPosition() {
         return lastPosition;
+    }
+
+    public double getManualSetpoint() {
+        return manualSetpoint;
     }
 
     // public double getProximity() {
