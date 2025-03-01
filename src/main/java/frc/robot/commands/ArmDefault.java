@@ -53,27 +53,15 @@ public class ArmDefault extends Command{
                 }
 
                 if (operator.getRawButton(XboxController.Button.kBack.value)) {
-                    System.out.println("(" + pivotSubsystem.getPivotEncoder() + ", " + extensionSubsystem.getExtensionEncoder() + ", " + manipulatorSubsystem.getWristEncoder() +")");
-                }
-
-                if (driver.getRawButton(XboxController.Button.kA.value)) { // intake
-                    manipulatorSubsystem.setIntakeSpeed(-1);
-                    isManualWrist = true;
-                } else if (driver.getRawButton(XboxController.Button.kB.value)) { // outtake
-                    manipulatorSubsystem.setIntakeSpeed(1);
-                    isManualWrist = true;
-                } else {
-                    manipulatorSubsystem.setIntakeSpeed(0);
+                    System.out.println("(" + PivotSubsystem.getPivotEncoder() + ", " + extensionSubsystem.getExtensionEncoder() + ", " + manipulatorSubsystem.getWristEncoder() +")");
                 }
     
                 if (operator.getRawButton(XboxController.Button.kLeftBumper.value)) {
-                    pivotSubsystem.setSpeed(-0.1);
+                    pivotSubsystem.setSetpoint(pivotSubsystem.getManualSetpoint() - 0.2);
                     isManualPivot = true;
                 } else if (operator.getRawButton(XboxController.Button.kRightBumper.value)) {
-                    pivotSubsystem.setSpeed(0.1);
+                    pivotSubsystem.setSetpoint(pivotSubsystem.getManualSetpoint() + 0.2);
                     isManualPivot = true;
-                } else if (ArmPosition.Manual.equals(ArmPosition.getPosition())) {
-                    pivotSubsystem.setSpeed(0);
                 }
 
                 extensionSubsystem.setPosition();

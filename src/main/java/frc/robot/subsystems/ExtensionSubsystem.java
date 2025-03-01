@@ -49,7 +49,7 @@ public class ExtensionSubsystem extends SubsystemBase{
 
         manualSetpoint = getExtensionEncoder();
 
-        pidController = new ProfiledPIDController(0.25, 0, 0, new TrapezoidProfile.Constraints(200, 80));
+        pidController = new ProfiledPIDController(0.25, 0, 0, new TrapezoidProfile.Constraints(200, 100));
         pidController.setTolerance(0.1);
     }
 
@@ -66,8 +66,12 @@ public class ExtensionSubsystem extends SubsystemBase{
             manualSetpoint = getExtensionEncoder();
         }
 
-        if (!PivotSubsystem.atPosition()) {
+        if (!PivotSubsystem.nearSetpoint() && ArmPosition.getPosition().extension != -1) {
             setpoint = 0;
+        }
+
+        if (PivotSubsystem.getPivotEncoder() > Constants.pivotExtensionLimit) {
+            manualSetpoint = 0;
         }
 
         double calculation = MathUtil.clamp(pidController.calculate(getExtensionEncoder(), setpoint), -1, 1);
@@ -111,7 +115,7 @@ public class ExtensionSubsystem extends SubsystemBase{
 
     private boolean atLimit(boolean goingDown){
         double encoder = getExtensionEncoder();
-        return (!goingDown && encoder >= Constants.extensionUpperLimit) || (goingDown && encoder <= Constants.extensionLowerLimit);
+        return (goingDown && encoder >= Constants.extensionUpperLimit) || (!goingDown && encoder <= Constants.extensionLowerLimit);
     }
 
     // private boolean nearLimit(boolean positive) {

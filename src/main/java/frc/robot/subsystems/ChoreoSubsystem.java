@@ -102,15 +102,14 @@ public AutoRoutine onePieceAuto() {
     routine.active().onTrue(
         Commands.sequence(
             // traj_startToIJ.resetOdometry(),
+            new InstantCommand(() -> ArmPosition.setPosition(ArmPosition.HumanP)),
             new InstantCommand(() -> s_Swerve.setHeading(traj_startToIJ.getInitialPose().get().getRotation())), //rotateBy(180);
             traj_startToIJ.cmd(),
+            new InstantCommand(() -> ArmPosition.setPosition(ArmPosition.L4)),
             new AlignToApril(false),
             new ManipulateCoral(false)
         )
     );
-
-    // When the trajectory is done, start the next trajectory
-    traj_startToIJ.done().onTrue(new InstantCommand(() -> ArmPosition.setPosition(ArmPosition.L2)));
 
     return routine;
 }

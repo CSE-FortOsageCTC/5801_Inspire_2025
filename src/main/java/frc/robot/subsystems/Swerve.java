@@ -387,6 +387,8 @@ public class Swerve extends SubsystemBase{
 
         double output = (((angle - swerveEstimator.getEstimatedPosition().getRotation().getDegrees())) + 360) % 360;
         s_AutoRotateUtil.updateTargetAngle(output); 
+
+        SmartDashboard.putNumber("Auto Rotate Output", output);
         
         return s_AutoRotateUtil.calculateRotationSpeed();
     }
@@ -459,6 +461,10 @@ public class Swerve extends SubsystemBase{
         translationXController.reset();
         translationYController.reset();
         s_AutoRotateUtil.reset();
+    }
+
+    public boolean alignAprilFinished() {
+        return translationXController.atSetpoint() && translationYController.atSetpoint() && s_AutoRotateUtil.isFinished();
     }
 
     public void resetAutoRotateUtil(){

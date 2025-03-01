@@ -35,7 +35,7 @@ public final class Constants {
     public static final double stageHeightMeters = 4; // 2.54
 
     public static final double scoringDx = Units.inchesToMeters(7);
-    public static final double scoringDy = Units.inchesToMeters(16.5);
+    public static final double scoringDy = Units.inchesToMeters(17); // might need to change at comp :) og: 16.5
 
     public static final class Swerve {
         public static final int pigeonID = 10;
@@ -196,6 +196,7 @@ public final class Constants {
     public static final double wristLowerLimit = 0;
     public static final double pivotUpperLimit = 0;
     public static final double pivotLowerLimit = -57.5; 
+    public static final double pivotExtensionLimit = -45;
     public static final double extensionUpperLimit = 0;
     public static final double extensionLowerLimit = -19.8;
 
@@ -205,7 +206,7 @@ public final class Constants {
         L1(-46.18359375, 0.025390625, 21.2109375),
         L2(-45.78466796875, 0.0234375, 27.0498046875),
         L3(-50.96337890625, -9.05859375, 29.41455078125),
-        L4(-55.0830078125, -19.16748046875, 29.30859375),
+        L4(-54.187255859375, -19.0849609375, 29.55078125),
         //HighAlgae(0, 0, 0),
         //LowAlgae(0, 0, 0),
         HumanP(-45.8837890625, -0.26220703125, 6.15087890625),
