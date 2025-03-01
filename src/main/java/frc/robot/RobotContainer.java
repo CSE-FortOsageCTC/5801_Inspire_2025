@@ -16,6 +16,7 @@ import frc.robot.commands.ArmDefault;
 import frc.robot.commands.DefaultTeleop;
 import frc.robot.subsystems.ChoreoSubsystem;
 import frc.robot.subsystems.ExtensionSubsystem;
+import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.ManipulatorSubsystem;
 import frc.robot.subsystems.Swerve;
 
@@ -31,6 +32,7 @@ public class RobotContainer {
   private ChoreoSubsystem s_choreoSubsystem;
   private final ExtensionSubsystem elevatorSubsystem = ExtensionSubsystem.getInstance();
   private final ManipulatorSubsystem manipulatorSubsystem = ManipulatorSubsystem.getInstance();
+  private final IntakeSubsystem intakeSubsystem = IntakeSubsystem.getInstance();
   private final Joystick driver = new Joystick(0);
   private final Joystick operator = new Joystick(1);
 
@@ -87,6 +89,11 @@ public class RobotContainer {
      driver_Start_ZeroHeading.onTrue(new InstantCommand(() -> s_Swerve.zeroHeading()));
      driverLeftDpad.whileTrue(new AlignToApril(true));
      driverRightDpad.whileTrue(new AlignToApril(false));
+     driver_A_Function.onTrue(new InstantCommand(() -> intakeSubsystem.setIntakeSpeed(1)));
+     driver_B_Function.onTrue(new InstantCommand(() -> intakeSubsystem.setIntakeSpeed(-1)));
+
+     driver_A_Function.onFalse(new InstantCommand(() -> intakeSubsystem.setIntakeSpeed(0)));
+     driver_B_Function.onFalse(new InstantCommand(() -> intakeSubsystem.setIntakeSpeed(0)));
 
      operatorA.onTrue(new InstantCommand(() -> ArmPosition.setPosition(ArmPosition.L1)));
      operatorX.onTrue(new InstantCommand(() -> ArmPosition.setPosition(ArmPosition.L2)));

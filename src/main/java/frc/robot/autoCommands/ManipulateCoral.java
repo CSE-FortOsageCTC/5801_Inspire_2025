@@ -1,12 +1,12 @@
 package frc.robot.autoCommands;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.subsystems.ManipulatorSubsystem;
+import frc.robot.subsystems.IntakeSubsystem;
 
 public class ManipulateCoral extends Command{
     
 
-    private ManipulatorSubsystem manipulatorSubsystem;
+    private IntakeSubsystem intakeSubsystem;
 
     private int timer = 0;
 
@@ -18,32 +18,31 @@ public class ManipulateCoral extends Command{
 
         this.intaking = intaking;
 
-        manipulatorSubsystem = ManipulatorSubsystem.getInstance();
+        intakeSubsystem = IntakeSubsystem.getInstance();
 
         if (intaking) {
             speed *= -1;
         }
 
-        addRequirements(manipulatorSubsystem);
+        addRequirements(intakeSubsystem);
     }
 
     @Override
     public void execute() {
         if (!intaking){
-            // timer++;
+            timer++;
         }
-        timer++;
-        //manipulatorSubsystem.setIntakeSpeed(speed);
+        intakeSubsystem.setIntakeSpeed(speed);
     }
 
     @Override
     public boolean isFinished() {
-        return timer >= 50; //|| (manipulatorSubsystem.hasPiece() && intaking);
+        return timer >= 50 || (intakeSubsystem.hasPiece() && intaking);
     }
 
     @Override
     public void end(boolean isFinished) {
-        //manipulatorSubsystem.setIntakeSpeed(0);
+        intakeSubsystem.setIntakeSpeed(0);
     }
 
 

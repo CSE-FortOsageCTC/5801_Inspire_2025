@@ -27,7 +27,7 @@ public class PivotSubsystem extends SubsystemBase{
     private static TalonFX pivotMaster;
     private static TalonFX pivotFollower;
 
-    //private static Servo servo;
+    private static Servo servo;
     
     private static DutyCycleEncoder pivotEncoder;
 
@@ -38,6 +38,8 @@ public class PivotSubsystem extends SubsystemBase{
     private static ExtensionSubsystem extensionSubsystem;
 
     private static double setpoint;
+
+    private double manualSetpoint;
 
     private static ArmPosition lastPivotPosition = ArmPosition.Travel;
 
@@ -55,7 +57,7 @@ public class PivotSubsystem extends SubsystemBase{
         pivotMaster.setNeutralMode(NeutralModeValue.Brake);
         pivotFollower.setNeutralMode(NeutralModeValue.Brake);
 
-        //servo = new Servo(0);
+        servo = new Servo(0);
 
         extensionSubsystem = ExtensionSubsystem.getInstance();
 
@@ -66,12 +68,14 @@ public class PivotSubsystem extends SubsystemBase{
         System.out.println(pivotEncoder.get());
 
         AlignPosition noPos = AlignPosition.NoPos;
+        
+        manualSetpoint = getPivotEncoder();
 
         System.out.println(pivotEncoder.get());
 
         pivotMaster.setPosition(pivotEncoder.get() * -53.8);
 
-        pidController = new ProfiledPIDController(0.3, 0, 0, new TrapezoidProfile.Constraints(100, 80));
+        pidController = new ProfiledPIDController(0.2, 0, 0, new TrapezoidProfile.Constraints(150, 100));
         pidController.setTolerance(0.1);
     }
 
@@ -84,14 +88,21 @@ public class PivotSubsystem extends SubsystemBase{
         pivotMaster.set(speed);
     }
 
+    public void setSetpoint(double setpoint){
+        ArmPosition.setPosition(ArmPosition.Manual);
+        lastPivotPosition = ArmPosition.Manual;
+        manualSetpoint = MathUtil.clamp(setpoint, Constants.pivotLowerLimit, Constants.pivotUpperLimit);
+        setPosition();
+    }
+
     private boolean atLimit(boolean positive){
         double encoder = getPivotEncoder();
         return (positive && encoder >= Constants.pivotUpperLimit) || (!positive && encoder <= Constants.pivotLowerLimit);
     }
 
     public static boolean nearSetpoint() {
-        double encoder = pivotSubsystem.getPivotEncoder();
-        return Math.abs(encoder - ArmPosition.getPosition().pivot) <= 2.5;
+        double encoder = getPivotEncoder();
+        return Math.abs(encoder - ArmPosition.getPosition().pivot) <= 15;
     }
 
     public void setPosition(){
@@ -99,15 +110,18 @@ public class PivotSubsystem extends SubsystemBase{
             pidController.reset(getPivotEncoder());
         }
 
-        if (ArmPosition.getPosition().pivot == -1) {
-            return;
-        }
-
         setpoint = ArmPosition.getPosition().pivot;
+
+        if (ArmPosition.getPosition().pivot == -1) {
+            setpoint = manualSetpoint;
+        } else {
+            manualSetpoint = getPivotEncoder();
+        }
 
         boolean isPositive = extensionSubsystem.getExtensionEncoder() - ArmPosition.getPosition().extension >= 0;
         if (!ExtensionSubsystem.atPosition() && !isPositive) {
             setpoint = getPivotEncoder();
+            manualSetpoint = getPivotEncoder();
         }
 
         if ((!ExtensionSubsystem.atPosition() && isPositive) || ExtensionSubsystem.atPosition()) {
@@ -118,7 +132,12 @@ public class PivotSubsystem extends SubsystemBase{
             lastPivotPosition = ArmPosition.getPosition();
         } else {
             setpoint = getPivotEncoder();
+            privSetSpeed(0);
         }
+    }
+
+    public double getManualSetpoint() {
+        return manualSetpoint;
     }
 
     public static boolean atPosition() {
@@ -131,7 +150,7 @@ public class PivotSubsystem extends SubsystemBase{
         lastPivotPosition = ArmPosition.Manual;
     }
 
-    public double getPivotEncoder(){
+    public static double getPivotEncoder(){
         return pivotMaster.getPosition().getValueAsDouble();
     }
 
@@ -145,7 +164,7 @@ public class PivotSubsystem extends SubsystemBase{
         //SmartDashboard.putNumber("Pivot Absolute Encoder", pivotEncoder.get());
         //pidController.setPID(0.3, 0, 0);
 
-        //servo.set(1); 
+        servo.set(0); 
     }
 
 }

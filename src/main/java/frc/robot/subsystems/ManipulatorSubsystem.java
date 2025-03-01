@@ -18,15 +18,13 @@ import frc.robot.Constants.ArmPosition;
 
 public class ManipulatorSubsystem extends SubsystemBase{
 
-    private static SparkMax intakeWheel;
     private static TalonFX intakeWrist;
 
     //private static DutyCycleEncoder wristEncoder;
 
-    // private static Canandcolor canandcolor;
-    // private CanandcolorSettings cacSettings;
-
     private static ManipulatorSubsystem manipulatorSubsystem;
+    
+    private static ExtensionSubsystem extensionSubsystem;
 
     private static ArmPosition lastPosition;
 
@@ -38,22 +36,17 @@ public class ManipulatorSubsystem extends SubsystemBase{
     private static ProfiledPIDController pidController;
 
     private ManipulatorSubsystem() {
-        intakeWheel = new SparkMax(55, MotorType.kBrushless);
+        
         intakeWrist = new TalonFX(56);
 
         intakeWrist.setNeutralMode(NeutralModeValue.Brake);
 
         intakeWrist.setPosition(0);
 
-        pidController = new ProfiledPIDController(0.25, 0, 0, new TrapezoidProfile.Constraints(100, 75));
+        extensionSubsystem = ExtensionSubsystem.getInstance();
+
+        pidController = new ProfiledPIDController(0.225, 0, 0, new TrapezoidProfile.Constraints(100, 75));
         pidController.setTolerance(0.1);
-
-        // canandcolor = new Canandcolor(30);
-        // cacSettings = new CanandcolorSettings();
-
-        // cacSettings.setLampLEDBrightness(0.2);
-        
-        // canandcolor.setSettings(cacSettings);
     }
 
     public static ManipulatorSubsystem getInstance(){
@@ -82,9 +75,7 @@ public class ManipulatorSubsystem extends SubsystemBase{
         intakeWrist.set(speed);
     }
     
-    public void setIntakeSpeed(double speed){
-        intakeWheel.set(speed);
-    }
+    
     
     public void setPosition(){
         if (ArmPosition.getPosition() != lastPosition) {
@@ -99,8 +90,12 @@ public class ManipulatorSubsystem extends SubsystemBase{
             manualSetpoint = getWristEncoder();
         }
 
-        if (!ExtensionSubsystem.nearSetpoint()) {
-            setpoint = getWristEncoder();
+        boolean isDown = extensionSubsystem.getExtensionEncoder() - ArmPosition.getPosition().extension >= 0;
+
+        if (!ExtensionSubsystem.nearSetpoint() && isDown) {
+            setpoint = ArmPosition.getPosition().manipulator;
+        } else if (!ExtensionSubsystem.nearSetpoint() && !isDown && ArmPosition.getPosition().manipulator == -1) {
+            setpoint = manualSetpoint;
         }
 
         if (!ExtensionSubsystem.isExtended() && getWristEncoder() > Constants.wristUpperLimitRetracted) {
@@ -140,17 +135,7 @@ public class ManipulatorSubsystem extends SubsystemBase{
         return manualSetpoint;
     }
 
-    // public double getProximity() {
-    //     return canandcolor.getProximity();
-    // }
-
-    // public boolean hasPiece() {
-    //     return canandcolor.getProximity() < 0.1;
-    // }
-
-    // public Double getHSVHue() {
-    //     return canandcolor.getHSVHue();
-    // }
+    
 
     @Override
     public void periodic(){

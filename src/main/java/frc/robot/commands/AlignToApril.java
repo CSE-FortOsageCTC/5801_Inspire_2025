@@ -40,6 +40,11 @@ public class AlignToApril extends Command{
     }
 
     @Override
+    public boolean isFinished() {
+        return s_Swerve.alignAprilFinished();
+    }
+
+    @Override
     public void end(boolean isFinished) {
         System.out.println("Ended Align to April Command");
         s_Swerve.resetAlignApril();
