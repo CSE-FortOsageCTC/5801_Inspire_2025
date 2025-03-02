@@ -16,14 +16,14 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.Constants.ArmPosition;
 
-public class ManipulatorSubsystem extends SubsystemBase{
+public class ManipulatorSubsystem extends SubsystemBase {
 
     private static TalonFX intakeWrist;
 
-    //private static DutyCycleEncoder wristEncoder;
+    // private static DutyCycleEncoder wristEncoder;
 
     private static ManipulatorSubsystem manipulatorSubsystem;
-    
+
     private static ExtensionSubsystem extensionSubsystem;
 
     private static ArmPosition lastPosition;
@@ -32,11 +32,10 @@ public class ManipulatorSubsystem extends SubsystemBase{
 
     private double setpoint;
 
-
     private static ProfiledPIDController pidController;
 
     private ManipulatorSubsystem() {
-        
+
         intakeWrist = new TalonFX(56);
 
         intakeWrist.setNeutralMode(NeutralModeValue.Brake);
@@ -49,7 +48,7 @@ public class ManipulatorSubsystem extends SubsystemBase{
         pidController.setTolerance(0.1);
     }
 
-    public static ManipulatorSubsystem getInstance(){
+    public static ManipulatorSubsystem getInstance() {
         if (manipulatorSubsystem == null) {
             manipulatorSubsystem = new ManipulatorSubsystem();
         }
@@ -57,27 +56,27 @@ public class ManipulatorSubsystem extends SubsystemBase{
         return manipulatorSubsystem;
     }
 
-    public void setSetpoint(double setpoint){
+    public void setSetpoint(double setpoint) {
         ArmPosition.setPosition(ArmPosition.Manual);
         lastPosition = ArmPosition.Manual;
-        manualSetpoint =  MathUtil.clamp(setpoint, Constants.wristLowerLimit, ExtensionSubsystem.isExtended() ? Constants.wristUpperLimitExtended : Constants.wristUpperLimitRetracted);
+        manualSetpoint = MathUtil.clamp(setpoint, Constants.wristLowerLimit,
+                ExtensionSubsystem.isExtended() ? Constants.wristUpperLimitExtended
+                        : Constants.wristUpperLimitRetracted);
         setPosition();
     }
 
-    private void privSetSpeed(double speed){
+    private void privSetSpeed(double speed) {
 
         boolean isPositive = speed > 0;
-        
+
         if (atLimit(isPositive)) {
             speed = 0;
-        } 
+        }
 
         intakeWrist.set(speed);
     }
-    
-    
-    
-    public void setPosition(){
+
+    public void setPosition() {
         if (ArmPosition.getPosition() != lastPosition) {
             pidController.reset(getWristEncoder());
         }
@@ -101,17 +100,18 @@ public class ManipulatorSubsystem extends SubsystemBase{
         if (!ExtensionSubsystem.isExtended() && getWristEncoder() > Constants.wristUpperLimitRetracted) {
             manualSetpoint = Constants.wristUpperLimitRetracted - 1;
         }
-        
+
         double calculation = MathUtil.clamp(pidController.calculate(getWristEncoder(), setpoint), -1, 1);
         privSetSpeed(calculation);
         // SmartDashboard.putNumber("PID Output", calculation);
         lastPosition = ArmPosition.getPosition();
     }
 
-    private boolean atLimit(boolean positive){
+    private boolean atLimit(boolean positive) {
         double encoder = getWristEncoder();
-        return (positive && encoder >= (ExtensionSubsystem.isExtended() ? Constants.wristUpperLimitExtended : Constants.wristUpperLimitRetracted))
-            || (!positive && encoder <= Constants.wristLowerLimit);
+        return (positive && encoder >= (ExtensionSubsystem.isExtended() ? Constants.wristUpperLimitExtended
+                : Constants.wristUpperLimitRetracted))
+                || (!positive && encoder <= Constants.wristLowerLimit);
     }
 
     public static boolean nearSetpoint() {
@@ -123,7 +123,7 @@ public class ManipulatorSubsystem extends SubsystemBase{
         return pidController.atSetpoint();
     }
 
-    public double getWristEncoder(){
+    public double getWristEncoder() {
         return intakeWrist.getPosition().getValueAsDouble();
     }
 
@@ -135,15 +135,13 @@ public class ManipulatorSubsystem extends SubsystemBase{
         return manualSetpoint;
     }
 
-    
-
     @Override
-    public void periodic(){
-        //SmartDashboard.putNumber("Wrist Kraken Encoder", getWristEncoder());
-        //SmartDashboard.putNumber("Wrist Absolute Encoder", wristEncoder.get());
-        //SmartDashboard.putNumber("HSV CanAndColor", getHSVHue());
-        //pidController.setP(0.3);
+    public void periodic() {
+        // SmartDashboard.putNumber("Wrist Kraken Encoder", getWristEncoder());
+        // SmartDashboard.putNumber("Wrist Absolute Encoder", wristEncoder.get());
+        // SmartDashboard.putNumber("HSV CanAndColor", getHSVHue());
+        // pidController.setP(0.3);
 
-        //SmartDashboard.putNumber("Proximity", getProximity());
+        // SmartDashboard.putNumber("Proximity", getProximity());
     }
 }

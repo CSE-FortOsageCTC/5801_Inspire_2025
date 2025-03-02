@@ -19,7 +19,7 @@ import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
-public class ExtensionSubsystem extends SubsystemBase{
+public class ExtensionSubsystem extends SubsystemBase {
     private static TalonFX extensionMaster;
     private static TalonFX extensionFollower;
 
@@ -31,21 +31,22 @@ public class ExtensionSubsystem extends SubsystemBase{
 
     private double manualSetpoint;
 
-    public static ExtensionSubsystem getInstance(){
-        if(extensionSubsystem == null) {
+    public static ExtensionSubsystem getInstance() {
+        if (extensionSubsystem == null) {
             extensionSubsystem = new ExtensionSubsystem();
         }
         return extensionSubsystem;
     }
 
-    private ExtensionSubsystem(){
-        extensionMaster = new TalonFX(50); //SparkMax(50, MotorType.kBrushless);
-        extensionFollower = new TalonFX(51); //SparkMax(51, MotorType.kBrushless);
+    private ExtensionSubsystem() {
+        extensionMaster = new TalonFX(50); // SparkMax(50, MotorType.kBrushless);
+        extensionFollower = new TalonFX(51); // SparkMax(51, MotorType.kBrushless);
 
         extensionMaster.setNeutralMode(NeutralModeValue.Brake);
         extensionFollower.setNeutralMode(NeutralModeValue.Brake);
 
-        extensionFollower.setControl(new Follower(extensionMaster.getDeviceID(), true));;
+        extensionFollower.setControl(new Follower(extensionMaster.getDeviceID(), true));
+        ;
 
         manualSetpoint = getExtensionEncoder();
 
@@ -53,11 +54,11 @@ public class ExtensionSubsystem extends SubsystemBase{
         pidController.setTolerance(0.1);
     }
 
-    public void setPosition(){
+    public void setPosition() {
         if (ArmPosition.getPosition() != lastExtensionPosition) {
             pidController.reset(getExtensionEncoder());
         }
-        
+
         double setpoint = ArmPosition.getPosition().extension;
 
         if (setpoint == -1) {
@@ -93,41 +94,43 @@ public class ExtensionSubsystem extends SubsystemBase{
         return Math.abs(encoder - ArmPosition.getPosition().extension) <= 2.5;
     }
 
-    public void setSetpoint(double setpoint){
+    public void setSetpoint(double setpoint) {
         ArmPosition.setPosition(ArmPosition.Manual);
         lastExtensionPosition = ArmPosition.Manual;
         manualSetpoint = MathUtil.clamp(setpoint, Constants.extensionLowerLimit, Constants.extensionUpperLimit);
         setPosition();
     }
 
-    private void privSetSpeed(double speed){
+    private void privSetSpeed(double speed) {
 
         boolean isPositive = speed > 0;
-        
+
         if (atLimit(isPositive)) {
             speed = 0;
         } // else if (nearLimit(isPositive)){
-        //     speed = 0.05;
-        // }
+          // speed = 0.05;
+          // }
 
         extensionMaster.set(speed);
     }
 
-    private boolean atLimit(boolean goingDown){
+    private boolean atLimit(boolean goingDown) {
         double encoder = getExtensionEncoder();
-        return (goingDown && encoder >= Constants.extensionUpperLimit) || (!goingDown && encoder <= Constants.extensionLowerLimit);
+        return (goingDown && encoder >= Constants.extensionUpperLimit)
+                || (!goingDown && encoder <= Constants.extensionLowerLimit);
     }
 
     // private boolean nearLimit(boolean positive) {
-    //     double encoder = getExtensionEncoder();
-    //     return (positive && Constants.extensionUpperLimit - encoder >= 10) || (!positive && Constants.extensionLowerLimit - encoder >= 10);
+    // double encoder = getExtensionEncoder();
+    // return (positive && Constants.extensionUpperLimit - encoder >= 10) ||
+    // (!positive && Constants.extensionLowerLimit - encoder >= 10);
     // }
 
     public double getManualSetpoint() {
         return manualSetpoint;
     }
 
-    public double getExtensionEncoder(){
+    public double getExtensionEncoder() {
         return extensionMaster.getPosition().getValueAsDouble();
     }
 
@@ -136,9 +139,9 @@ public class ExtensionSubsystem extends SubsystemBase{
     }
 
     @Override
-    public void periodic(){
-        //SmartDashboard.putNumber("Extension Encoder", getExtensionEncoder());
-        //SmartDashboard.putNumber("Extension Manual Setpoint", manualSetpoint);
-        //pidController.setPID(0.25, 0, 0);
+    public void periodic() {
+        SmartDashboard.putNumber("Extension Encoder", getExtensionEncoder());
+        // SmartDashboard.putNumber("Extension Manual Setpoint", manualSetpoint);
+        // pidController.setPID(0.25, 0, 0);
     }
 }

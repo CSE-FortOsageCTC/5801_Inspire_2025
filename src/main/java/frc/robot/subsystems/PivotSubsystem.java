@@ -22,13 +22,12 @@ import edu.wpi.first.wpilibj.Servo;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
-
-public class PivotSubsystem extends SubsystemBase{
+public class PivotSubsystem extends SubsystemBase {
     private static TalonFX pivotMaster;
     private static TalonFX pivotFollower;
 
     private static Servo servo;
-    
+
     private static DutyCycleEncoder pivotEncoder;
 
     private static ProfiledPIDController pidController;
@@ -43,16 +42,16 @@ public class PivotSubsystem extends SubsystemBase{
 
     private static ArmPosition lastPivotPosition = ArmPosition.Travel;
 
-    public static PivotSubsystem getInstance(){
-        if(pivotSubsystem == null) {
+    public static PivotSubsystem getInstance() {
+        if (pivotSubsystem == null) {
             pivotSubsystem = new PivotSubsystem();
         }
         return pivotSubsystem;
     }
 
-    private PivotSubsystem(){
-        pivotMaster = new TalonFX(52); //SparkMax(50, MotorType.kBrushless);
-        pivotFollower = new TalonFX(53); //SparkMax(51, MotorType.kBrushless);
+    private PivotSubsystem() {
+        pivotMaster = new TalonFX(52); // SparkMax(50, MotorType.kBrushless);
+        pivotFollower = new TalonFX(53); // SparkMax(51, MotorType.kBrushless);
 
         pivotMaster.setNeutralMode(NeutralModeValue.Brake);
         pivotFollower.setNeutralMode(NeutralModeValue.Brake);
@@ -68,7 +67,7 @@ public class PivotSubsystem extends SubsystemBase{
         System.out.println(pivotEncoder.get());
 
         AlignPosition noPos = AlignPosition.NoPos;
-        
+
         manualSetpoint = getPivotEncoder();
 
         System.out.println(pivotEncoder.get());
@@ -79,7 +78,7 @@ public class PivotSubsystem extends SubsystemBase{
         pidController.setTolerance(0.1);
     }
 
-    private void privSetSpeed(double speed){
+    private void privSetSpeed(double speed) {
         boolean isPositive = speed > 0;
         if (atLimit(isPositive)) {
             speed = 0;
@@ -88,16 +87,17 @@ public class PivotSubsystem extends SubsystemBase{
         pivotMaster.set(speed);
     }
 
-    public void setSetpoint(double setpoint){
+    public void setSetpoint(double setpoint) {
         ArmPosition.setPosition(ArmPosition.Manual);
         lastPivotPosition = ArmPosition.Manual;
         manualSetpoint = MathUtil.clamp(setpoint, Constants.pivotLowerLimit, Constants.pivotUpperLimit);
         setPosition();
     }
 
-    private boolean atLimit(boolean positive){
+    private boolean atLimit(boolean positive) {
         double encoder = getPivotEncoder();
-        return (positive && encoder >= Constants.pivotUpperLimit) || (!positive && encoder <= Constants.pivotLowerLimit);
+        return (positive && encoder >= Constants.pivotUpperLimit)
+                || (!positive && encoder <= Constants.pivotLowerLimit);
     }
 
     public static boolean nearSetpoint() {
@@ -105,7 +105,7 @@ public class PivotSubsystem extends SubsystemBase{
         return Math.abs(encoder - ArmPosition.getPosition().pivot) <= 15;
     }
 
-    public void setPosition(){
+    public void setPosition() {
         if (ArmPosition.getPosition() != lastPivotPosition) {
             pidController.reset(getPivotEncoder());
         }
@@ -125,7 +125,7 @@ public class PivotSubsystem extends SubsystemBase{
         }
 
         if ((!ExtensionSubsystem.atPosition() && isPositive) || ExtensionSubsystem.atPosition()) {
-            
+
             double calculation = MathUtil.clamp(pidController.calculate(getPivotEncoder(), setpoint), -1, 1);
             privSetSpeed(calculation);
             // SmartDashboard.putNumber("PID Output", calculation);
@@ -144,13 +144,13 @@ public class PivotSubsystem extends SubsystemBase{
         return pidController.atSetpoint();
     }
 
-    public void setSpeed(double speed){
+    public void setSpeed(double speed) {
         privSetSpeed(speed);
         ArmPosition.setPosition(ArmPosition.Manual);
         lastPivotPosition = ArmPosition.Manual;
     }
 
-    public static double getPivotEncoder(){
+    public static double getPivotEncoder() {
         return pivotMaster.getPosition().getValueAsDouble();
     }
 
@@ -159,12 +159,12 @@ public class PivotSubsystem extends SubsystemBase{
     }
 
     @Override
-    public void periodic(){
-        //SmartDashboard.putNumber("Pivot Kraken Encoder", getPivotEncoder());
-        //SmartDashboard.putNumber("Pivot Absolute Encoder", pivotEncoder.get());
-        //pidController.setPID(0.3, 0, 0);
+    public void periodic() {
+        SmartDashboard.putNumber("Pivot Kraken Encoder", getPivotEncoder());
+        SmartDashboard.putNumber("Pivot Absolute Encoder", pivotEncoder.get());
+        // pidController.setPID(0.3, 0, 0);
 
-        servo.set(0); 
+        servo.set(0);
     }
 
 }
