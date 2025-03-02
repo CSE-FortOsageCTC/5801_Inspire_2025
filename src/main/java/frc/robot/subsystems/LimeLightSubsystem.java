@@ -1,6 +1,5 @@
 package frc.robot.subsystems;
 
-
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.networktables.NetworkTable;
@@ -10,7 +9,6 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.LimelightHelpers;
-
 
 /**
  * this class retrieves limelight values from the networktable
@@ -25,27 +23,51 @@ public class LimeLightSubsystem extends SubsystemBase {
     private double lastBotPoseTimestamp;
     private static LimeLightSubsystem limelightRight;
     private static LimeLightSubsystem limelightLeft;
+    private static LimeLightSubsystem limelightSky;
+    private static LimeLightSubsystem limelight;
+
     private String limelightString;
 
     public static LimeLightSubsystem getRightInstance() {
         if (limelightRight == null) {
-            limelightRight = new LimeLightSubsystem(false);
+            limelightRight = new LimeLightSubsystem(Constants.limelightRight);
         }
         return limelightRight;
     }
 
     public static LimeLightSubsystem getLeftInstance() {
         if (limelightLeft == null) {
-            limelightLeft = new LimeLightSubsystem(true);
+            limelightLeft = new LimeLightSubsystem(Constants.limelightLeft);
         }
         return limelightLeft;
+    }
+
+    public static LimeLightSubsystem getSkyInstance() {
+        if (limelightSky == null) {
+            limelightSky = new LimeLightSubsystem(Constants.limelightSky);
+        }
+        return limelightSky;
+    }
+
+    public static LimeLightSubsystem getInstance(String limelight) {
+            switch (limelight) {
+                case Constants.limelightLeft:
+                    return getLeftInstance();
+                case Constants.limelightRight:
+                    return getRightInstance();
+                case Constants.limelightSky:
+                    return getSkyInstance();
+                default:
+                    break;
+            }
+        return limelightSky;
     }
 
     /**
      * Constructs Limelight Class
      */
-    private LimeLightSubsystem(boolean isLeft) {
-        limelightString = isLeft? Constants.limelightLeft:Constants.limelightRight;
+    private LimeLightSubsystem(String limelightName) {
+        limelightString = limelightName;
         botPose = new Pose2d();
         table = NetworkTableInstance.getDefault().getTable(limelightString);
         table.getEntry("pipeline").setNumber(0);
@@ -60,23 +82,25 @@ public class LimeLightSubsystem extends SubsystemBase {
         ts1 = table.getEntry("ts1");
         ts2 = table.getEntry("ts2");
 
-        
     }
- 
+
     /**
      * Retrieving the april tag ID value
+     * 
      * @return April tag ID value
      */
-    public int getAprilValue(){
+    public int getAprilValue() {
         tid = table.getEntry("tid");
         return (int) tid.getDouble(0.0);
     }
 
     /**
      * Checks if the April tag is detected
-     * @return <code>true</code> when april tag is detected, <code>false</code> otherwise
+     * 
+     * @return <code>true</code> when april tag is detected, <code>false</code>
+     *         otherwise
      */
-    public boolean hasTag() {                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           
+    public boolean hasTag() {
         tv = table.getEntry("tv");
         return tv.getDouble(0.0) == 1.0;
     }
@@ -117,12 +141,12 @@ public class LimeLightSubsystem extends SubsystemBase {
         ts0 = table.getEntry("ts0");
         return ts0.getDouble(0.0);
     }
-    
+
     public double getSkew1() {
         ts1 = table.getEntry("ts1");
         return ts1.getDouble(0.0);
     }
-    
+
     public double getSkew2() {
         ts2 = table.getEntry("ts2");
         return ts2.getDouble(0.0);
@@ -131,7 +155,7 @@ public class LimeLightSubsystem extends SubsystemBase {
     /**
      * retrieves limelight values and prints them onto the log and smartdashboard
      */
-    public void outputValues(){
+    public void outputValues() {
         table = NetworkTableInstance.getDefault().getTable(limelightString);
         System.out.println(getAprilValue());
         System.out.println(hasTag());
@@ -139,18 +163,17 @@ public class LimeLightSubsystem extends SubsystemBase {
         System.out.println(getY());
         System.out.println(getSkew());
         System.out.println(getArea());
-        
+
     }
-    
 
     /*
-     *  Returns 0 for all values if no Apriltag detected
+     * Returns 0 for all values if no Apriltag detected
      */
     public Pose2d getBotPose() {
         return botPose;
     }
 
-    public void UpdateBotPose(){
+    public void UpdateBotPose() {
         botPoseEntry = table.getEntry("botpose_wpiblue");
         double[] botpose = botPoseEntry.getDoubleArray(new double[7]);
         Pose2d visionPose = new Pose2d(botpose[0], botpose[1], Rotation2d.fromDegrees((botpose[5] + 360) % 360));
@@ -158,13 +181,12 @@ public class LimeLightSubsystem extends SubsystemBase {
         botPose = visionPose;
     }
 
-
-    public double getLastBotPoseTimestamp(){
+    public double getLastBotPoseTimestamp() {
         return this.lastBotPoseTimestamp;
     }
 
     @Override
-    public void periodic(){
+    public void periodic() {
         UpdateBotPose();
     }
 }

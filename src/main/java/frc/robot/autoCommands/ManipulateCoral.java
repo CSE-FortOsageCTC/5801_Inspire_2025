@@ -3,8 +3,7 @@ package frc.robot.autoCommands;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.IntakeSubsystem;
 
-public class ManipulateCoral extends Command{
-    
+public class ManipulateCoral extends Command {
 
     private IntakeSubsystem intakeSubsystem;
 
@@ -29,7 +28,7 @@ public class ManipulateCoral extends Command{
 
     @Override
     public void execute() {
-        if (!intaking){
+        if (!intaking) {
             timer++;
         }
         intakeSubsystem.setIntakeSpeed(speed);
@@ -44,6 +43,5 @@ public class ManipulateCoral extends Command{
     public void end(boolean isFinished) {
         intakeSubsystem.setIntakeSpeed(0);
     }
-
 
 }

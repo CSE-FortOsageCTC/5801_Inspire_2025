@@ -6,8 +6,8 @@ import frc.robot.subsystems.ExtensionSubsystem;
 import frc.robot.subsystems.ManipulatorSubsystem;
 import frc.robot.subsystems.PivotSubsystem;
 
-public class GoToArmPosition extends Command{
-    
+public class GoToArmPosition extends Command {
+
     private ArmPosition position;
 
     private PivotSubsystem pivotSubsystem;
