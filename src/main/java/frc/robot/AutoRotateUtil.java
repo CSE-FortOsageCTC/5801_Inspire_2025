@@ -17,7 +17,7 @@ public class AutoRotateUtil {
 
         this.pidController = new PIDController(0, 0, 0);
 
-        pidController.setTolerance(0.001);
+        pidController.setTolerance(0.1);
         pidController.setSetpoint(0);
         // SmartDashboard.putNumber("kP", 0.01);
         // SmartDashboard.putNumber("kI", 0);

@@ -30,7 +30,6 @@ public class AlignToApril extends Command {
 
     @Override
     public void initialize() {
-        System.out.println("Initialized Align to April Command");
         s_Swerve.alignAprilTag(alignPos, isScoring);
     }
 
@@ -53,7 +52,8 @@ public class AlignToApril extends Command {
 
     @Override
     public void end(boolean isFinished) {
-        System.out.println("Ended Align to April Command");
+        AlignPosition.setIsScoring(true);
+        s_Swerve.teleopDrive(new Translation2d(0, 0), 0, true, false);
         s_Swerve.resetAlignApril();
     }
 

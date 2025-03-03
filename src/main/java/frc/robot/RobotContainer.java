@@ -72,6 +72,13 @@ public class RobotContainer {
   private final JoystickButton operatorRightStickDown = new JoystickButton(operator,
       XboxController.Button.kRightStick.value);
 
+  private final JoystickButton operatorLeftBumper = new JoystickButton(operator, XboxController.Button.kLeftBumper.value);
+  private final JoystickButton operatorRightBumper = new JoystickButton(operator, XboxController.Button.kRightBumper.value);
+  private final POVButton operatorUpDPad = new POVButton(operator, 0);
+  private final POVButton operatorRightDPad = new POVButton(operator, 90);
+  private final POVButton operatorDownDPad = new POVButton(operator, 180);
+  private final POVButton operatorLeftDPad = new POVButton(operator, 270);
+
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
    */
@@ -87,7 +94,7 @@ public class RobotContainer {
 
     // Add options to the chooser
     autoChooser.addRoutine("onePiece", s_choreoSubsystem::onePieceAuto);
-    autoChooser.addRoutine("three piece", s_choreoSubsystem::threePieceAuto);
+    autoChooser.addRoutine("three piece", s_choreoSubsystem::twoPieceIJAuto);
     // autoChooser.addCmd("Example Auto Command", this::exampleAutoCommand);
 
     // Put the auto chooser on the dashboard
@@ -99,20 +106,21 @@ public class RobotContainer {
     manipulatorSubsystem.setDefaultCommand(armDefaultCommand);
     // Initialize Driver Button Functions
     driver_Start_ZeroHeading.onTrue(new InstantCommand(() -> s_Swerve.zeroHeading()));
-    driverLeftDpad.whileTrue(new AlignToApril(AlignPosition.LeftOffset, true));
-    driverRightDpad.whileTrue(new AlignToApril(AlignPosition.RightOffset, true));
-    driverDownDpad.whileTrue(new AlignToApril(AlignPosition.CenterOffset, false));
-    driverUpDpad.whileTrue(new AlignToApril(AlignPosition.CenterOffset, true));
-    driver_A_Function.whileTrue(new IntakeCommand(1));
-    driver_B_Function.whileTrue(new IntakeCommand(-1));
+    driver_X_Function.whileTrue(new AlignToApril(AlignPosition.LeftOffset, true));
+    driver_B_Function.whileTrue(new AlignToApril(AlignPosition.RightOffset, true));
+    driver_Y_Function.whileTrue(new AlignToApril(AlignPosition.CenterOffset, false));
+    driver_A_Function.whileTrue(new AlignToApril(AlignPosition.CenterOffset, true));
+    operatorLeftBumper.whileTrue(new IntakeCommand(1));
+    operatorRightBumper.whileTrue(new IntakeCommand(-1));
 
-    operatorA.onTrue(new InstantCommand(() -> ArmPosition.setPosition(ArmPosition.L1)));
-    operatorX.onTrue(new InstantCommand(() -> ArmPosition.setPosition(ArmPosition.L2)));
-    operatorB.onTrue(new InstantCommand(() -> ArmPosition.setPosition(ArmPosition.L3)));
+    operatorA.onTrue(new InstantCommand(() -> ArmPosition.setPosition(ArmPosition.HumanP)));
+    operatorX.onTrue(new InstantCommand(() -> ArmPosition.setPosition(ArmPosition.L3)));
+    operatorB.onTrue(new InstantCommand(() -> ArmPosition.setPosition(ArmPosition.L2)));
     operatorY.onTrue(new InstantCommand(() -> ArmPosition.setPosition(ArmPosition.L4)));
-    operatorStart.onTrue(new InstantCommand(() -> ArmPosition.setPosition(ArmPosition.Travel)));
-    operatorLeftStickDown.onTrue(new InstantCommand(() -> ArmPosition.setPosition(ArmPosition.StartingConfig)));
-    operatorRightStickDown.onTrue(new InstantCommand(() -> ArmPosition.setPosition(ArmPosition.HumanP)));
+    operatorLeftDPad.onTrue(new InstantCommand(() -> ArmPosition.setPosition(ArmPosition.StartingConfig)));
+    operatorRightDPad.onTrue(new InstantCommand(() -> ArmPosition.setPosition(ArmPosition.L1)));
+    operatorUpDPad.onTrue(new InstantCommand(() -> ArmPosition.setPosition(ArmPosition.HighAlgae)));
+    operatorDownDPad.onTrue(new InstantCommand(() -> ArmPosition.setPosition(ArmPosition.LowAlgae)));
 
     // operatorA.onFalse(new InstantCommand(() ->
     // ArmPosition.setPosition(ArmPosition.Travel)));

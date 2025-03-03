@@ -17,11 +17,6 @@ import frc.lib.util.SwerveModuleConstants;
 public final class Constants {
     public static final double stickDeadband = 0.125;
 
-    public static final double coneLimelightAreaSetpoint = .2;
-    public static final double cubeLimelightAreaSetpoint = 10;
-    public static final int conePipeline = 1;
-    public static final int cubePipeline = 2;
-
     public static final String limelightRight = "limelight-right";
     public static final String limelightLeft = "limelight-left";
     public static final String limelightSky = "limelight-sky";
@@ -35,7 +30,8 @@ public final class Constants {
     public static final double stageHeightMeters = 4; // 2.54
 
     public static final double scoringDx = Units.inchesToMeters(7);
-    public static final double scoringDy = Units.inchesToMeters(17); // might need to change at comp :) og: 16.5
+    public static final double scoringDy = Units.inchesToMeters(18.5); // might need to change at comp :)
+    public static final double coralDy = Units.inchesToMeters(28);
 
     public static final class Swerve {
         public static final int pigeonID = 10;
@@ -204,7 +200,7 @@ public final class Constants {
     public static final double wristLowerLimit = 0;
     public static final double pivotUpperLimit = 0;
     public static final double pivotLowerLimit = -52.3;
-    public static final double pivotExtensionLimit = -38;
+    public static final double pivotExtensionLimit = -35;
     public static final double extensionUpperLimit = 0;
     public static final double extensionLowerLimit = -21.3;
 
@@ -218,10 +214,10 @@ public final class Constants {
         Travel(-1, -.5, -1),
         L1(-32.83642578125, 0.01513671875, 24.7626953125),
         L2(-40.83251953125, 0.015625, 25.65869140625),
-        L3(-46.07421875, -7.7607421875, 27.0693359375),
+        L3(-45.808349609375, -8.310546875, 28.1240234375),
         L4(-49.902099609375, -21.10400390625, 29.25634765625),
-        HighAlgae(-40.0361328125, -10.84033203125, 24.54833984375),
-        // LowAlgae(0, 0, 0),
+        HighAlgae(-39.593017578125, -18.86669921875, 25.26611328125),
+        LowAlgae(-35.692626953125, -4.3701171875, 24.21484375),
         HumanP(-39.17431640625, 0.0048828125, 2.435546875),
         Climb1(0, 0, 0),
         Climb2(0, 0, 0),
