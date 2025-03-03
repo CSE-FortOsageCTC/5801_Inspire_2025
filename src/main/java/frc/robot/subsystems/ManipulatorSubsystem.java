@@ -119,7 +119,7 @@ public class ManipulatorSubsystem extends SubsystemBase {
         return Math.abs(encoder - ArmPosition.getPosition().manipulator) <= 1;
     }
 
-    public boolean atPosition() {
+    public static boolean atPosition() {
         return pidController.atSetpoint();
     }
 

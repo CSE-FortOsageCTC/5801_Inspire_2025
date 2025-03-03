@@ -1,7 +1,12 @@
 package frc.robot.autoCommands;
 
+import java.security.cert.Extension;
+
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.subsystems.ExtensionSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
+import frc.robot.subsystems.ManipulatorSubsystem;
+import frc.robot.subsystems.PivotSubsystem;
 
 public class ManipulateCoral extends Command {
 
@@ -28,15 +33,17 @@ public class ManipulateCoral extends Command {
 
     @Override
     public void execute() {
-        if (!intaking) {
-            timer++;
+        if (PivotSubsystem.nearSetpoint() && ExtensionSubsystem.nearSetpoint() && ManipulatorSubsystem.nearSetpoint()) {
+            if (!intaking) {
+                timer++;
+            }
+            intakeSubsystem.setIntakeSpeed(speed);
         }
-        intakeSubsystem.setIntakeSpeed(speed);
     }
 
     @Override
     public boolean isFinished() {
-        return timer >= 50 || (intakeSubsystem.hasPiece() && intaking);
+        return timer >= 40 || (intakeSubsystem.hasPiece() && intaking);
     }
 
     @Override

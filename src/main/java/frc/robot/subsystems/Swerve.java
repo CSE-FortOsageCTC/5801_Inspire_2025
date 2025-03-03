@@ -119,6 +119,7 @@ public class Swerve extends SubsystemBase {
         // limeLightSwerveEstimator.setVisionMeasurementStdDevs(VecBuilder.fill(0.5,
         // 0.5, Units.degreesToRadians(.5)));
 
+        swerveEstimator.resetPosition(getGyroRot2d(), getModulePositions(), new Pose2d(8.77, 4.05, new Rotation2d()));
     }
 
     public void updatePoseEstimator() {
@@ -408,7 +409,9 @@ public class Swerve extends SubsystemBase {
         } else {
             speedY = 0;
         }
-
+        // Added clamps
+        speedX = MathUtil.clamp(speedX, -0.25, 0.25);
+        speedY = MathUtil.clamp(speedY, -0.25, 0.25);
         return new Translation2d(speedX, speedY);
 
     }
@@ -493,7 +496,7 @@ public class Swerve extends SubsystemBase {
         s_AutoRotateUtil.end();
     }
 
-    public void setLimelightOdometry(String limelightName){
+    public void setLimelightOdometryMT2(String limelightName) {
         boolean doRejectUpdate = false;
 
         LimelightHelpers.SetIMUMode(limelightName, 0);
@@ -515,12 +518,34 @@ public class Swerve extends SubsystemBase {
             doRejectUpdate = true;
         }
         if (!doRejectUpdate) {
+            // Add logic here to check the distance to the april tag (getAprilTag() in the
+            // relevant limelight subsystem, get the position of that id, etc.)
 
-            swerveEstimator.setVisionMeasurementStdDevs(VecBuilder.fill(0.7, 0.7, 0.7));
-            swerveEstimator.addVisionMeasurement(
-                    mt2Right.pose,
-                    mt2Right.timestampSeconds);
+            swerveEstimator.setVisionMeasurementStdDevs(VecBuilder.fill(0.7, 0.7, 9999));
+            swerveEstimator.addVisionMeasurement(mt2Right.pose, mt2Right.timestampSeconds);
         }
+    }
+
+    public void setLimelightOdometryMT1(String limelightName) {
+        boolean doRejectUpdate = false;
+        LimelightHelpers.PoseEstimate mt1 = LimelightHelpers.getBotPoseEstimate_wpiBlue(limelightName);
+        if (Math.abs(gyro.getAngularVelocityZWorld().getValueAsDouble()) > 720) // if our angular velocity is greater
+                                                                                // than 720 degrees per second, ignore
+                                                                                // vision updates
+        {
+            doRejectUpdate = true;
+        }
+        if (mt1 == null || mt1.tagCount == 0) {
+            doRejectUpdate = true;
+        }
+        if (!doRejectUpdate) {
+            // Add logic here to check the distance to the april tag (getAprilTag() in the
+            // relevant limelight subsystem, get the position of that id, etc.)
+
+            swerveEstimator.setVisionMeasurementStdDevs(VecBuilder.fill(0.7, 0.7, 9999));
+            swerveEstimator.addVisionMeasurement(mt1.pose, mt1.timestampSeconds);
+        }
+
     }
 
     @Override
@@ -530,6 +555,8 @@ public class Swerve extends SubsystemBase {
         // SmartDashboard.putNumber("gyro", gyro.getYaw().getValueAsDouble());
 
         updatePoseEstimator();
+
+        AlignPosition currentAlignPosition = AlignPosition.getPosition();
 
         // for(SwerveModule mod : mSwerveMods){
         // // SmartDashboard.putNumber("Mod " + mod.moduleNumber + " CANcoder",
@@ -547,9 +574,13 @@ public class Swerve extends SubsystemBase {
         SmartDashboard.putNumber("Odometry X", odometryX);
         SmartDashboard.putNumber("Odometry Y", odometryY);
 
-        setLimelightOdometry(Constants.limelightLeft);
-        setLimelightOdometry(Constants.limelightRight);
-        setLimelightOdometry(Constants.limelightSky);
+        if (AlignPosition.getIsScoring()) {
+            setLimelightOdometryMT2(Constants.limelightLeft);
+            setLimelightOdometryMT2(Constants.limelightRight);
+        } else {
+            setLimelightOdometryMT1(Constants.limelightSky);
+        }
+
     }
 
     public class DriveParams {

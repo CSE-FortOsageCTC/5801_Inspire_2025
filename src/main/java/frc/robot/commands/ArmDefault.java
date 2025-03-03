@@ -6,6 +6,7 @@ import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.Constants;
 import frc.robot.Constants.ArmPosition;
 import frc.robot.subsystems.ExtensionSubsystem;
 import frc.robot.subsystems.ManipulatorSubsystem;
@@ -44,10 +45,10 @@ public class ArmDefault extends Command {
             isManualElevator = true;
         }
 
-        if (driver.getRawButton(XboxController.Button.kX.value)) {
+        if (operator.getRawAxis(XboxController.Axis.kRightX.value) > Constants.stickDeadband) {
             manipulatorSubsystem.setSetpoint(manipulatorSubsystem.getManualSetpoint() - .1);
             isManualWrist = true;
-        } else if (driver.getRawButton(XboxController.Button.kY.value)) {
+        } else if (operator.getRawAxis(XboxController.Axis.kRightX.value) < -Constants.stickDeadband) {
             manipulatorSubsystem.setSetpoint(manipulatorSubsystem.getManualSetpoint() + .1);
             isManualWrist = true;
         }
@@ -57,10 +58,10 @@ public class ArmDefault extends Command {
                     + ", " + manipulatorSubsystem.getWristEncoder() + ")");
         }
 
-        if (operator.getRawButton(XboxController.Button.kLeftBumper.value)) {
+        if (operator.getRawAxis(XboxController.Axis.kLeftY.value) < -Constants.stickDeadband) {
             pivotSubsystem.setSetpoint(pivotSubsystem.getManualSetpoint() - 0.2);
             isManualPivot = true;
-        } else if (operator.getRawButton(XboxController.Button.kRightBumper.value)) {
+        } else if (operator.getRawAxis(XboxController.Axis.kLeftY.value) > Constants.stickDeadband) {
             pivotSubsystem.setSetpoint(pivotSubsystem.getManualSetpoint() + 0.2);
             isManualPivot = true;
         }

@@ -28,10 +28,12 @@ public enum AlignPosition {
     private static double tagY;
     private static double distance;
     private static double theta;
-    private static AprilTagFieldLayout fieldLayout = AprilTagFieldLayout.loadField(AprilTagFields.k2025ReefscapeWelded);
+    public static AprilTagFieldLayout fieldLayout = AprilTagFieldLayout.loadField(AprilTagFields.k2025ReefscapeWelded);
     // private static LimeLightSubsystem s_LimeLightSubsystem =
     // LimeLightSubsystem.getRightInstance();
     private static Swerve s_Swerve = Swerve.getInstance();
+
+    private static boolean scoring = true;
 
     public static AlignPosition getPosition() {
 
@@ -59,6 +61,7 @@ public enum AlignPosition {
 
         s_Swerve.resetAlignApril();
 
+        scoring = isScoring;
         // if (tagID == -1) {
         // alignOffset = s_Swerve.getEstimatedPosition();
         // return;
@@ -87,7 +90,7 @@ public enum AlignPosition {
                 correctedPos();
                 break;
             case CenterOffset:
-                theta = Math.atan2(Constants.scoringDy, 0) + rotationRadians;
+                theta = Math.atan2(isScoring? Constants.scoringDy:Constants.coralDy, 0) + rotationRadians;
                 tagX = isScoring ? getNearestScoringPos().getX() : getNearestHumanPos().getX();
                 tagY = isScoring ? getNearestScoringPos().getY() : getNearestHumanPos().getY();
                 correctedPos();
@@ -147,6 +150,14 @@ public enum AlignPosition {
             }
         }
         return closestPose;
+    }
+
+    public static boolean getIsScoring() {
+        return scoring;
+    }
+
+    public static void setIsScoring(boolean isScoring) {
+        scoring = isScoring;
     }
 
     AlignPosition() {

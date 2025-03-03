@@ -53,7 +53,7 @@ public class IntakeSubsystem extends SubsystemBase {
     }
 
     public boolean hasPiece() {
-        return canandcolor.getProximity() < 0.07;
+        return canandcolor.getProximity() == 0? false:canandcolor.getProximity() < 0.07;
     }
 
     public Double getHSVHue() {
