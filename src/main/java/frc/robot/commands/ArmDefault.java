@@ -66,9 +66,11 @@ public class ArmDefault extends Command {
             isManualPivot = true;
         }
 
-        extensionSubsystem.setPosition();
+        if (PivotSubsystem.getStartingDelay() >= 50) {
+            pivotSubsystem.setPosition();
+        }
 
-        pivotSubsystem.setPosition();
+        // extensionSubsystem.setPosition();
 
         manipulatorSubsystem.setPosition();
 

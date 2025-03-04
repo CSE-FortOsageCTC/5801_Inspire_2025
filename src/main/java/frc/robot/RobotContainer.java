@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import frc.robot.Constants.ArmPosition;
 import frc.robot.commands.AlignToApril;
 import frc.robot.commands.ArmDefault;
+import frc.robot.commands.ClimbCommand;
 import frc.robot.commands.DefaultTeleop;
 import frc.robot.commands.IntakeCommand;
 import frc.robot.subsystems.ChoreoSubsystem;
@@ -61,6 +62,7 @@ public class RobotContainer {
   private final POVButton driverRightDpad = new POVButton(driver, 90);
   private final POVButton driverUpDpad = new POVButton(driver, 0);
   private final POVButton driverDownDpad = new POVButton(driver, 180);
+  private final JoystickButton driverStartButton = new JoystickButton(driver, XboxController.Button.kStart.value);
 
   private final JoystickButton operatorX = new JoystickButton(operator, XboxController.Button.kX.value);
   private final JoystickButton operatorY = new JoystickButton(operator, XboxController.Button.kY.value);
@@ -110,9 +112,11 @@ public class RobotContainer {
     driver_B_Function.whileTrue(new AlignToApril(AlignPosition.RightOffset, true));
     driver_Y_Function.whileTrue(new AlignToApril(AlignPosition.CenterOffset, false));
     driver_A_Function.whileTrue(new AlignToApril(AlignPosition.CenterOffset, true));
+
+    driverStartButton.onTrue(new ClimbCommand(driver));
+    
     operatorLeftBumper.whileTrue(new IntakeCommand(1));
     operatorRightBumper.whileTrue(new IntakeCommand(-1));
-
     operatorA.onTrue(new InstantCommand(() -> ArmPosition.setPosition(ArmPosition.HumanP)));
     operatorX.onTrue(new InstantCommand(() -> ArmPosition.setPosition(ArmPosition.L3)));
     operatorB.onTrue(new InstantCommand(() -> ArmPosition.setPosition(ArmPosition.L2)));
@@ -121,6 +125,8 @@ public class RobotContainer {
     operatorRightDPad.onTrue(new InstantCommand(() -> ArmPosition.setPosition(ArmPosition.L1)));
     operatorUpDPad.onTrue(new InstantCommand(() -> ArmPosition.setPosition(ArmPosition.HighAlgae)));
     operatorDownDPad.onTrue(new InstantCommand(() -> ArmPosition.setPosition(ArmPosition.LowAlgae)));
+
+
 
     // operatorA.onFalse(new InstantCommand(() ->
     // ArmPosition.setPosition(ArmPosition.Travel)));

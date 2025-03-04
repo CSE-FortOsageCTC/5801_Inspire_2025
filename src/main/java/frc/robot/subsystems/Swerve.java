@@ -61,6 +61,8 @@ public class Swerve extends SubsystemBase {
     public StructArrayPublisher<Pose3d> arrayPublisher;
     public Pose3d poseA = new Pose3d();
     public Pose3d poseB = new Pose3d();
+
+    public boolean isRed;
     // public ProfiledPIDController translationXController = new
     // ProfiledPIDController(10, 0, 0, new TrapezoidProfile.Constraints(1, .5));
     // public ProfiledPIDController translationYController = new
@@ -87,7 +89,9 @@ public class Swerve extends SubsystemBase {
         pieceSeenDebouncer = new Debouncer(.1, Debouncer.DebounceType.kBoth);
         gyro = new Pigeon2(Constants.Swerve.pigeonID);
         gyro.getConfigurator().apply(new Pigeon2Configuration());
+        isRed = DriverStation.getAlliance().get().equals(Alliance.Red);
         gyro.reset();
+        //gyro.setYaw(isRed? 180:0);
         f_Limelight = LimeLightSubsystem.getRightInstance();
         s_AutoRotateUtil = new AutoRotateUtil(0);
         field = new Field2d();
@@ -410,8 +414,8 @@ public class Swerve extends SubsystemBase {
             speedY = 0;
         }
         // Added clamps
-        speedX = MathUtil.clamp(speedX, -0.25, 0.25);
-        speedY = MathUtil.clamp(speedY, -0.25, 0.25);
+        speedX = MathUtil.clamp(speedX, -0.15, 0.15);
+        speedY = MathUtil.clamp(speedY, -0.15, 0.15);
         return new Translation2d(speedX, speedY);
 
     }
@@ -497,11 +501,12 @@ public class Swerve extends SubsystemBase {
     }
 
     public void setLimelightOdometryMT2(String limelightName) {
+        double robotAngle = swerveEstimator.getEstimatedPosition().getRotation().getDegrees();
         boolean doRejectUpdate = false;
 
         LimelightHelpers.SetIMUMode(limelightName, 0);
         LimelightHelpers.SetRobotOrientation(limelightName,
-                swerveEstimator.getEstimatedPosition().getRotation().getDegrees(), 0, 0, 0, 0, 0);
+                    isRed ? -robotAngle : robotAngle , 0, 0, 0, 0, 0);
 
         // LimelightHelpers.SetRobotOrientation("limelight-front",
         // swerveEstimator.getEstimatedPosition().getRotation().getDegrees(), 0, 0, 0,

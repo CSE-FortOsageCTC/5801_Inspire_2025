@@ -5,17 +5,21 @@ import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.revrobotics.spark.SparkMax;
+import com.revrobotics.spark.config.SparkMaxConfig;
 
 import frc.robot.AlignPosition;
 import frc.robot.Constants;
 import frc.robot.Constants.ArmPosition;
 
+import com.revrobotics.spark.SparkBase.PersistMode;
+import com.revrobotics.spark.SparkBase.ResetMode;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.Servo;
@@ -40,7 +44,14 @@ public class PivotSubsystem extends SubsystemBase {
 
     private double manualSetpoint;
 
+    private boolean isClimbing;
+
+    private static int startingDelay = 0;
+
     private static ArmPosition lastPivotPosition = ArmPosition.Travel;
+
+    private SparkMax climbingClamp;
+    private SparkMaxConfig config;
 
     public static PivotSubsystem getInstance() {
         if (pivotSubsystem == null) {
@@ -68,14 +79,30 @@ public class PivotSubsystem extends SubsystemBase {
 
         AlignPosition noPos = AlignPosition.NoPos;
 
+        climbingClamp = new SparkMax(20, MotorType.kBrushless);
+        config = new SparkMaxConfig();
+        config.smartCurrentLimit(20);
+
+        climbingClamp.configure(config, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
+
         manualSetpoint = getPivotEncoder();
 
         System.out.println(pivotEncoder.get());
+
+        isClimbing = false;
 
         pivotMaster.setPosition(pivotEncoder.get() * -53.8);
 
         pidController = new ProfiledPIDController(0.2, 0, 0, new TrapezoidProfile.Constraints(150, 100));
         pidController.setTolerance(0.1);
+    }
+
+    public static void resetStartDelay() {
+        startingDelay = 0;
+    }
+
+    public static int getStartingDelay() {
+        return startingDelay;
     }
 
     private void privSetSpeed(double speed) {
@@ -158,13 +185,26 @@ public class PivotSubsystem extends SubsystemBase {
         return lastPivotPosition;
     }
 
+    public void setIsClimbing(){
+        isClimbing = true;
+    }
+
+    public void setClimbingClampSpeed(double speed){
+        climbingClamp.set(speed);
+    }
+
     @Override
     public void periodic() {
         SmartDashboard.putNumber("Pivot Kraken Encoder", getPivotEncoder());
         SmartDashboard.putNumber("Pivot Absolute Encoder", pivotEncoder.get());
         // pidController.setPID(0.3, 0, 0);
+        if (DriverStation.isDisabled()) {
+            resetStartDelay();
+        }
+        if (startingDelay < 50) {
+            startingDelay++;
+        }
 
-        servo.set(0);
+        servo.set(0);//isClimbing ? 1 : 0);
     }
-
 }

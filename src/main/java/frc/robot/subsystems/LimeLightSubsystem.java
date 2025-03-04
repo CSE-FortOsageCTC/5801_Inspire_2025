@@ -31,6 +31,8 @@ public class LimeLightSubsystem extends SubsystemBase {
     public static LimeLightSubsystem getRightInstance() {
         if (limelightRight == null) {
             limelightRight = new LimeLightSubsystem(Constants.limelightRight);
+
+            LimelightHelpers.setCameraPose_RobotSpace(Constants.limelightRight, -.003175, .28575, 0.2159, 0, 0, 172);
         }
         return limelightRight;
     }
@@ -38,6 +40,8 @@ public class LimeLightSubsystem extends SubsystemBase {
     public static LimeLightSubsystem getLeftInstance() {
         if (limelightLeft == null) {
             limelightLeft = new LimeLightSubsystem(Constants.limelightLeft);
+            LimelightHelpers.setCameraPose_RobotSpace(Constants.limelightLeft, 0, -0.2921, 0.2159, 0, 0, -171);
+
         }
         return limelightLeft;
     }
@@ -45,6 +49,8 @@ public class LimeLightSubsystem extends SubsystemBase {
     public static LimeLightSubsystem getSkyInstance() {
         if (limelightSky == null) {
             limelightSky = new LimeLightSubsystem(Constants.limelightSky);
+            LimelightHelpers.setCameraPose_RobotSpace(Constants.limelightSky, 0.2286, 0.19685, 0.2794, 180, 50, -1);
+
         }
         return limelightSky;
     }
