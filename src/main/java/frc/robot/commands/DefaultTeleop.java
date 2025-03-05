@@ -57,9 +57,12 @@ public class DefaultTeleop extends Command {
     @Override
     public void execute() {
         Alliance alliance = DriverStation.getAlliance().get();
-        double yAxis = alliance.equals(Alliance.Red) ? driver.getRawAxis(translationSup)
-                : -driver.getRawAxis(translationSup);
-        double xAxis = alliance.equals(Alliance.Red) ? driver.getRawAxis(strafeSup) : -driver.getRawAxis(strafeSup);
+        // double yAxis = alliance.equals(Alliance.Red) ? driver.getRawAxis(translationSup)
+        //         : -driver.getRawAxis(translationSup);
+        double yAxis = -driver.getRawAxis(translationSup);
+        // double xAxis = alliance.equals(Alliance.Red) ? driver.getRawAxis(strafeSup) : -driver.getRawAxis(strafeSup);
+        double xAxis = -driver.getRawAxis(strafeSup);
+
         double rotationAxis = driver.getRawAxis(rotationSup);
         // SmartDashboard.putString("Teleop Alignment", alignPose == null ? "" :
         // alignPose.toString());

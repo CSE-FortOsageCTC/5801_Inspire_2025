@@ -2,6 +2,8 @@ package frc.robot.subsystems;
 
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
+import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
+import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
@@ -41,6 +43,16 @@ public class ManipulatorSubsystem extends SubsystemBase {
         intakeWrist.setNeutralMode(NeutralModeValue.Brake);
 
         intakeWrist.setPosition(0);
+        
+        // TalonFXConfiguration wristConfig = new TalonFXConfiguration();
+        // CurrentLimitsConfigs currentLimitsConfigs = new CurrentLimitsConfigs();
+
+        // currentLimitsConfigs.withStatorCurrentLimit(20);
+        // currentLimitsConfigs.withStatorCurrentLimitEnable(true);
+
+        // wristConfig.withCurrentLimits(currentLimitsConfigs);
+
+        // intakeWrist.getConfigurator().apply(wristConfig);
 
         extensionSubsystem = ExtensionSubsystem.getInstance();
 
@@ -62,7 +74,7 @@ public class ManipulatorSubsystem extends SubsystemBase {
         manualSetpoint = MathUtil.clamp(setpoint, Constants.wristLowerLimit,
                 ExtensionSubsystem.isExtended() ? Constants.wristUpperLimitExtended
                         : Constants.wristUpperLimitRetracted);
-        setPosition();
+        //setPosition();
     }
 
     private void privSetSpeed(double speed) {

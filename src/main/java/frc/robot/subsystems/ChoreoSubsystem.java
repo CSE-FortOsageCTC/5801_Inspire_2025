@@ -55,14 +55,14 @@ public class ChoreoSubsystem extends SubsystemBase {
                 this::getPose,
                 this::setPose,
                 this::autoDrive,
-                getFlipped(),
+                isRed(),
                 s_Swerve);
 
         // autoFactory.bind("hi", new InstantCommand(() -> System.out.println("this is
         // the bind")));
     }
 
-    private boolean getFlipped() {
+    private boolean isRed() {
         Optional<DriverStation.Alliance> alliance = DriverStation.getAlliance();
         System.out.println(alliance);
         return alliance.isPresent() && alliance.get().equals(Alliance.Red);
@@ -125,7 +125,7 @@ public class ChoreoSubsystem extends SubsystemBase {
         routine.active().onTrue(
                 Commands.sequence(
                         // traj_startToIJ.resetOdometry(), //rotateBy(180);
-                        new InstantCommand(() -> s_Swerve.setHeading(traj_startToIJ.getInitialPose().get().getRotation())),
+                        new InstantCommand(() -> s_Swerve.setHeading(Rotation2d.fromDegrees(0))),//traj_startToIJ.getRawTrajectory().getInitialPose(isRed()).get().getRotation())),
                         traj_startToIJ.cmd(),
                         new InstantCommand(() -> ArmPosition.setPosition(ArmPosition.L4)),
                         new AlignToApril(AlignPosition.RightOffset, true),

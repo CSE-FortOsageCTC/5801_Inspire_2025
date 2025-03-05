@@ -1,5 +1,7 @@
 package frc.robot.subsystems;
 
+import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
+import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
@@ -47,10 +49,22 @@ public class ExtensionSubsystem extends SubsystemBase {
 
         extensionFollower.setControl(new Follower(extensionMaster.getDeviceID(), true));
         ;
+        
+        // TalonFXConfiguration extensionConfig = new TalonFXConfiguration();
+        // CurrentLimitsConfigs currentLimitsConfigs = new CurrentLimitsConfigs();
+
+        // currentLimitsConfigs.withStatorCurrentLimit(20);
+        // currentLimitsConfigs.withStatorCurrentLimitEnable(true);
+
+        // extensionConfig.withCurrentLimits(currentLimitsConfigs);
+
+        // extensionMaster.getConfigurator().apply(extensionConfig);
+        // extensionFollower.getConfigurator().apply(extensionConfig);
+
 
         manualSetpoint = getExtensionEncoder();
 
-        pidController = new ProfiledPIDController(0.25, 0, 0, new TrapezoidProfile.Constraints(200, 100));
+        pidController = new ProfiledPIDController(0.25, 0, 0, new TrapezoidProfile.Constraints(200, 75));
         pidController.setTolerance(0.1);
     }
 
@@ -111,6 +125,7 @@ public class ExtensionSubsystem extends SubsystemBase {
           // speed = 0.05;
           // }
 
+        //System.out.println("extension speed: " + speed);
         extensionMaster.set(speed);
     }
 

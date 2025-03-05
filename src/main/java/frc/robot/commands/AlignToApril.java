@@ -3,6 +3,8 @@ package frc.robot.commands;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.AlignPosition;
 import frc.robot.Constants;
@@ -18,11 +20,15 @@ public class AlignToApril extends Command {
     private Translation2d translation;
     private double rotation;
 
+    private boolean isRed;
+
     public AlignToApril(AlignPosition alignPos, boolean isScoring) {
 
         this.isScoring = isScoring;
         this.alignPos = alignPos;
         s_Swerve = Swerve.getInstance();
+
+        isRed = DriverStation.getAlliance().get().equals(Alliance.Red);
 
         addRequirements(s_Swerve);
 
@@ -36,12 +42,12 @@ public class AlignToApril extends Command {
     @Override
     public void execute() {
         Rotation2d rotationTag = AlignPosition.getAlignOffset().getRotation();
-        translation = s_Swerve.translateToApril().times(Constants.Swerve.maxSpeed);
+        translation = s_Swerve.translateToApril().times(isRed ? -Constants.Swerve.maxSpeed : Constants.Swerve.maxSpeed);
         if (!isScoring) {
             rotationTag = rotationTag.rotateBy(Rotation2d.fromDegrees(180));
         }
         rotation = s_Swerve.rotateToApril(rotationTag.getDegrees()) * Constants.Swerve.maxAngularVelocity;
-        s_Swerve.teleopDrive(translation, rotation, true, false);
+        s_Swerve.teleopDrive(translation, rotation, true, false); //TODO: Change to regular drive command
 
     }
 

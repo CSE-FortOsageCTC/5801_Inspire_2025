@@ -8,6 +8,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 //import frc.robot.subsystems.LimeLightSubsystem;
 import frc.robot.subsystems.Swerve;
@@ -32,6 +33,8 @@ public enum AlignPosition {
     // private static LimeLightSubsystem s_LimeLightSubsystem =
     // LimeLightSubsystem.getRightInstance();
     private static Swerve s_Swerve = Swerve.getInstance();
+
+    private static boolean isRed = DriverStation.getAlliance().get().equals(Alliance.Red);
 
     private static boolean scoring = true;
 
