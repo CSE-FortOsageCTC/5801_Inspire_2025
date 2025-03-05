@@ -1,5 +1,7 @@
 package frc.robot.subsystems;
 
+import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
+import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.ControlRequest;
 import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.hardware.TalonFX;
@@ -64,6 +66,17 @@ public class PivotSubsystem extends SubsystemBase {
         pivotMaster = new TalonFX(52); // SparkMax(50, MotorType.kBrushless);
         pivotFollower = new TalonFX(53); // SparkMax(51, MotorType.kBrushless);
 
+        TalonFXConfiguration pivotConfig = new TalonFXConfiguration();
+        CurrentLimitsConfigs currentLimitsConfigs = new CurrentLimitsConfigs();
+
+        // currentLimitsConfigs.withSupplyCurrentLimit(120);
+        // currentLimitsConfigs.withSupplyCurrentLimitEnable(true);
+
+        pivotConfig.withCurrentLimits(currentLimitsConfigs);
+
+        // pivotMaster.getConfigurator().apply(pivotConfig);
+        // pivotFollower.getConfigurator().apply(pivotConfig);
+
         pivotMaster.setNeutralMode(NeutralModeValue.Brake);
         pivotFollower.setNeutralMode(NeutralModeValue.Brake);
 
@@ -77,7 +90,7 @@ public class PivotSubsystem extends SubsystemBase {
 
         System.out.println(pivotEncoder.get());
 
-        AlignPosition noPos = AlignPosition.NoPos;
+        AlignPosition noPos = AlignPosition.NoPos; //Do not remove! The robot will break.
 
         climbingClamp = new SparkMax(20, MotorType.kBrushless);
         config = new SparkMaxConfig();
@@ -104,6 +117,9 @@ public class PivotSubsystem extends SubsystemBase {
     public static int getStartingDelay() {
         return startingDelay;
     }
+    public static double getServo(){
+        return servo.get();
+    }
 
     private void privSetSpeed(double speed) {
         boolean isPositive = speed > 0;
@@ -118,7 +134,7 @@ public class PivotSubsystem extends SubsystemBase {
         ArmPosition.setPosition(ArmPosition.Manual);
         lastPivotPosition = ArmPosition.Manual;
         manualSetpoint = MathUtil.clamp(setpoint, Constants.pivotLowerLimit, Constants.pivotUpperLimit);
-        setPosition();
+        //setPosition();
     }
 
     private boolean atLimit(boolean positive) {
@@ -201,7 +217,7 @@ public class PivotSubsystem extends SubsystemBase {
         if (DriverStation.isDisabled()) {
             resetStartDelay();
         }
-        if (startingDelay < 50) {
+        if (startingDelay < 250) {
             startingDelay++;
         }
 

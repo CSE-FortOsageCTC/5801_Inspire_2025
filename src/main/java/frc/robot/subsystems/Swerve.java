@@ -2,7 +2,9 @@ package frc.robot.subsystems;
 
 import java.util.List;
 
+import com.ctre.phoenix6.configs.MountPoseConfigs;
 import com.ctre.phoenix6.configs.Pigeon2Configuration;
+import com.ctre.phoenix6.configs.Pigeon2Configurator;
 import com.ctre.phoenix6.hardware.Pigeon2;
 
 import choreo.trajectory.SwerveSample;
@@ -86,11 +88,15 @@ public class Swerve extends SubsystemBase {
     }
 
     private Swerve() {
+        isRed = DriverStation.getAlliance().get().equals(Alliance.Red);
         pieceSeenDebouncer = new Debouncer(.1, Debouncer.DebounceType.kBoth);
         gyro = new Pigeon2(Constants.Swerve.pigeonID);
-        gyro.getConfigurator().apply(new Pigeon2Configuration());
-        isRed = DriverStation.getAlliance().get().equals(Alliance.Red);
-        gyro.reset();
+
+        Pigeon2Configuration configuration = new Pigeon2Configuration();
+        // configuration.withMountPose(new MountPoseConfigs().withMountPoseYaw(isRed? 180:0));
+        // gyro.getConfigurator().apply(configuration);
+
+        //gyro.reset();
         //gyro.setYaw(isRed? 180:0);
         f_Limelight = LimeLightSubsystem.getRightInstance();
         s_AutoRotateUtil = new AutoRotateUtil(0);
@@ -132,7 +138,7 @@ public class Swerve extends SubsystemBase {
 
         // }
 
-        swerveEstimator.updateWithTime(Timer.getFPGATimestamp(), getGyroRot2d(), getModPos);
+        swerveEstimator.updateWithTime(Timer.getFPGATimestamp(), getGyroRot2d().rotateBy(Rotation2d.fromDegrees(isRed ? 180 : 0)), getModPos);
         // limeLightSwerveEstimator.updateWithTime(Timer.getFPGATimestamp(),
         // getGyroYaw(), getModPos);
     }
@@ -193,7 +199,7 @@ public class Swerve extends SubsystemBase {
         }
     }
 
-    private void drive(Translation2d translation, double rotation, boolean fieldRelative, boolean isOpenLoop) {
+    public void drive(Translation2d translation, double rotation, boolean fieldRelative, boolean isOpenLoop) {
         SwerveModuleState[] swerveModuleStates = Constants.Swerve.swerveKinematics.toSwerveModuleStates(
                 fieldRelative ? ChassisSpeeds.fromFieldRelativeSpeeds(
                         translation.getX(),
@@ -414,8 +420,8 @@ public class Swerve extends SubsystemBase {
             speedY = 0;
         }
         // Added clamps
-        speedX = MathUtil.clamp(speedX, -0.15, 0.15);
-        speedY = MathUtil.clamp(speedY, -0.15, 0.15);
+        speedX = MathUtil.clamp(speedX, -0.17, 0.17);
+        speedY = MathUtil.clamp(speedY, -0.17, 0.17);
         return new Translation2d(speedX, speedY);
 
     }
@@ -506,7 +512,7 @@ public class Swerve extends SubsystemBase {
 
         LimelightHelpers.SetIMUMode(limelightName, 0);
         LimelightHelpers.SetRobotOrientation(limelightName,
-                    isRed ? -robotAngle : robotAngle , 0, 0, 0, 0, 0);
+                    robotAngle , 0, 0, 0, 0, 0);
 
         // LimelightHelpers.SetRobotOrientation("limelight-front",
         // swerveEstimator.getEstimatedPosition().getRotation().getDegrees(), 0, 0, 0,

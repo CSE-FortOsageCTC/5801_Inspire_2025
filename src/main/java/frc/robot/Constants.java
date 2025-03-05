@@ -31,7 +31,7 @@ public final class Constants {
 
     public static final double scoringDx = Units.inchesToMeters(7);
     public static final double scoringDy = Units.inchesToMeters(18.5); // might need to change at comp :)
-    public static final double coralDy = Units.inchesToMeters(28);
+    public static final double coralDy = Units.inchesToMeters(27);
 
     public static final class Swerve {
         public static final int pigeonID = 10;

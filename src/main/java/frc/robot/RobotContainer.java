@@ -20,6 +20,7 @@ import frc.robot.subsystems.ChoreoSubsystem;
 import frc.robot.subsystems.ExtensionSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.LEDSubsystem;
+import frc.robot.subsystems.LimeLightSubsystem;
 import frc.robot.subsystems.ManipulatorSubsystem;
 import frc.robot.subsystems.Swerve;
 
@@ -36,6 +37,9 @@ public class RobotContainer {
   // The robot's subsystems and commands are defined here...
   private Swerve s_Swerve;
   private ChoreoSubsystem s_choreoSubsystem;
+  private LimeLightSubsystem limelightLeft;
+  private LimeLightSubsystem limelightSky;
+  private LimeLightSubsystem limelightRight;
   private final ExtensionSubsystem elevatorSubsystem = ExtensionSubsystem.getInstance();
   private final ManipulatorSubsystem manipulatorSubsystem = ManipulatorSubsystem.getInstance();
   private final IntakeSubsystem intakeSubsystem = IntakeSubsystem.getInstance();
@@ -87,6 +91,9 @@ public class RobotContainer {
   public RobotContainer() {
     s_Swerve = Swerve.getInstance();
     s_choreoSubsystem = ChoreoSubsystem.getInstance();
+    limelightLeft = LimeLightSubsystem.getInstance(Constants.limelightLeft);
+    limelightSky = LimeLightSubsystem.getInstance(Constants.limelightSky);
+    limelightRight = LimeLightSubsystem.getInstance(Constants.limelightRight);
 
     // Configure the trigger bindings
     configureBindings();
@@ -96,7 +103,7 @@ public class RobotContainer {
 
     // Add options to the chooser
     autoChooser.addRoutine("onePiece", s_choreoSubsystem::onePieceAuto);
-    autoChooser.addRoutine("three piece", s_choreoSubsystem::twoPieceIJAuto);
+    autoChooser.addRoutine("two piece ij", s_choreoSubsystem::twoPieceIJAuto);
     // autoChooser.addCmd("Example Auto Command", this::exampleAutoCommand);
 
     // Put the auto chooser on the dashboard
@@ -114,7 +121,7 @@ public class RobotContainer {
     driver_A_Function.whileTrue(new AlignToApril(AlignPosition.CenterOffset, true));
 
     driverStartButton.onTrue(new ClimbCommand(driver));
-    
+
     operatorLeftBumper.whileTrue(new IntakeCommand(1));
     operatorRightBumper.whileTrue(new IntakeCommand(-1));
     operatorA.onTrue(new InstantCommand(() -> ArmPosition.setPosition(ArmPosition.HumanP)));

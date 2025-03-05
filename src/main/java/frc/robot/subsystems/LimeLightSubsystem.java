@@ -5,6 +5,9 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
@@ -25,6 +28,7 @@ public class LimeLightSubsystem extends SubsystemBase {
     private static LimeLightSubsystem limelightLeft;
     private static LimeLightSubsystem limelightSky;
     private static LimeLightSubsystem limelight;
+    private boolean isRed;
 
     private String limelightString;
 
@@ -32,7 +36,7 @@ public class LimeLightSubsystem extends SubsystemBase {
         if (limelightRight == null) {
             limelightRight = new LimeLightSubsystem(Constants.limelightRight);
 
-            LimelightHelpers.setCameraPose_RobotSpace(Constants.limelightRight, -.003175, .28575, 0.2159, 0, 0, 172);
+            //setCamera(Constants.limelightRight, -.003175, .28575, 0.2159, 0, 0, 172);
         }
         return limelightRight;
     }
@@ -40,7 +44,7 @@ public class LimeLightSubsystem extends SubsystemBase {
     public static LimeLightSubsystem getLeftInstance() {
         if (limelightLeft == null) {
             limelightLeft = new LimeLightSubsystem(Constants.limelightLeft);
-            LimelightHelpers.setCameraPose_RobotSpace(Constants.limelightLeft, 0, -0.2921, 0.2159, 0, 0, -171);
+            //setCamera(Constants.limelightLeft, 0, -0.2921, 0.2159, 0, 0, -171);
 
         }
         return limelightLeft;
@@ -49,7 +53,7 @@ public class LimeLightSubsystem extends SubsystemBase {
     public static LimeLightSubsystem getSkyInstance() {
         if (limelightSky == null) {
             limelightSky = new LimeLightSubsystem(Constants.limelightSky);
-            LimelightHelpers.setCameraPose_RobotSpace(Constants.limelightSky, 0.2286, 0.19685, 0.2794, 180, 50, -1);
+            //setCamera(Constants.limelightSky, 0.2286, 0.19685, 0.2794, 180, 50, -1);
 
         }
         return limelightSky;
@@ -73,6 +77,8 @@ public class LimeLightSubsystem extends SubsystemBase {
      * Constructs Limelight Class
      */
     private LimeLightSubsystem(String limelightName) {
+        isRed = DriverStation.getAlliance().get().equals(Alliance.Red);
+        SmartDashboard.putBoolean("isRed?", isRed);
         limelightString = limelightName;
         botPose = new Pose2d();
         table = NetworkTableInstance.getDefault().getTable(limelightString);
@@ -89,6 +95,26 @@ public class LimeLightSubsystem extends SubsystemBase {
         ts2 = table.getEntry("ts2");
 
     }
+
+    // public static void setCamera(String name, double forward, double side, double up, double roll, double pitch, double yaw){
+        
+    //     boolean isRed = DriverStation.getAlliance().get().equals(Alliance.Red);
+
+    //     if (isRed){
+    //         forward = -forward;
+    //         side = -side;
+    //         pitch = -pitch;
+    //         yaw += 180;
+    //         if (yaw > 180) {
+    //             yaw -= 360;
+    //         }
+    //         if (yaw < -180) {
+    //             yaw += 360;
+    //         }
+    //     }
+        
+    //     LimelightHelpers.setCameraPose_RobotSpace(name, forward, side, up, roll, pitch, yaw);
+    // }
 
     /**
      * Retrieving the april tag ID value
