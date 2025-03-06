@@ -104,6 +104,7 @@ public class RobotContainer {
     // Add options to the chooser
     autoChooser.addRoutine("onePiece", s_choreoSubsystem::onePieceAuto);
     autoChooser.addRoutine("two piece ij", s_choreoSubsystem::twoPieceIJAuto);
+    autoChooser.addRoutine("two piece ef", s_choreoSubsystem::twoPieceEFAuto);
     // autoChooser.addCmd("Example Auto Command", this::exampleAutoCommand);
 
     // Put the auto chooser on the dashboard

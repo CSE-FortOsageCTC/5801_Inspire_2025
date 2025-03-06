@@ -96,7 +96,7 @@ public class Swerve extends SubsystemBase {
         // configuration.withMountPose(new MountPoseConfigs().withMountPoseYaw(isRed? 180:0));
         // gyro.getConfigurator().apply(configuration);
 
-        //gyro.reset();
+        gyro.reset();
         //gyro.setYaw(isRed? 180:0);
         f_Limelight = LimeLightSubsystem.getRightInstance();
         s_AutoRotateUtil = new AutoRotateUtil(0);

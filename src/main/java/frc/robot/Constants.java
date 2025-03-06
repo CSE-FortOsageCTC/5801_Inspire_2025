@@ -31,7 +31,8 @@ public final class Constants {
 
     public static final double scoringDx = Units.inchesToMeters(7);
     public static final double scoringDy = Units.inchesToMeters(18.5); // might need to change at comp :)
-    public static final double coralDy = Units.inchesToMeters(27);
+    public static final double redCoralDy = Units.inchesToMeters(18.5);
+    public static final double blueCoralDy = Units.inchesToMeters(18.5);
 
     public static final class Swerve {
         public static final int pigeonID = 10;
@@ -123,6 +124,8 @@ public final class Constants {
         public static final double maxElevatorAngle = 61.2;
 
         public static final double degreesToEncoderValue = maxElevatorValue / (maxElevatorAngle - minElevatorAngle);
+                    // max Distance from robot - wrist angle shenanigans
+        public static final double XLimit = 40 - 10;
 
         // public static final double
         /* Module Specific Constants */
@@ -200,9 +203,12 @@ public final class Constants {
     public static final double wristLowerLimit = 0;
     public static final double pivotUpperLimit = 0;
     public static final double pivotLowerLimit = -52.3;
-    public static final double pivotExtensionLimit = -35;
+    public static final double pivotExtensionLimit = -40;
     public static final double extensionUpperLimit = 0;
     public static final double extensionLowerLimit = -21.3;
+
+    public static final double pivotDegreesPerEncoder = 1.73;
+    public static final double extensionInchesPerEncoder = 2.16;
 
     public static final int blueScoringTagStart = 17;
     public static final int redScoringTagStart = 6;
@@ -215,13 +221,13 @@ public final class Constants {
         L1(-32.83642578125, 0.01513671875, 24.7626953125),
         L2(-40.83251953125, 0.015625, 25.65869140625),
         L3(-45.808349609375, -8.310546875, 28.1240234375),
-        L4(-49.902099609375, -21.10400390625, 29.25634765625),
+        L4(-48.902099609375, -21.10400390625, 29.25634765625),
         HighAlgae(-39.593017578125, -18.86669921875, 25.26611328125),
         LowAlgae(-35.692626953125, -4.3701171875, 24.21484375),
         HumanP(-39.17431640625, 0.0048828125, 2.435546875),
         Climb1(-34.94189453125, 0.02197265625, 12.14306640625),
-        Climb2(-11.537841796875, 0.02197265625, 12.64990234375),
-        StartingConfig(-30.032470703125, 0, 0.2509765625),
+        Climb2(-9.537841796875, 0.02197265625, 12.64990234375),
+        StartingConfig(-30.032470703125, 0, 0),
         Manual(-1, -1, -1);
 
         public double pivot;
