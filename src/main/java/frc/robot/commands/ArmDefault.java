@@ -37,10 +37,10 @@ public class ArmDefault extends Command {
     @Override
     public void execute() {
 
-        if (operator.getPOV() == 0) {
+        if (operator.getRawAxis(XboxController.Axis.kRightTrigger.value) > Constants.stickDeadband) {
             extensionSubsystem.setSetpoint(extensionSubsystem.getManualSetpoint() - 0.1);
             isManualElevator = true;
-        } else if (operator.getPOV() == 180) {
+        } else if (operator.getRawAxis(XboxController.Axis.kLeftTrigger.value) > Constants.stickDeadband) {
             extensionSubsystem.setSetpoint(extensionSubsystem.getManualSetpoint() + 0.1);
             isManualElevator = true;
         }

@@ -1,8 +1,12 @@
 package frc.robot.subsystems;
 
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.ArmPosition;
+
+import java.sql.Driver;
 
 import org.w3c.dom.css.RGBColor;
 
@@ -28,7 +32,11 @@ public class LEDSubsystem extends SubsystemBase {
     private double timer;
     private boolean isStrobing;
 
-    private int[] rgbColor= {65, 105, 225};
+    private boolean isRed;
+
+    private int[] fullBlue= {0, 0, 255};
+
+    private int[] fullRed = {255, 0, 0};
 
     public static LEDSubsystem getInstance() {
         if (ledSubsystem == null) {
@@ -38,6 +46,7 @@ public class LEDSubsystem extends SubsystemBase {
     }
 
     private LEDSubsystem() {
+        isRed = DriverStation.getAlliance().get().equals(Alliance.Red);
         pivotSubsystem = PivotSubsystem.getInstance();
         intakeSubsystem = IntakeSubsystem.getInstance();
         extensionSubsystem = ExtensionSubsystem.getInstance();
@@ -89,7 +98,12 @@ public class LEDSubsystem extends SubsystemBase {
         && !currentArmPos.equals(ArmPosition.HumanP) && !currentArmPos.equals(ArmPosition.StartingConfig) && !currentArmPos.equals(ArmPosition.Manual) && !currentArmPos.equals(ArmPosition.Travel)) {
             setRainbow();
         } else if (intakeSubsystem.hasPiece()) {
-            setColor(65, 105, 225);
+            
+            if (isRed) {
+                setColor(fullRed[0], fullRed[1], fullRed[2]);
+            } else {
+                setColor(fullBlue[0], fullBlue[1], fullBlue[2]);
+            }
         } else {
             setBlack();
         }

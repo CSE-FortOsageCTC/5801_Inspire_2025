@@ -3,6 +3,7 @@ package frc.robot.subsystems;
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.Follower;
+import com.ctre.phoenix6.controls.MusicTone;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.revrobotics.spark.SparkMax;
@@ -16,6 +17,7 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -47,6 +49,8 @@ public class ExtensionSubsystem extends SubsystemBase {
         extensionMaster.setNeutralMode(NeutralModeValue.Brake);
         extensionFollower.setNeutralMode(NeutralModeValue.Brake);
 
+        //extensionMaster.setControl(new MusicTone())
+
         extensionFollower.setControl(new Follower(extensionMaster.getDeviceID(), true));
         ;
         
@@ -64,7 +68,7 @@ public class ExtensionSubsystem extends SubsystemBase {
 
         manualSetpoint = getExtensionEncoder();
 
-        pidController = new ProfiledPIDController(0.25, 0, 0, new TrapezoidProfile.Constraints(200, 75));
+        pidController = new ProfiledPIDController(0.25, 0, 0, new TrapezoidProfile.Constraints(200, 100));
         pidController.setTolerance(0.1);
     }
 
@@ -85,8 +89,16 @@ public class ExtensionSubsystem extends SubsystemBase {
             setpoint = 0;
         }
 
-        if (PivotSubsystem.getPivotEncoder() > Constants.pivotExtensionLimit) {
-            manualSetpoint = 0;
+        // if (PivotSubsystem.getPivotEncoder() > Constants.pivotExtensionLimit) {
+        //     manualSetpoint = 0;
+        // }
+        double pivotDegrees = PivotSubsystem.getPivotEncoder() * -Constants.pivotDegreesPerEncoder;
+        SmartDashboard.putNumber("Pivot Degrees", pivotDegrees);
+        double maxHypotenuse = Constants.Swerve.XLimit/Math.cos(Units.degreesToRadians(pivotDegrees))-40;
+        double maxSetpoint = MathUtil.clamp(-Math.abs(maxHypotenuse/Constants.extensionInchesPerEncoder), Constants.extensionLowerLimit, Constants.extensionUpperLimit);
+        SmartDashboard.putNumber("Max Extension Setpoint", maxSetpoint);
+        if(setpoint < maxSetpoint){
+            setpoint = maxSetpoint;
         }
 
         double calculation = MathUtil.clamp(pidController.calculate(getExtensionEncoder(), setpoint), -1, 1);

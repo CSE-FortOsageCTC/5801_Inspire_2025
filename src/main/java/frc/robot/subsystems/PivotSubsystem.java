@@ -8,6 +8,7 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.SparkMaxConfig;
+import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 
 import frc.robot.AlignPosition;
 import frc.robot.Constants;
@@ -95,6 +96,7 @@ public class PivotSubsystem extends SubsystemBase {
         climbingClamp = new SparkMax(20, MotorType.kBrushless);
         config = new SparkMaxConfig();
         config.smartCurrentLimit(20);
+        config.idleMode(IdleMode.kCoast);
 
         climbingClamp.configure(config, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
 
@@ -158,16 +160,16 @@ public class PivotSubsystem extends SubsystemBase {
         if (ArmPosition.getPosition().pivot == -1) {
             setpoint = manualSetpoint;
         } else {
-            manualSetpoint = getPivotEncoder();
+            manualSetpoint = setpoint;
         }
 
-        boolean isPositive = extensionSubsystem.getExtensionEncoder() - ArmPosition.getPosition().extension >= 0;
-        if (!ExtensionSubsystem.atPosition() && !isPositive) {
+        boolean isGoingDown = extensionSubsystem.getExtensionEncoder() - ArmPosition.getPosition().extension >= 0;
+        if (!ExtensionSubsystem.atPosition() && !isGoingDown) {
             setpoint = getPivotEncoder();
             manualSetpoint = getPivotEncoder();
         }
 
-        if ((!ExtensionSubsystem.atPosition() && isPositive) || ExtensionSubsystem.atPosition()) {
+        if ((!ExtensionSubsystem.atPosition() && isGoingDown) || ExtensionSubsystem.atPosition()) {
 
             double calculation = MathUtil.clamp(pidController.calculate(getPivotEncoder(), setpoint), -1, 1);
             privSetSpeed(calculation);
