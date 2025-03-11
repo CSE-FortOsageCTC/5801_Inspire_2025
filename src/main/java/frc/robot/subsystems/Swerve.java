@@ -70,8 +70,8 @@ public class Swerve extends SubsystemBase {
     // public ProfiledPIDController translationYController = new
     // ProfiledPIDController(10, 0, 0, new TrapezoidProfile.Constraints(1, .5));
 
-    public PIDController translationXController = new PIDController(0.5, 0, 0);
-    public PIDController translationYController = new PIDController(0.5, 0, 0);
+    public PIDController translationXController = new PIDController(0.6, 0, 0);
+    public PIDController translationYController = new PIDController(0.6, 0, 0);
 
     private final PIDController autoXController = new PIDController(10.0, 0.0, 0.0);
     private final PIDController autoYController = new PIDController(10.0, 0.0, 0.0);

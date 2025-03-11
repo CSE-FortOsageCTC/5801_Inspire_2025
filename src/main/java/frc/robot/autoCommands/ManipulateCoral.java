@@ -14,6 +14,8 @@ public class ManipulateCoral extends Command {
 
     private int timer = 0;
 
+    private int startDelay = 10;
+
     private boolean intaking;
 
     private double speed = 1;
@@ -33,6 +35,11 @@ public class ManipulateCoral extends Command {
 
     @Override
     public void execute() {
+        if (startDelay <= 0 && !intaking) {
+            startDelay--;
+            return;
+        }
+
         if (PivotSubsystem.nearSetpoint() && ExtensionSubsystem.nearSetpoint() && ManipulatorSubsystem.nearSetpoint()) {
             if (!intaking) {
                 timer++;
@@ -43,7 +50,7 @@ public class ManipulateCoral extends Command {
 
     @Override
     public boolean isFinished() {
-        return timer >= 40 || (intakeSubsystem.hasPiece() && intaking);
+        return timer >= 80 || (intakeSubsystem.hasPiece() && intaking);
     }
 
     @Override

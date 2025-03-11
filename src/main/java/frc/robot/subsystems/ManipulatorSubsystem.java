@@ -56,7 +56,7 @@ public class ManipulatorSubsystem extends SubsystemBase {
 
         extensionSubsystem = ExtensionSubsystem.getInstance();
 
-        pidController = new ProfiledPIDController(0.225, 0, 0, new TrapezoidProfile.Constraints(100, 75));
+        pidController = new ProfiledPIDController(0.225, 0, 0, new TrapezoidProfile.Constraints(50, 75));
         pidController.setTolerance(0.1);
     }
 
