@@ -208,7 +208,13 @@ public class PivotSubsystem extends SubsystemBase {
     }
 
     public void setClimbingClampSpeed(double speed){
+        // if (climbingClamp.getBusVoltage() > 10){
+        //     speed = 0;
+        // }
+
         climbingClamp.set(speed);
+
+        SmartDashboard.putNumber("Climb Clamp Voltage", climbingClamp.get());
     }
 
     @Override

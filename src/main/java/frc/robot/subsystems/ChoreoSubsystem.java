@@ -118,7 +118,7 @@ public class ChoreoSubsystem extends SubsystemBase {
         // Load the routine's trajectories
         AutoTrajectory traj_startToIJ = routine.trajectory("startToIJ");
         AutoTrajectory traj_IJtoHP = routine.trajectory("IJToHP");
-        AutoTrajectory traj_HPtoKL = routine.trajectory("HPtoKL");
+        AutoTrajectory traj_HPtoIJ = routine.trajectory("HPToIJ");
         AutoTrajectory traj_KLtoHP = routine.trajectory("KLtoHP");
 
         // When the routine begins, reset odometry and start the first trajectory
@@ -127,16 +127,16 @@ public class ChoreoSubsystem extends SubsystemBase {
                         // traj_startToIJ.resetOdometry(), //rotateBy(180);
                         new InstantCommand(() -> s_Swerve.setHeading(Rotation2d.fromDegrees(0))),//traj_startToIJ.getRawTrajectory().getInitialPose(isRed()).get().getRotation())),
                         traj_startToIJ.cmd(),
-                        new InstantCommand(() -> ArmPosition.setPosition(ArmPosition.L4)),
-                        new AlignToApril(AlignPosition.RightOffset, true),
+                        new InstantCommand(() -> ArmPosition.setPosition(ArmPosition.L2)),
+                        new AlignToApril(AlignPosition.RightOffset, true).withTimeout(3),
                         new ManipulateCoral(false),
                         new InstantCommand(() -> ArmPosition.setPosition(ArmPosition.HumanP)),
                         traj_IJtoHP.cmd(),
-                        new AlignToApril(AlignPosition.CenterOffset, false),
+                        new AlignToApril(AlignPosition.CenterOffset, false).withTimeout(3),
                         new ManipulateCoral(true),
-                        traj_HPtoKL.cmd(),
-                        new InstantCommand(() -> ArmPosition.setPosition(ArmPosition.L4)),
-                        new AlignToApril(AlignPosition.LeftOffset, true),
+                        traj_HPtoIJ.cmd(),
+                        new InstantCommand(() -> ArmPosition.setPosition(ArmPosition.L2)),
+                        new AlignToApril(AlignPosition.LeftOffset, true).withTimeout(4),
                         new ManipulateCoral(false),
                         new InstantCommand(() -> ArmPosition.setPosition(ArmPosition.HumanP))
                         // traj_KLtoHP.cmd(),
@@ -159,7 +159,7 @@ public class ChoreoSubsystem extends SubsystemBase {
         // Load the routine's trajectories
         AutoTrajectory traj_startToEF = routine.trajectory("startToEF");
         AutoTrajectory traj_EFtoHP = routine.trajectory("EFToHP");
-        AutoTrajectory traj_HPtoCD = routine.trajectory("HPtoCD");
+        AutoTrajectory traj_HPtoEF = routine.trajectory("HPToEF");
         AutoTrajectory traj_CDtoHP = routine.trajectory("CDtoHP");
 
         // When the routine begins, reset odometry and start the first trajectory
@@ -168,16 +168,16 @@ public class ChoreoSubsystem extends SubsystemBase {
                         // traj_startToIJ.resetOdometry(), //rotateBy(180);
                         new InstantCommand(() -> s_Swerve.setHeading(Rotation2d.fromDegrees(0))),
                         traj_startToEF.cmd(),
-                        new InstantCommand(() -> ArmPosition.setPosition(ArmPosition.L4)),
-                        new AlignToApril(AlignPosition.LeftOffset, true),
+                        new InstantCommand(() -> ArmPosition.setPosition(ArmPosition.L2)),
+                        new AlignToApril(AlignPosition.LeftOffset, true).withTimeout(3),
                         new ManipulateCoral(false),
                         new InstantCommand(() -> ArmPosition.setPosition(ArmPosition.HumanP)),
                         traj_EFtoHP.cmd(),
-                        new AlignToApril(AlignPosition.CenterOffset, false),
+                        new AlignToApril(AlignPosition.CenterOffset, false).withTimeout(3),
                         new ManipulateCoral(true),
-                        traj_HPtoCD.cmd(),
-                        new InstantCommand(() -> ArmPosition.setPosition(ArmPosition.L4)),
-                        new AlignToApril(AlignPosition.RightOffset, true),
+                        traj_HPtoEF.cmd(),
+                        new InstantCommand(() -> ArmPosition.setPosition(ArmPosition.L2)),
+                        new AlignToApril(AlignPosition.RightOffset, true).withTimeout(4),
                         new ManipulateCoral(false),
                         new InstantCommand(() -> ArmPosition.setPosition(ArmPosition.HumanP))
                         // traj_KLtoHP.cmd(),
@@ -193,5 +193,46 @@ public class ChoreoSubsystem extends SubsystemBase {
 
         return routine;
     }
+    public AutoRoutine twoPieceIJAutoL2() {
+        AutoRoutine routine = autoFactory.newRoutine("threePiece");
+
+        // Load the routine's trajectories
+        AutoTrajectory traj_startToIJ = routine.trajectory("startToIJ");
+        AutoTrajectory traj_IJtoHP = routine.trajectory("IJToHP");
+        AutoTrajectory traj_HPtoKL = routine.trajectory("HPtoKL");
+        AutoTrajectory traj_KLtoHP = routine.trajectory("KLtoHP");
+
+        // When the routine begins, reset odometry and start the first trajectory
+        routine.active().onTrue(
+                Commands.sequence(
+                        // traj_startToIJ.resetOdometry(), //rotateBy(180);
+                        new InstantCommand(() -> s_Swerve.setHeading(Rotation2d.fromDegrees(0))),//traj_startToIJ.getRawTrajectory().getInitialPose(isRed()).get().getRotation())),
+                        traj_startToIJ.cmd(),
+                        new InstantCommand(() -> ArmPosition.setPosition(ArmPosition.L2)),
+                        new AlignToApril(AlignPosition.RightOffset, true),
+                        new ManipulateCoral(false),
+                        new InstantCommand(() -> ArmPosition.setPosition(ArmPosition.HumanP)),
+                        traj_IJtoHP.cmd(),
+                        new AlignToApril(AlignPosition.CenterOffset, false),
+                        new ManipulateCoral(true),
+                        traj_HPtoKL.cmd(),
+                        new InstantCommand(() -> ArmPosition.setPosition(ArmPosition.L2)),
+                        new AlignToApril(AlignPosition.LeftOffset, true),
+                        new ManipulateCoral(false),
+                        new InstantCommand(() -> ArmPosition.setPosition(ArmPosition.HumanP))
+                        // traj_KLtoHP.cmd(),
+                        // new AlignToApril(AlignPosition.CenterOffset, false),
+                        // new ManipulateCoral(true),
+                        // traj_HPtoKL.cmd(),
+                        // new InstantCommand(() -> ArmPosition.setPosition(ArmPosition.L4)),
+                        // new AlignToApril(AlignPosition.RightOffset, true),
+                        // new ManipulateCoral(false),
+                        // new InstantCommand(() -> ArmPosition.setPosition(ArmPosition.HumanP))
+                        ));
+
+
+        return routine;
+    }
+
 
 }

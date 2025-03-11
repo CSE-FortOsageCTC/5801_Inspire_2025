@@ -30,9 +30,9 @@ public final class Constants {
     public static final double stageHeightMeters = 4; // 2.54
 
     public static final double scoringDx = Units.inchesToMeters(7);
-    public static final double scoringDy = Units.inchesToMeters(18.5); // might need to change at comp :)
-    public static final double redCoralDy = Units.inchesToMeters(18.5);
-    public static final double blueCoralDy = Units.inchesToMeters(18.5);
+    public static final double scoringDy = Units.inchesToMeters(18); // might need to change at comp :)
+    public static final double redCoralDy = Units.inchesToMeters(17);
+    public static final double blueCoralDy = Units.inchesToMeters(17);
 
     public static final class Swerve {
         public static final int pigeonID = 10;
@@ -125,7 +125,7 @@ public final class Constants {
 
         public static final double degreesToEncoderValue = maxElevatorValue / (maxElevatorAngle - minElevatorAngle);
                     // max Distance from robot - wrist angle shenanigans
-        public static final double XLimit = 40 - 10;
+        public static final double XLimit = 38 - 10;
 
         // public static final double
         /* Module Specific Constants */
@@ -218,15 +218,15 @@ public final class Constants {
 
     public enum ArmPosition {
         Travel(-1, -.5, -1),
-        L1(-32.83642578125, 0.01513671875, 24.7626953125),
-        L2(-40.83251953125, 0.015625, 25.65869140625),
-        L3(-45.808349609375, -8.310546875, 28.1240234375),
-        L4(-48.902099609375, -21.10400390625, 29.25634765625),
+        L1(-32.83642578125, 0, 24.7626953125),
+        L2(-40.83251953125, 0, 25.65869140625),
+        L3(-45.085693359375, -8.0693359375, 27.11181640625),
+        L4(-50.6572265625, -21.00390625, 29.05029296875),
         HighAlgae(-39.593017578125, -18.86669921875, 25.26611328125),
-        LowAlgae(-35.692626953125, -4.3701171875, 24.21484375),
-        HumanP(-39.17431640625, 0.0048828125, 2.435546875),
-        Climb1(-34.94189453125, 0.02197265625, 12.14306640625),
-        Climb2(-9.537841796875, 0.02197265625, 12.64990234375),
+        LowAlgae(-36.4453125, -7.4169921875, 20.36083984375),
+        HumanP(-39.17431640625, 0, 2.435546875),
+        Climb1(-34.94189453125, 0, 12.14306640625),
+        Climb2(-9.537841796875, 0, 12.64990234375),
         StartingConfig(-30.032470703125, 0, 0),
         Manual(-1, -1, -1);
 

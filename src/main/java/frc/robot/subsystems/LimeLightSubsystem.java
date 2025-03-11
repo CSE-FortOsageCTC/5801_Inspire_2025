@@ -219,6 +219,6 @@ public class LimeLightSubsystem extends SubsystemBase {
 
     @Override
     public void periodic() {
-        UpdateBotPose();
+        //UpdateBotPose();
     }
 }
