@@ -34,6 +34,9 @@ public final class Constants {
     public static final double redCoralDy = Units.inchesToMeters(17);
     public static final double blueCoralDy = Units.inchesToMeters(17);
 
+    // True if new Ground Intake : False if Central MO intake
+    public static final boolean isGroundIntake = true;
+
     public static final class Swerve {
         public static final int pigeonID = 10;
 
@@ -216,6 +219,7 @@ public final class Constants {
     public static final int blueHumanPTagStart = 12;
     public static final int redHumanPTagStart = 1;
 
+    // Original "claw" intake from Central MO
     public enum ArmPosition {
         Travel(-1, -.5, -1),
         L1(-32.83642578125, 0, 24.7626953125),

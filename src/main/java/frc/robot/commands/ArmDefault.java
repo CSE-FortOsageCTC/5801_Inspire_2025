@@ -15,14 +15,11 @@ import frc.robot.subsystems.PivotSubsystem;
 public class ArmDefault extends Command {
     public final Joystick operator;
     private final Joystick driver;
-    private boolean isManualElevator = false;
-    private boolean isManualWrist = false;
-    private boolean isManualPivot = false;
     public ExtensionSubsystem extensionSubsystem;
     public PivotSubsystem pivotSubsystem;
     private ManipulatorSubsystem manipulatorSubsystem;
-    private SlewRateLimiter elevatorManualSlewRateLimiterUp = new SlewRateLimiter(0.05);
-    private SlewRateLimiter elevatorManualSlewRateLimiterDown = new SlewRateLimiter(0.05);
+    // private SlewRateLimiter elevatorManualSlewRateLimiterUp = new SlewRateLimiter(0.05);
+    // private SlewRateLimiter elevatorManualSlewRateLimiterDown = new SlewRateLimiter(0.05);
 
     public ArmDefault(Joystick driver, Joystick operator) {
         this.driver = driver;
@@ -39,18 +36,14 @@ public class ArmDefault extends Command {
 
         if (operator.getRawAxis(XboxController.Axis.kRightTrigger.value) > Constants.stickDeadband) {
             extensionSubsystem.setSetpoint(extensionSubsystem.getManualSetpoint() - 0.1);
-            isManualElevator = true;
         } else if (operator.getRawAxis(XboxController.Axis.kLeftTrigger.value) > Constants.stickDeadband) {
             extensionSubsystem.setSetpoint(extensionSubsystem.getManualSetpoint() + 0.1);
-            isManualElevator = true;
         }
 
         if (operator.getRawAxis(XboxController.Axis.kRightX.value) > Constants.stickDeadband) {
             manipulatorSubsystem.setSetpoint(manipulatorSubsystem.getManualSetpoint() - .1);
-            isManualWrist = true;
         } else if (operator.getRawAxis(XboxController.Axis.kRightX.value) < -Constants.stickDeadband) {
             manipulatorSubsystem.setSetpoint(manipulatorSubsystem.getManualSetpoint() + .1);
-            isManualWrist = true;
         }
 
         if (operator.getRawButton(XboxController.Button.kBack.value)) {
@@ -60,10 +53,8 @@ public class ArmDefault extends Command {
 
         if (operator.getRawAxis(XboxController.Axis.kLeftY.value) < -Constants.stickDeadband) {
             pivotSubsystem.setSetpoint(pivotSubsystem.getManualSetpoint() - 0.2);
-            isManualPivot = true;
         } else if (operator.getRawAxis(XboxController.Axis.kLeftY.value) > Constants.stickDeadband) {
             pivotSubsystem.setSetpoint(pivotSubsystem.getManualSetpoint() + 0.2);
-            isManualPivot = true;
         }
 
         if (PivotSubsystem.getServo() == 0){//(PivotSubsystem.getStartingDelay() >= 250) {

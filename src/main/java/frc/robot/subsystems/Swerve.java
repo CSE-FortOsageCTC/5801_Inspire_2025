@@ -77,7 +77,6 @@ public class Swerve extends SubsystemBase {
     private final PIDController autoYController = new PIDController(10.0, 0.0, 0.0);
     private final PIDController autoHeadingController = new PIDController(8.0, 0.0, 0.0);
 
-    public boolean readyToPickUp = false;
     public DriveParams autoPickupDriveParams;
 
     public static Swerve getInstance() {
@@ -446,7 +445,7 @@ public class Swerve extends SubsystemBase {
     // }
 
     public double rotateToNote() {
-        boolean noteInView = f_Limelight.hasTag();
+        boolean noteInView = f_Limelight.pieceDetected();
 
         noteInView = pieceSeenDebouncer.calculate(noteInView);
 
@@ -471,7 +470,7 @@ public class Swerve extends SubsystemBase {
         xTranslationPidController.setTolerance(0);
         xTranslationPidController.setSetpoint(0);
 
-        if (pieceSeenDebouncer.calculate(f_Limelight.hasTag())) {
+        if (pieceSeenDebouncer.calculate(f_Limelight.pieceDetected())) {
 
             // Calculates the x and y speed values for the translation movement
             double ySpeed = yTranslationPidController.calculate(xValue);

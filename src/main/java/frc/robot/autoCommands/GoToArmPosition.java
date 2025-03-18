@@ -36,7 +36,7 @@ public class GoToArmPosition extends Command {
 
     @Override
     public boolean isFinished() {
-        return pivotSubsystem.atPosition() && extensionSubsystem.atPosition() && manipulatorSubsystem.atPosition();
+        return PivotSubsystem.atPosition() && ExtensionSubsystem.atPosition() && ManipulatorSubsystem.atPosition();
     }
 
     @Override

@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import frc.robot.Constants.ArmPosition;
 import frc.robot.commands.AlignToApril;
 import frc.robot.commands.ArmDefault;
+import frc.robot.commands.AutoPickupPiece;
 import frc.robot.commands.ClimbCommand;
 import frc.robot.commands.DefaultTeleop;
 import frc.robot.commands.IntakeCommand;
@@ -103,7 +104,7 @@ public class RobotContainer {
 
     // Add options to the chooser
     autoChooser.addRoutine("onePiece", s_choreoSubsystem::onePieceAuto);
-    autoChooser.addRoutine("two piece ij", s_choreoSubsystem::twoPieceIJAuto);
+    autoChooser.addRoutine("two piece ij", s_choreoSubsystem::twoPieceIJAutoL2);
     autoChooser.addRoutine("two piece ef", s_choreoSubsystem::twoPieceEFAuto);
     //autoChooser.addRoutine("L2 IJ", s_choreoSubsystem::twoPieceIJAutoL2); //If we need an L2 Auto
 
@@ -120,7 +121,7 @@ public class RobotContainer {
     driver_Start_ZeroHeading.onTrue(new InstantCommand(() -> s_Swerve.zeroHeading()));
     driver_X_Function.whileTrue(new AlignToApril(AlignPosition.LeftOffset, true));
     driver_B_Function.whileTrue(new AlignToApril(AlignPosition.RightOffset, true));
-    driver_Y_Function.whileTrue(new AlignToApril(AlignPosition.CenterOffset, false));
+    driver_Y_Function.whileTrue(new AutoPickupPiece(0));
     driver_A_Function.whileTrue(new AlignToApril(AlignPosition.CenterOffset, true));
 
     driverStartButton.onTrue(new ClimbCommand(driver));

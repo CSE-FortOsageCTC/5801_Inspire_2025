@@ -53,6 +53,8 @@ public class PivotSubsystem extends SubsystemBase {
 
     private static ArmPosition lastPivotPosition = ArmPosition.Travel;
 
+    
+
     private SparkMax climbingClamp;
     private SparkMaxConfig config;
 
