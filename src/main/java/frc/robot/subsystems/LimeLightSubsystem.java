@@ -5,6 +5,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.networktables.NetworkTableValue;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -93,7 +94,6 @@ public class LimeLightSubsystem extends SubsystemBase {
         ts0 = table.getEntry("ts0");
         ts1 = table.getEntry("ts1");
         ts2 = table.getEntry("ts2");
-
     }
 
     // public static void setCamera(String name, double forward, double side, double up, double roll, double pitch, double yaw){
@@ -132,7 +132,7 @@ public class LimeLightSubsystem extends SubsystemBase {
      * @return <code>true</code> when april tag is detected, <code>false</code>
      *         otherwise
      */
-    public boolean hasTag() {
+    public boolean pieceDetected() {
         tv = table.getEntry("tv");
         return tv.getDouble(0.0) == 1.0;
     }
@@ -190,7 +190,7 @@ public class LimeLightSubsystem extends SubsystemBase {
     public void outputValues() {
         table = NetworkTableInstance.getDefault().getTable(limelightString);
         System.out.println(getAprilValue());
-        System.out.println(hasTag());
+        System.out.println(pieceDetected());
         System.out.println(getX());
         System.out.println(getY());
         System.out.println(getSkew());
@@ -213,8 +213,22 @@ public class LimeLightSubsystem extends SubsystemBase {
         botPose = visionPose;
     }
 
+    public boolean isCoral() {
+        return LimelightHelpers.getDetectorClass(limelightString).equals("coral");
+    }
+
     public double getLastBotPoseTimestamp() {
         return this.lastBotPoseTimestamp;
+    }
+
+    public void setPipeline(int pipelineValue){
+        // NetworkTableValue value = NetworkTableValue.makeInteger(pipelineValue);
+        // // NetworkTableInstance.getDefault().flush();
+
+        // // table.getEntry("pipeline").setNumber(value);
+        // table.putValue("pipeline", value);
+
+        LimelightHelpers.setPipelineIndex(limelightString, pipelineValue);
     }
 
     @Override

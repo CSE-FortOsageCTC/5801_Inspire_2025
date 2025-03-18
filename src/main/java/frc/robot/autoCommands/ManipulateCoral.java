@@ -56,6 +56,8 @@ public class ManipulateCoral extends Command {
     @Override
     public void end(boolean isFinished) {
         intakeSubsystem.setIntakeSpeed(0);
-    }
 
+        timer = 0;
+        startDelay = 10;
+    }
 }
