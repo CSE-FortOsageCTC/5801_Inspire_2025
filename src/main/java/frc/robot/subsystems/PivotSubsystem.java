@@ -51,7 +51,7 @@ public class PivotSubsystem extends SubsystemBase {
 
     private static int startingDelay = 0;
 
-    private static ArmPosition lastPivotPosition = ArmPosition.Travel;
+    private static double lastPivotPosition = ArmPosition.StartingConfig.pivot;
 
     
 
@@ -108,7 +108,7 @@ public class PivotSubsystem extends SubsystemBase {
 
         isClimbing = false;
 
-        pivotMaster.setPosition((pivotEncoder.get() - 0.21) * -53.8);
+        pivotMaster.setPosition((pivotEncoder.get() - 0.2458) * -52.71);
 
         pidController = new ProfiledPIDController(0.2, 0, 0, new TrapezoidProfile.Constraints(150, 100));
         pidController.setTolerance(0.1);
@@ -136,7 +136,7 @@ public class PivotSubsystem extends SubsystemBase {
 
     public void setSetpoint(double setpoint) {
         ArmPosition.setPosition(ArmPosition.Manual);
-        lastPivotPosition = ArmPosition.Manual;
+        lastPivotPosition = ArmPosition.Manual.pivot;
         manualSetpoint = MathUtil.clamp(setpoint, Constants.pivotLowerLimit, Constants.pivotUpperLimit);
         //setPosition();
     }
@@ -153,9 +153,6 @@ public class PivotSubsystem extends SubsystemBase {
     }
 
     public void setPosition() {
-        if (ArmPosition.getPosition() != lastPivotPosition) {
-            pidController.reset(getPivotEncoder());
-        }
 
         setpoint = ArmPosition.getPosition().pivot;
 
@@ -171,16 +168,18 @@ public class PivotSubsystem extends SubsystemBase {
             manualSetpoint = getPivotEncoder();
         }
 
-        if ((!ExtensionSubsystem.atPosition() && isGoingDown) || ExtensionSubsystem.atPosition()) {
-
-            double calculation = MathUtil.clamp(pidController.calculate(getPivotEncoder(), setpoint), -1, 1);
-            privSetSpeed(calculation);
-            // SmartDashboard.putNumber("PID Output", calculation);
-            lastPivotPosition = ArmPosition.getPosition();
-        } else {
+        if (!isGoingDown) {
             setpoint = getPivotEncoder();
-            privSetSpeed(0);
         }
+
+        if (setpoint != lastPivotPosition && ArmPosition.getPosition().pivot != -1) {
+            pidController.reset(getPivotEncoder());
+        }
+
+        SmartDashboard.putNumber("Pivot Setpoint", setpoint);
+        double calculation = MathUtil.clamp(pidController.calculate(getPivotEncoder(), setpoint), -1, 1);
+        privSetSpeed(calculation);
+        lastPivotPosition = setpoint;
     }
 
     public double getManualSetpoint() {
@@ -194,14 +193,14 @@ public class PivotSubsystem extends SubsystemBase {
     public void setSpeed(double speed) {
         privSetSpeed(speed);
         ArmPosition.setPosition(ArmPosition.Manual);
-        lastPivotPosition = ArmPosition.Manual;
+        lastPivotPosition = ArmPosition.Manual.pivot;
     }
 
     public static double getPivotEncoder() {
         return pivotMaster.getPosition().getValueAsDouble();
     }
 
-    public ArmPosition getArmPosition() {
+    public double getArmPosition() {
         return lastPivotPosition;
     }
 

@@ -95,9 +95,10 @@ public class ExtensionSubsystem extends SubsystemBase {
         double pivotDegrees = PivotSubsystem.getPivotEncoder() * -Constants.pivotDegreesPerEncoder;
         SmartDashboard.putNumber("Pivot Degrees", pivotDegrees);
         double maxHypotenuse = Constants.Swerve.XLimit/Math.cos(Units.degreesToRadians(pivotDegrees))-40;
-        double maxSetpoint = MathUtil.clamp(-Math.abs(maxHypotenuse/Constants.extensionInchesPerEncoder), Constants.extensionLowerLimit, Constants.extensionUpperLimit);
+        double maxSetpoint = MathUtil.clamp(-maxHypotenuse/Constants.extensionInchesPerEncoder, Constants.extensionLowerLimit, Constants.extensionUpperLimit);
         SmartDashboard.putNumber("Max Extension Setpoint", maxSetpoint);
         if(setpoint < maxSetpoint){
+            manualSetpoint = maxSetpoint;
             setpoint = maxSetpoint;
         }
 
