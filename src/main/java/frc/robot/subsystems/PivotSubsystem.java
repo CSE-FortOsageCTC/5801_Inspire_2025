@@ -108,7 +108,7 @@ public class PivotSubsystem extends SubsystemBase {
 
         isClimbing = false;
 
-        pivotMaster.setPosition(pivotEncoder.get() * -53.8);
+        pivotMaster.setPosition((pivotEncoder.get() - 0.21) * -53.8);
 
         pidController = new ProfiledPIDController(0.2, 0, 0, new TrapezoidProfile.Constraints(150, 100));
         pidController.setTolerance(0.1);

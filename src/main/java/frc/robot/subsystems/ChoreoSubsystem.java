@@ -102,13 +102,13 @@ public class ChoreoSubsystem extends SubsystemBase {
         routine.active().onTrue(
                 Commands.sequence(
                         // traj_startToIJ.resetOdometry(),
-                        new InstantCommand(() -> ArmPosition.setPosition(ArmPosition.HumanP)),
+                        new InstantCommand(() -> ArmPosition.setPosition(ArmPosition.Ground)),
                         new InstantCommand(() -> s_Swerve.setHeading(Rotation2d.fromDegrees(0))), // rotateBy(180);
                         traj_startToIJ.cmd(),
                         new InstantCommand(() -> ArmPosition.setPosition(ArmPosition.L4)),
                         new AlignToApril(AlignPosition.RightOffset, true),
                         new ManipulateCoral(false),
-                        new InstantCommand(() -> ArmPosition.setPosition(ArmPosition.HumanP))));
+                        new InstantCommand(() -> ArmPosition.setPosition(ArmPosition.Ground))));
 
         return routine;
     }
@@ -131,7 +131,7 @@ public class ChoreoSubsystem extends SubsystemBase {
                         new InstantCommand(() -> ArmPosition.setPosition(ArmPosition.L2)),
                         new AlignToApril(AlignPosition.RightOffset, true).withTimeout(3),
                         new ManipulateCoral(false),
-                        new InstantCommand(() -> ArmPosition.setPosition(ArmPosition.HumanP)),
+                        new InstantCommand(() -> ArmPosition.setPosition(ArmPosition.Ground)),
                         traj_IJtoHP.cmd(),
                         new AlignToApril(AlignPosition.CenterOffset, false).withTimeout(3),
                         new ManipulateCoral(true),
@@ -139,7 +139,7 @@ public class ChoreoSubsystem extends SubsystemBase {
                         new InstantCommand(() -> ArmPosition.setPosition(ArmPosition.L2)),
                         new AlignToApril(AlignPosition.LeftOffset, true).withTimeout(4),
                         new ManipulateCoral(false),
-                        new InstantCommand(() -> ArmPosition.setPosition(ArmPosition.HumanP))
+                        new InstantCommand(() -> ArmPosition.setPosition(ArmPosition.Ground))
                         // traj_KLtoHP.cmd(),
                         // new AlignToApril(AlignPosition.CenterOffset, false),
                         // new ManipulateCoral(true),
@@ -174,7 +174,7 @@ public class ChoreoSubsystem extends SubsystemBase {
                         new InstantCommand(() -> ArmPosition.setPosition(ArmPosition.L2)),
                         new AlignToApril(AlignPosition.LeftOffset, true).withTimeout(3),
                         new ManipulateCoral(false),
-                        new InstantCommand(() -> ArmPosition.setPosition(ArmPosition.HumanP)),
+                        new InstantCommand(() -> ArmPosition.setPosition(ArmPosition.Ground)),
                         traj_EFtoHP.cmd(),
                         // new AlignToApril(AlignPosition.CenterOffset, false).withTimeout(3),
                         new AutoPickupPiece(0).withTimeout(4),
@@ -183,7 +183,7 @@ public class ChoreoSubsystem extends SubsystemBase {
                         new InstantCommand(() -> ArmPosition.setPosition(ArmPosition.L2)),
                         new AlignToApril(AlignPosition.RightOffset, true).withTimeout(4),
                         new ManipulateCoral(false),
-                        new InstantCommand(() -> ArmPosition.setPosition(ArmPosition.HumanP)),
+                        new InstantCommand(() -> ArmPosition.setPosition(ArmPosition.Ground)),
                         traj_KLtoHP.cmd(),
                         // new AlignToApril(AlignPosition.CenterOffset, false),
                         new AutoPickupPiece(0).withTimeout(4),
@@ -192,7 +192,7 @@ public class ChoreoSubsystem extends SubsystemBase {
                         new InstantCommand(() -> ArmPosition.setPosition(ArmPosition.L2)),
                         new AlignToApril(AlignPosition.RightOffset, true),
                         new ManipulateCoral(false),
-                        new InstantCommand(() -> ArmPosition.setPosition(ArmPosition.HumanP))
+                        new InstantCommand(() -> ArmPosition.setPosition(ArmPosition.Ground))
                         ));
 
 
@@ -216,7 +216,7 @@ public class ChoreoSubsystem extends SubsystemBase {
                         new InstantCommand(() -> ArmPosition.setPosition(ArmPosition.L2)),
                         new AlignToApril(AlignPosition.RightOffset, true),
                         new ManipulateCoral(false),
-                        new InstantCommand(() -> ArmPosition.setPosition(ArmPosition.HumanP)),
+                        new InstantCommand(() -> ArmPosition.setPosition(ArmPosition.Ground)),
                         traj_IJtoHP.cmd(),
                         // new AlignToApril(AlignPosition.CenterOffset, false),
                         new AutoPickupPiece(0).withTimeout(4),
@@ -225,7 +225,7 @@ public class ChoreoSubsystem extends SubsystemBase {
                         new InstantCommand(() -> ArmPosition.setPosition(ArmPosition.L2)),
                         new AlignToApril(AlignPosition.LeftOffset, true),
                         new ManipulateCoral(false),
-                        new InstantCommand(() -> ArmPosition.setPosition(ArmPosition.HumanP)),
+                        new InstantCommand(() -> ArmPosition.setPosition(ArmPosition.Ground)),
                         traj_KLtoHP.cmd(),
                         // new AlignToApril(AlignPosition.CenterOffset, false),
                         new AutoPickupPiece(0).withTimeout(4),
@@ -234,7 +234,7 @@ public class ChoreoSubsystem extends SubsystemBase {
                         new InstantCommand(() -> ArmPosition.setPosition(ArmPosition.L2)),
                         new AlignToApril(AlignPosition.RightOffset, true),
                         new ManipulateCoral(false),
-                        new InstantCommand(() -> ArmPosition.setPosition(ArmPosition.HumanP))
+                        new InstantCommand(() -> ArmPosition.setPosition(ArmPosition.Ground))
                         ));
 
 

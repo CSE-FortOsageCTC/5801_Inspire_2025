@@ -167,7 +167,7 @@ public class AutoPickupPiece extends Command {
 
             swerve.drive(translation, rotation, false, true);
         } else {
-            swerve.drive(new Translation2d(0, 0), 0, false, true);
+            swerve.drive(new Translation2d(0.1, 0), 0, false, true);
         }
     }
 
@@ -188,6 +188,8 @@ public class AutoPickupPiece extends Command {
 
         limelightLeft.setPipeline(0);
         limelightRight.setPipeline(0);
+
+        //TODO: go to StartingConfig after intaking :)
 
         // LimelightHelpers.Flush();
     }
