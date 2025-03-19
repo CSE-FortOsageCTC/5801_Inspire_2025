@@ -126,8 +126,8 @@ public class RobotContainer {
 
     driverStartButton.onTrue(new ClimbCommand(driver));
 
-    operatorLeftBumper.whileTrue(new IntakeCommand(0.25));
-    operatorRightBumper.whileTrue(new IntakeCommand(-1));
+    operatorLeftBumper.whileTrue(new IntakeCommand(false));
+    operatorRightBumper.whileTrue(new IntakeCommand(true));
     operatorA.onTrue(new InstantCommand(() -> ArmPosition.setPosition(ArmPosition.Ground)));
     operatorX.onTrue(new InstantCommand(() -> ArmPosition.setPosition(ArmPosition.L3)));
     operatorB.onTrue(new InstantCommand(() -> ArmPosition.setPosition(ArmPosition.L2)));

@@ -200,13 +200,12 @@ public final class Constants {
                 kMaxAngularSpeedRadiansPerSecond, kMaxAngularSpeedRadiansPerSecondSquared);
     }
 
-    public static final double wristUpperLimitExtended = 31.6;
-    public static final double wristUpperLimitRetracted = 17.5380859375;
+    public static final double wristUpperLimitExtended = 17.648437;
     public static final double wristLowerLimit = 0;
-    public static final double pivotUpperLimit = -2.8085937;
+    public static final double pivotUpperLimit = 0;
     public static final double pivotLowerLimit = -55.00000000000000001;
     public static final double pivotExtensionLimit = -40;
-    public static final double extensionUpperLimit = -0.2;
+    public static final double extensionUpperLimit = 0;
     public static final double extensionLowerLimit = -21.6;
 
     public static final double pivotDegreesPerEncoder = 1.73;
@@ -221,13 +220,13 @@ public final class Constants {
     // Original "claw" intake from Central MO
     public enum ArmPosition {
         Travel(-1, -.5, -1),
-        L1(-32.83642578125, 0, 24.7626953125),
-        L2(-29.026611328125, -1.64697265625, 2.15185546875),
-        L3(-43.293212890625, -7.25439453125, 4.646484375),
-        L4(-49.261474609375, -20.169921875, 11.109375),
+        L1(-25.1376953125, 0.09375, 16.82177734375),
+        L2(-27.8740234375, -0.8388671875, 3.107421875),
+        L3(-38.919921875, -6.87255859375, 5.53759765625),
+        L4(-46.866455078125, -18.39892578125, 8.78466796875),
         HighAlgae(-39.593017578125, -18.86669921875, 25.26611328125),
         LowAlgae(-36.4453125, -7.4169921875, 20.36083984375),
-        Ground(-2.73291015625, -0.248046875, 17.283203125),
+        Ground(0.05419921875, -0.380859375, 16.95703125),
         Climb1(-34.94189453125, 0, 12.14306640625),
         Climb2(-9.537841796875, 0, 12.64990234375),
         StartingConfig(-30.032470703125, 0, 0),

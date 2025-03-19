@@ -57,7 +57,7 @@ public class ManipulatorSubsystem extends SubsystemBase {
         extensionSubsystem = ExtensionSubsystem.getInstance();
 
         pidController = new ProfiledPIDController(0.225, 0, 0, new TrapezoidProfile.Constraints(50, 75));
-        pidController.setTolerance(0.1);
+        pidController.setTolerance(0.05);
     }
 
     public static ManipulatorSubsystem getInstance() {
@@ -71,9 +71,7 @@ public class ManipulatorSubsystem extends SubsystemBase {
     public void setSetpoint(double setpoint) {
         ArmPosition.setPosition(ArmPosition.Manual);
         lastPosition = ArmPosition.Manual;
-        manualSetpoint = MathUtil.clamp(setpoint, Constants.wristLowerLimit,
-                ExtensionSubsystem.isExtended() ? Constants.wristUpperLimitExtended
-                        : Constants.wristUpperLimitRetracted);
+        manualSetpoint = MathUtil.clamp(setpoint, Constants.wristLowerLimit, Constants.wristUpperLimitExtended);
         //setPosition();
     }
 
@@ -109,21 +107,24 @@ public class ManipulatorSubsystem extends SubsystemBase {
             setpoint = manualSetpoint;
         }
 
-        if (!ExtensionSubsystem.isExtended() && getWristEncoder() > Constants.wristUpperLimitRetracted) {
-            manualSetpoint = Constants.wristUpperLimitRetracted - 1;
-        }
+        // if (ExtensionSubsystem.atPosition() || (!ExtensionSubsystem.atPosition() && isDown)) {
+        //     double calculation = MathUtil.clamp(pidController.calculate(getWristEncoder(), setpoint), -1, 1);
+        //     privSetSpeed(calculation);
+        // } else {
+        //     privSetSpeed(0);
+        // }
 
         double calculation = MathUtil.clamp(pidController.calculate(getWristEncoder(), setpoint), -1, 1);
         privSetSpeed(calculation);
+
         // SmartDashboard.putNumber("PID Output", calculation);
         lastPosition = ArmPosition.getPosition();
     }
 
     private boolean atLimit(boolean positive) {
         double encoder = getWristEncoder();
-        return (positive && encoder >= (ExtensionSubsystem.isExtended() ? Constants.wristUpperLimitExtended
-                : Constants.wristUpperLimitRetracted))
-                || (!positive && encoder <= Constants.wristLowerLimit);
+        return (positive && encoder >= ( Constants.wristUpperLimitExtended)
+            || (!positive && encoder <= Constants.wristLowerLimit));
     }
 
     public static boolean nearSetpoint() {

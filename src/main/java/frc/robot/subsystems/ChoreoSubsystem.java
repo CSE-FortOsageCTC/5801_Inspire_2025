@@ -174,7 +174,7 @@ public class ChoreoSubsystem extends SubsystemBase {
                         new InstantCommand(() -> ArmPosition.setPosition(ArmPosition.L2)),
                         new AlignToApril(AlignPosition.LeftOffset, true).withTimeout(3),
                         new ManipulateCoral(false),
-                        new InstantCommand(() -> ArmPosition.setPosition(ArmPosition.Ground)),
+                        new InstantCommand(() -> ArmPosition.setPosition(ArmPosition.StartingConfig)),
                         traj_EFtoHP.cmd(),
                         // new AlignToApril(AlignPosition.CenterOffset, false).withTimeout(3),
                         new AutoPickupPiece(0).withTimeout(4),
@@ -183,7 +183,7 @@ public class ChoreoSubsystem extends SubsystemBase {
                         new InstantCommand(() -> ArmPosition.setPosition(ArmPosition.L2)),
                         new AlignToApril(AlignPosition.RightOffset, true).withTimeout(4),
                         new ManipulateCoral(false),
-                        new InstantCommand(() -> ArmPosition.setPosition(ArmPosition.Ground)),
+                        new InstantCommand(() -> ArmPosition.setPosition(ArmPosition.StartingConfig)),
                         traj_KLtoHP.cmd(),
                         // new AlignToApril(AlignPosition.CenterOffset, false),
                         new AutoPickupPiece(0).withTimeout(4),
@@ -192,7 +192,7 @@ public class ChoreoSubsystem extends SubsystemBase {
                         new InstantCommand(() -> ArmPosition.setPosition(ArmPosition.L2)),
                         new AlignToApril(AlignPosition.RightOffset, true),
                         new ManipulateCoral(false),
-                        new InstantCommand(() -> ArmPosition.setPosition(ArmPosition.Ground))
+                        new InstantCommand(() -> ArmPosition.setPosition(ArmPosition.StartingConfig))
                         ));
 
 
@@ -216,7 +216,7 @@ public class ChoreoSubsystem extends SubsystemBase {
                         new InstantCommand(() -> ArmPosition.setPosition(ArmPosition.L2)),
                         new AlignToApril(AlignPosition.RightOffset, true),
                         new ManipulateCoral(false),
-                        new InstantCommand(() -> ArmPosition.setPosition(ArmPosition.Ground)),
+                        new InstantCommand(() -> ArmPosition.setPosition(ArmPosition.StartingConfig)),
                         traj_IJtoHP.cmd(),
                         // new AlignToApril(AlignPosition.CenterOffset, false),
                         new AutoPickupPiece(0).withTimeout(4),
@@ -225,7 +225,7 @@ public class ChoreoSubsystem extends SubsystemBase {
                         new InstantCommand(() -> ArmPosition.setPosition(ArmPosition.L2)),
                         new AlignToApril(AlignPosition.LeftOffset, true),
                         new ManipulateCoral(false),
-                        new InstantCommand(() -> ArmPosition.setPosition(ArmPosition.Ground)),
+                        new InstantCommand(() -> ArmPosition.setPosition(ArmPosition.StartingConfig)),
                         traj_KLtoHP.cmd(),
                         // new AlignToApril(AlignPosition.CenterOffset, false),
                         new AutoPickupPiece(0).withTimeout(4),
@@ -234,7 +234,7 @@ public class ChoreoSubsystem extends SubsystemBase {
                         new InstantCommand(() -> ArmPosition.setPosition(ArmPosition.L2)),
                         new AlignToApril(AlignPosition.RightOffset, true),
                         new ManipulateCoral(false),
-                        new InstantCommand(() -> ArmPosition.setPosition(ArmPosition.Ground))
+                        new InstantCommand(() -> ArmPosition.setPosition(ArmPosition.StartingConfig))
                         ));
 
 
