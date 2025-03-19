@@ -13,12 +13,13 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class IntakeSubsystem extends SubsystemBase {
 
-    private static SparkMax intakeWheel;
+    private static SparkMax coralIntake;
+    private static SparkMax algaeIntake;
 
     private static IntakeSubsystem intakeSubsystem;
 
-    private static Canandcolor canandcolor;
-    private CanandcolorSettings cacSettings;
+    // private static Canandcolor canandcolor;
+    // private CanandcolorSettings cacSettings;
 
     public static IntakeSubsystem getInstance() {
         if (intakeSubsystem == null) {
@@ -28,41 +29,55 @@ public class IntakeSubsystem extends SubsystemBase {
     }
 
     private IntakeSubsystem() {
-        intakeWheel = new SparkMax(55, MotorType.kBrushless);
-        SparkMaxConfig sparkMaxConfig = new SparkMaxConfig();
-        sparkMaxConfig.smartCurrentLimit(20, 20);
-        intakeWheel.configure(sparkMaxConfig, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
+        coralIntake = new SparkMax(54, MotorType.kBrushless);
+        algaeIntake = new SparkMax(55, MotorType.kBrushless);
 
-        canandcolor = new Canandcolor(30);
-        cacSettings = new CanandcolorSettings();
+        //coralIntake.
 
-        cacSettings.setLampLEDBrightness(0.2);
+        SparkMaxConfig coralConfig = new SparkMaxConfig();
+        SparkMaxConfig algaeConfig = new SparkMaxConfig();
 
-        canandcolor.setSettings(cacSettings);
+        coralConfig.smartCurrentLimit(20, 20);
+
+        algaeConfig.smartCurrentLimit(20, 20);
+        algaeConfig.follow(54, false);
+
+        coralIntake.configure(coralConfig, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
+        algaeIntake.configure(algaeConfig, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
+
+        // canandcolor = new Canandcolor(30);
+        // cacSettings = new CanandcolorSettings();
+
+        // cacSettings.setLampLEDBrightness(0.2);
+
+        // canandcolor.setSettings(cacSettings);
     }
 
     public void setIntakeSpeed(double speed) {
         if (hasPiece() && speed < 0) {
             speed = 0;
         }
-        intakeWheel.set(speed);
+        coralIntake.set(speed);
     }
 
     public double getProximity() {
-        return canandcolor.getProximity();
+        return 0;
+        // return canandcolor.getProximity();
     }
 
     public boolean hasPiece() {
-        return canandcolor.getProximity() == 0? false:canandcolor.getProximity() < 0.07;
+        // return canandcolor.getProximity() == 0? false:canandcolor.getProximity() < 0.07;
+        return false;
     }
 
     public Double getHSVHue() {
-        return canandcolor.getHSVHue();
+        // return canandcolor.getHSVHue();
+        return 0.0;
     }
 
     @Override
     public void periodic() {
         // SmartDashboard.putNumber("intake current", intakeWheel.getOutputCurrent());
-        SmartDashboard.putNumber("intake proximity", canandcolor.getProximity());
+        // SmartDashboard.putNumber("intake proximity", canandcolor.getProximity());
     }
 }

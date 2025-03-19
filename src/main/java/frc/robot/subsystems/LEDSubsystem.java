@@ -95,7 +95,7 @@ public class LEDSubsystem extends SubsystemBase {
         if (isStrobing) {
             setStrobe();
         } else if (PivotSubsystem.nearSetpoint() && ManipulatorSubsystem.nearSetpoint() && ExtensionSubsystem.nearSetpoint()
-        && !currentArmPos.equals(ArmPosition.HumanP) && !currentArmPos.equals(ArmPosition.StartingConfig) && !currentArmPos.equals(ArmPosition.Manual) && !currentArmPos.equals(ArmPosition.Travel)) {
+        && !currentArmPos.equals(ArmPosition.Ground) && !currentArmPos.equals(ArmPosition.StartingConfig) && !currentArmPos.equals(ArmPosition.Manual) && !currentArmPos.equals(ArmPosition.Travel)) {
             setRainbow();
         } else if (intakeSubsystem.hasPiece()) {
             

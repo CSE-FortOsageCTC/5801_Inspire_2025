@@ -138,7 +138,7 @@ public final class Constants {
             public static final int angleMotorID = 2;
             public static final int canCoderID = 12;
 
-            // TODO: BEVELS TO THE RIGHT
+            // BEVELS TO THE RIGHT
             public static final Rotation2d angleOffset = Rotation2d.fromDegrees(-47.373046875); // 134.47265625
                                                                                                 // //133.06640625
             public static final SwerveModuleConstants constants = new SwerveModuleConstants(driveMotorID, angleMotorID,
@@ -151,7 +151,7 @@ public final class Constants {
             public static final int angleMotorID = 4;
             public static final int canCoderID = 14;
 
-            // TODO: BEVELS TO THE RIGHT
+            // BEVELS TO THE RIGHT
             public static final Rotation2d angleOffset = Rotation2d.fromDegrees(57.39257812500001); // -120.41015624999999
                                                                                                     // // -122.6953125
             public static final SwerveModuleConstants constants = new SwerveModuleConstants(driveMotorID, angleMotorID,
@@ -164,7 +164,7 @@ public final class Constants {
             public static final int angleMotorID = 6;
             public static final int canCoderID = 16;
 
-            // TODO: BEVELS TO THE RIGHT
+            // BEVELS TO THE RIGHT
             public static final Rotation2d angleOffset = Rotation2d.fromDegrees(-35.244140625); // 144.4921875 //
                                                                                                 // 144.31640625
             public static final SwerveModuleConstants constants = new SwerveModuleConstants(driveMotorID, angleMotorID,
@@ -177,7 +177,7 @@ public final class Constants {
             public static final int angleMotorID = 8;
             public static final int canCoderID = 18;
 
-            // TODO: BEVELS TO THE RIGHT
+            // BEVELS TO THE RIGHT
             public static final Rotation2d angleOffset = Rotation2d.fromDegrees(-99.052734375); // 75.41015625 //
                                                                                                 // 80.947265625
             public static final SwerveModuleConstants constants = new SwerveModuleConstants(driveMotorID, angleMotorID,
@@ -185,8 +185,7 @@ public final class Constants {
         }
     }
 
-    public static final class AutoConstants { // TODO: The below constants are used in the example auto, and must be
-                                              // tuned to specific robot
+    public static final class AutoConstants {
         public static final double kMaxSpeedMetersPerSecond = 3;
         public static final double kMaxAccelerationMetersPerSecondSquared = 3;
         public static final double kMaxAngularSpeedRadiansPerSecond = Math.PI;
@@ -202,13 +201,13 @@ public final class Constants {
     }
 
     public static final double wristUpperLimitExtended = 31.6;
-    public static final double wristUpperLimitRetracted = 26.2;
+    public static final double wristUpperLimitRetracted = 17.5380859375;
     public static final double wristLowerLimit = 0;
-    public static final double pivotUpperLimit = 0;
-    public static final double pivotLowerLimit = -52.3;
+    public static final double pivotUpperLimit = -2.8085937;
+    public static final double pivotLowerLimit = -55.00000000000000001;
     public static final double pivotExtensionLimit = -40;
-    public static final double extensionUpperLimit = 0;
-    public static final double extensionLowerLimit = -21.3;
+    public static final double extensionUpperLimit = -0.2;
+    public static final double extensionLowerLimit = -21.6;
 
     public static final double pivotDegreesPerEncoder = 1.73;
     public static final double extensionInchesPerEncoder = 2.16;
@@ -223,12 +222,12 @@ public final class Constants {
     public enum ArmPosition {
         Travel(-1, -.5, -1),
         L1(-32.83642578125, 0, 24.7626953125),
-        L2(-40.83251953125, 0, 25.65869140625),
-        L3(-45.085693359375, -8.0693359375, 27.11181640625),
-        L4(-50.6572265625, -21.00390625, 29.05029296875),
+        L2(-29.026611328125, -1.64697265625, 2.15185546875),
+        L3(-43.293212890625, -7.25439453125, 4.646484375),
+        L4(-49.261474609375, -20.169921875, 11.109375),
         HighAlgae(-39.593017578125, -18.86669921875, 25.26611328125),
         LowAlgae(-36.4453125, -7.4169921875, 20.36083984375),
-        HumanP(-39.17431640625, 0, 2.435546875),
+        Ground(-2.73291015625, -0.248046875, 17.283203125),
         Climb1(-34.94189453125, 0, 12.14306640625),
         Climb2(-9.537841796875, 0, 12.64990234375),
         StartingConfig(-30.032470703125, 0, 0),
@@ -251,6 +250,14 @@ public final class Constants {
         }
 
         public static void setPosition(ArmPosition position) {
+            // If trying to go to Ground and previous setpoint was anything near the reef, set it to StartingConfig instead
+            if (Ground.equals(position) && (L1.equals(currentPosition) || L2.equals(currentPosition) || L3.equals(currentPosition) 
+             || L4.equals(currentPosition) || HighAlgae.equals(currentPosition) || LowAlgae.equals(currentPosition))) {
+
+                currentPosition = StartingConfig;
+                return;                
+            }
+
             currentPosition = position;
         }
     }
