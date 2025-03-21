@@ -11,6 +11,7 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.lib.util.COTSTalonFXSwerveConstants;
 import frc.lib.util.SwerveModuleConstants;
 
@@ -224,9 +225,9 @@ public final class Constants {
         L2(-27.8740234375, -0.8388671875, 3.107421875),
         L3(-38.919921875, -6.87255859375, 5.53759765625),
         L4(-46.866455078125, -18.39892578125, 8.78466796875),
-        HighAlgae(-39.593017578125, -18.86669921875, 25.26611328125),
-        LowAlgae(-36.4453125, -7.4169921875, 20.36083984375),
-        Ground(0.05419921875, -0.380859375, 16.95703125),
+        HighAlgae(-39.593017578125, -18.86669921875, -1),
+        LowAlgae(-36.4453125, -7.4169921875, -1),
+        Ground(0.134521484375, 0, 17.20068359375),
         Climb1(-34.94189453125, 0, 12.14306640625),
         Climb2(-9.537841796875, 0, 12.64990234375),
         StartingConfig(-30.032470703125, 0, 0),

@@ -1,4 +1,7 @@
+
 package frc.robot.subsystems;
+
+import java.util.concurrent.TimeUnit;
 
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
@@ -51,7 +54,7 @@ public class PivotSubsystem extends SubsystemBase {
 
     private static int startingDelay = 0;
 
-    private static double lastPivotPosition = ArmPosition.StartingConfig.pivot;
+    private static double lastPivotPosition = ArmPosition.getPosition().pivot;
 
     
 
@@ -95,6 +98,12 @@ public class PivotSubsystem extends SubsystemBase {
 
         AlignPosition noPos = AlignPosition.NoPos; //Do not remove! The robot will break.
 
+        try {
+            TimeUnit.SECONDS.sleep(2);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
         climbingClamp = new SparkMax(20, MotorType.kBrushless);
         config = new SparkMaxConfig();
         config.smartCurrentLimit(20);
@@ -121,6 +130,7 @@ public class PivotSubsystem extends SubsystemBase {
     public static int getStartingDelay() {
         return startingDelay;
     }
+
     public static double getServo(){
         return servo.get();
     }
@@ -162,15 +172,16 @@ public class PivotSubsystem extends SubsystemBase {
             manualSetpoint = setpoint;
         }
 
-        boolean isGoingDown = extensionSubsystem.getExtensionEncoder() - ArmPosition.getPosition().extension >= 0;
-        if (!ExtensionSubsystem.atPosition() && !isGoingDown) {
+        boolean isGoingDown = ExtensionSubsystem.getMotorSpeed() > 0; //extensionSubsystem.getExtensionEncoder() - ArmPosition.getPosition().extension >= .1;
+        SmartDashboard.putBoolean("IsGoingDown Pivot", isGoingDown);
+        if (!ExtensionSubsystem.atPosition() && isGoingDown && ArmPosition.getPosition().pivot != -1) {
             setpoint = getPivotEncoder();
             manualSetpoint = getPivotEncoder();
         }
 
-        if (!isGoingDown) {
-            setpoint = getPivotEncoder();
-        }
+        // if (!isGoingDown) {
+        //     setpoint = getPivotEncoder();
+        // }
 
         if (setpoint != lastPivotPosition && ArmPosition.getPosition().pivot != -1) {
             pidController.reset(getPivotEncoder());

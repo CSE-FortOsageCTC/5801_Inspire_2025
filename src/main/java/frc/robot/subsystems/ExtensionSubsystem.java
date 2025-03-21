@@ -49,6 +49,8 @@ public class ExtensionSubsystem extends SubsystemBase {
         extensionMaster.setNeutralMode(NeutralModeValue.Brake);
         extensionFollower.setNeutralMode(NeutralModeValue.Brake);
 
+        extensionMaster.setPosition(0);
+
         //extensionMaster.setControl(new MusicTone())
 
         extensionFollower.setControl(new Follower(extensionMaster.getDeviceID(), true));
@@ -92,7 +94,7 @@ public class ExtensionSubsystem extends SubsystemBase {
         // if (PivotSubsystem.getPivotEncoder() > Constants.pivotExtensionLimit) {
         //     manualSetpoint = 0;
         // }
-        double pivotDegrees = PivotSubsystem.getPivotEncoder() * -Constants.pivotDegreesPerEncoder;
+        double pivotDegrees = MathUtil.clamp((PivotSubsystem.getPivotEncoder() * -Constants.pivotDegreesPerEncoder), 0, 89);
         SmartDashboard.putNumber("Pivot Degrees", pivotDegrees);
         double maxHypotenuse = Constants.Swerve.XLimit/Math.cos(Units.degreesToRadians(pivotDegrees))-40;
         double maxSetpoint = MathUtil.clamp(-maxHypotenuse/Constants.extensionInchesPerEncoder, Constants.extensionLowerLimit, Constants.extensionUpperLimit);
@@ -114,6 +116,10 @@ public class ExtensionSubsystem extends SubsystemBase {
 
     public static boolean isExtended() {
         return extensionSubsystem.getExtensionEncoder() < -5.0;
+    }
+
+    public static double getMotorSpeed() {
+        return extensionMaster.get();
     }
 
     public static boolean nearSetpoint() {
@@ -168,6 +174,8 @@ public class ExtensionSubsystem extends SubsystemBase {
 
     @Override
     public void periodic() {
+
+        SmartDashboard.putNumber("Extension Motor Speed", getMotorSpeed());
         SmartDashboard.putNumber("Extension Encoder", getExtensionEncoder());
         // SmartDashboard.putNumber("Extension Manual Setpoint", manualSetpoint);
         // pidController.setPID(0.25, 0, 0);
