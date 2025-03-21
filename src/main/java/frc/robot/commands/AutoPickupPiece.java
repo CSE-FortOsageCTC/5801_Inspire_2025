@@ -13,9 +13,11 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.robot.AutoRotateUtil;
 import frc.robot.Constants;
 import frc.robot.LimelightHelpers;
+import frc.robot.Constants.ArmPosition;
 import frc.robot.autoCommands.ManipulateCoral;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.LimeLightSubsystem;
+import frc.robot.subsystems.PivotSubsystem;
 import frc.robot.subsystems.Swerve;
 
 public class AutoPickupPiece extends Command {
@@ -34,11 +36,12 @@ public class AutoPickupPiece extends Command {
     public Rotation2d yaw;
     private AutoRotateUtil autoRotateUtil;
 
-    public PIDController yTranslationPidController, xTranslationPidController;
+    public PIDController xTranslationPidController;
 
     public Pose2d position;
 
     public boolean hasPickedUpPiece = false;
+    private boolean hasSeenPiece = false;
 
     public int waitFor = 0;
     public int counter = 0;
@@ -59,12 +62,12 @@ public class AutoPickupPiece extends Command {
         debouncer = new Debouncer(.5);
 
         // creating yTranslationPidController and setting the toleance and setpoint
-        yTranslationPidController = new PIDController(.2, 0, 0);
-        yTranslationPidController.setTolerance(1);
-        yTranslationPidController.setSetpoint(0);
+        // yTranslationPidController = new PIDController(.2, 0, 0);
+        // yTranslationPidController.setTolerance(1);
+        // yTranslationPidController.setSetpoint(0);
 
         // creating xTranslationPidController and setting the toleance and setpoint
-        xTranslationPidController = new PIDController(.8, 0, 0);
+        xTranslationPidController = new PIDController(1.6, 0, 0);
         xTranslationPidController.setTolerance(1);
         xTranslationPidController.setSetpoint(0);
 
@@ -116,6 +119,7 @@ public class AutoPickupPiece extends Command {
         limelightLeft.setPipeline(2);
         limelightRight.setPipeline(2);
 
+        ArmPosition.setPosition(ArmPosition.StartingConfig);
         // LimelightHelpers.Flush();
 
         if(leftDistance < rightDistance){
@@ -142,16 +146,18 @@ public class AutoPickupPiece extends Command {
 
         counter++;
 
-        if (debouncer.calculate(pieceSeen()) && !pieceDetected && counter >= waitFor) {
+        if (debouncer.calculate(pieceSeen()) && !pieceDetected && counter >= waitFor && !hasSeenPiece) {
             xValue = targetLimelight.getX(); // gets the limelight X Coordinate
             yValue = targetLimelight.getY(); // gets the limelight Y Coordinate
             areaValue = targetLimelight.getArea(); // gets the area percentage from the limelight
             SmartDashboard.putNumber("Limelight Area", areaValue);
             autoRotateUtil.updateTargetAngle(-xValue * 2);
 
-            if (yValue <= -20) {
+            if (yValue <= 1 && xValue <= 1) {
                 intakeSubsystem.setIntakeSpeed(-1);
+                ArmPosition.setPosition(ArmPosition.Ground);
                 hasPickedUpPiece = true;
+                hasSeenPiece = true;
             }
             // System.out.println("Note in view");
             // Calculates the x and y speed values for the translation movement
@@ -167,7 +173,9 @@ public class AutoPickupPiece extends Command {
 
             swerve.drive(translation, rotation, false, true);
         } else {
-            swerve.drive(new Translation2d(0.1, 0), 0, false, true);
+            if (PivotSubsystem.atPosition()) {
+                swerve.drive(new Translation2d(-0.15, 0).times(Constants.Swerve.maxSpeed), 0, false, true);
+            }
         }
     }
 
@@ -183,11 +191,15 @@ public class AutoPickupPiece extends Command {
         intakeSubsystem.setIntakeSpeed(0);
         detectedDelayCount = 0;
         xTranslationPidController.reset();
-        yTranslationPidController.reset();
+        // yTranslationPidController.reset();
         autoRotateUtil.reset();
+
+        ArmPosition.setPosition(ArmPosition.StartingConfig);
 
         limelightLeft.setPipeline(0);
         limelightRight.setPipeline(0);
+
+        hasSeenPiece = false;
 
         //TODO: go to StartingConfig after intaking :)
 
