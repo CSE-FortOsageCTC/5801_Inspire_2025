@@ -46,7 +46,7 @@ public class ClimbCommand extends Command{
             isIrreversible = true;
         }
 
-        System.out.println("Speed = " + speed);
+        // System.out.println("Speed = " + speed);
 
         pivotSubsystem.setClimbingClampSpeed(speed);
         pivotSubsystem.setPosition();

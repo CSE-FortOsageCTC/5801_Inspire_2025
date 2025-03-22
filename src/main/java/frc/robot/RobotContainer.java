@@ -23,6 +23,7 @@ import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.LEDSubsystem;
 import frc.robot.subsystems.LimeLightSubsystem;
 import frc.robot.subsystems.ManipulatorSubsystem;
+import frc.robot.subsystems.PivotSubsystem;
 import frc.robot.subsystems.Swerve;
 
 /**
@@ -44,6 +45,7 @@ public class RobotContainer {
   private final ExtensionSubsystem elevatorSubsystem = ExtensionSubsystem.getInstance();
   private final ManipulatorSubsystem manipulatorSubsystem = ManipulatorSubsystem.getInstance();
   private final IntakeSubsystem intakeSubsystem = IntakeSubsystem.getInstance();
+  private final PivotSubsystem pivotSubsystem = PivotSubsystem.getInstance();
   private final LEDSubsystem ledsubsystem = LEDSubsystem.getInstance();
   private final Joystick driver = new Joystick(0);
   private final Joystick operator = new Joystick(1);
@@ -99,12 +101,14 @@ public class RobotContainer {
     // Configure the trigger bindings
     configureBindings();
 
+    ArmPosition.setPosition(ArmPosition.StartingConfig);
+
     // Create the auto chooser
     autoChooser = new AutoChooser();
 
     // Add options to the chooser
     autoChooser.addRoutine("onePiece", s_choreoSubsystem::onePieceAuto);
-    autoChooser.addRoutine("two piece ij", s_choreoSubsystem::twoPieceIJAutoL2);
+    autoChooser.addRoutine("two piece ij", s_choreoSubsystem::twoPieceIJAuto);
     autoChooser.addRoutine("two piece ef", s_choreoSubsystem::twoPieceEFAuto);
     //autoChooser.addRoutine("L2 IJ", s_choreoSubsystem::twoPieceIJAutoL2); //If we need an L2 Auto
 

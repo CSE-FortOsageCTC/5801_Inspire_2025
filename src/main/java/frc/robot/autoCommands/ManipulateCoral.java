@@ -16,18 +16,18 @@ public class ManipulateCoral extends Command {
 
     private int startDelay = 10;
 
-    private boolean intaking;
+    private boolean isL1;
 
-    private double speed = 1;
+    private double speed = -1;
 
-    public ManipulateCoral(boolean intaking) {
+    public ManipulateCoral(boolean isL1) {
 
-        this.intaking = intaking;
+        this.isL1 = isL1;
 
         intakeSubsystem = IntakeSubsystem.getInstance();
 
-        if (intaking) {
-            speed *= -1;
+        if (isL1) {
+            speed = 0.5;
         }
 
         addRequirements(intakeSubsystem);
@@ -35,13 +35,13 @@ public class ManipulateCoral extends Command {
 
     @Override
     public void execute() {
-        if (startDelay <= 0 && !intaking) {
+        if (startDelay <= 0 && !isL1) {
             startDelay--;
             return;
         }
 
         if (PivotSubsystem.nearSetpoint() && ExtensionSubsystem.nearSetpoint() && ManipulatorSubsystem.nearSetpoint()) {
-            if (!intaking) {
+            if (!isL1) {
                 timer++;
             }
             intakeSubsystem.setIntakeSpeed(speed);
@@ -50,7 +50,7 @@ public class ManipulateCoral extends Command {
 
     @Override
     public boolean isFinished() {
-        return timer >= 80 || (intakeSubsystem.hasPiece() && intaking);
+        return timer >= 30 || (intakeSubsystem.hasPiece() && isL1);
     }
 
     @Override

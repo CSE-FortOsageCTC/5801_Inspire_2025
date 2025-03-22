@@ -1,5 +1,6 @@
 package frc.robot.commands;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -97,27 +98,10 @@ public class AutoPickupPiece extends Command {
         return Math.hypot(dX, dY * dY);
     }
 
-    public double newY() {
-        return limelightRight.getY() > 0 ? 1.0 : 0;
-    }
-
-    public double newRotation() {
-        if (limelightRight.getX() > 0) {
-            return yaw.getDegrees() - 1.0;
-        } else if (limelightRight.getX() < 0) {
-            return yaw.getDegrees() + 1.0;
-        } else {
-            return 0;
-        }
-    }
-
     @Override
     public void initialize() {
         double leftDistance = getDistance(limelightLeft);
         double rightDistance = getDistance(limelightRight);
-
-        limelightLeft.setPipeline(2);
-        limelightRight.setPipeline(2);
 
         ArmPosition.setPosition(ArmPosition.StartingConfig);
         // LimelightHelpers.Flush();
@@ -140,7 +124,7 @@ public class AutoPickupPiece extends Command {
 
         boolean pieceDetected = intakeSubsystem.hasPiece(); // piece is detected in the robot
 
-        if (pieceDetected && hasPickedUpPiece) {
+        if (pieceDetected) {
             detectedDelayCount++;
         }
 
@@ -148,16 +132,18 @@ public class AutoPickupPiece extends Command {
 
         if (debouncer.calculate(pieceSeen()) && !pieceDetected && counter >= waitFor && !hasSeenPiece) {
             xValue = targetLimelight.getX(); // gets the limelight X Coordinate
-            yValue = targetLimelight.getY(); // gets the limelight Y Coordinate
+            yValue = MathUtil.clamp(targetLimelight.getY(), 0, 200); // gets the limelight Y Coordinate
             areaValue = targetLimelight.getArea(); // gets the area percentage from the limelight
             SmartDashboard.putNumber("Limelight Area", areaValue);
             autoRotateUtil.updateTargetAngle(-xValue * 2);
 
-            if (yValue <= 1 && xValue <= 1) {
+            if (isAligned()) {
                 intakeSubsystem.setIntakeSpeed(-1);
                 ArmPosition.setPosition(ArmPosition.Ground);
-                hasPickedUpPiece = true;
+                System.out.println("It should be moving the arm right now");
                 hasSeenPiece = true;
+                swerve.drive(new Translation2d(0, 0), 0, true, true);
+                return;
             }
             // System.out.println("Note in view");
             // Calculates the x and y speed values for the translation movement
@@ -173,10 +159,14 @@ public class AutoPickupPiece extends Command {
 
             swerve.drive(translation, rotation, false, true);
         } else {
-            if (PivotSubsystem.atPosition()) {
+            if (PivotSubsystem.atPosition() && ArmPosition.Ground.equals(ArmPosition.getPosition()) && isAligned()) {
                 swerve.drive(new Translation2d(-0.15, 0).times(Constants.Swerve.maxSpeed), 0, false, true);
             }
         }
+    }
+
+    private boolean isAligned() {
+        return yValue <= 1 && Math.abs(xValue) <= 3;
     }
 
     @Override
@@ -196,10 +186,8 @@ public class AutoPickupPiece extends Command {
 
         ArmPosition.setPosition(ArmPosition.StartingConfig);
 
-        limelightLeft.setPipeline(0);
-        limelightRight.setPipeline(0);
-
         hasSeenPiece = false;
+        counter = 0;
 
         //TODO: go to StartingConfig after intaking :)
 

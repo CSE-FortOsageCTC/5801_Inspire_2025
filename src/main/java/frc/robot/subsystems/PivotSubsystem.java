@@ -46,15 +46,15 @@ public class PivotSubsystem extends SubsystemBase {
 
     private static ExtensionSubsystem extensionSubsystem;
 
-    private static double setpoint;
+    private static double setpoint = ArmPosition.StartingConfig.pivot;
 
-    private double manualSetpoint;
+    private double manualSetpoint = ArmPosition.StartingConfig.pivot;
 
     private boolean isClimbing;
 
     private static int startingDelay = 0;
 
-    private static double lastPivotPosition = ArmPosition.getPosition().pivot;
+    private static double lastPivotPosition = ArmPosition.StartingConfig.pivot;
 
     
 
@@ -94,7 +94,7 @@ public class PivotSubsystem extends SubsystemBase {
 
         pivotEncoder = new DutyCycleEncoder(1);
 
-        System.out.println(pivotEncoder.get());
+        System.out.println(getPivotEncoder());
 
         AlignPosition noPos = AlignPosition.NoPos; //Do not remove! The robot will break.
 
@@ -111,13 +111,19 @@ public class PivotSubsystem extends SubsystemBase {
 
         climbingClamp.configure(config, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
 
-        manualSetpoint = getPivotEncoder();
+        // manualSetpoint = getPivotEncoder();
 
-        System.out.println(pivotEncoder.get());
+        System.out.println(getPivotEncoder());
 
         isClimbing = false;
 
-        pivotMaster.setPosition((pivotEncoder.get() - 0.2458) * -52.71);
+        pivotMaster.setPosition((pivotEncoder.get() - 0.237) * -57.566);
+
+        try {
+            TimeUnit.SECONDS.sleep(2);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
 
         pidController = new ProfiledPIDController(0.2, 0, 0, new TrapezoidProfile.Constraints(150, 100));
         pidController.setTolerance(0.1);
@@ -187,7 +193,7 @@ public class PivotSubsystem extends SubsystemBase {
             pidController.reset(getPivotEncoder());
         }
 
-        SmartDashboard.putNumber("Pivot Setpoint", setpoint);
+        
         double calculation = MathUtil.clamp(pidController.calculate(getPivotEncoder(), setpoint), -1, 1);
         privSetSpeed(calculation);
         lastPivotPosition = setpoint;
@@ -233,11 +239,12 @@ public class PivotSubsystem extends SubsystemBase {
     public void periodic() {
         SmartDashboard.putNumber("Pivot Kraken Encoder", getPivotEncoder());
         SmartDashboard.putNumber("Pivot Absolute Encoder", pivotEncoder.get());
+        SmartDashboard.putNumber("Pivot Setpoint", setpoint);
         // pidController.setPID(0.3, 0, 0);
         if (DriverStation.isDisabled()) {
             resetStartDelay();
         }
-        if (startingDelay < 250) {
+        if (startingDelay < 50) {
             startingDelay++;
         }
 

@@ -1,5 +1,6 @@
 package frc.robot.subsystems;
 
+import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.util.Color;
@@ -29,6 +30,8 @@ public class LEDSubsystem extends SubsystemBase {
     private ManipulatorSubsystem manipulatorSubsystem;
     private IntakeSubsystem intakeSubsystem;
 
+    private Debouncer isCoralDebouncer;
+
     private double timer;
     private boolean isStrobing;
 
@@ -55,6 +58,8 @@ public class LEDSubsystem extends SubsystemBase {
         candle1.configBrightnessScalar(1);
         candle1.clearAnimation(1);
         candle1.clearAnimation(2);
+
+        isCoralDebouncer = new Debouncer(0.05);
 
         timer = 0;
         isStrobing = false;
@@ -104,6 +109,8 @@ public class LEDSubsystem extends SubsystemBase {
             } else {
                 setColor(fullBlue[0], fullBlue[1], fullBlue[2]);
             }
+        } else if (isCoralDebouncer.calculate(LimeLightSubsystem.getLeftInstance().isCoral()) || isCoralDebouncer.calculate(LimeLightSubsystem.getRightInstance().isCoral())) {
+            setColor(241, 250, 61); // Team "Safety Green" *eyeroll*
         } else {
             setBlack();
         }
