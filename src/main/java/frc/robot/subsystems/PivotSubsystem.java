@@ -46,15 +46,15 @@ public class PivotSubsystem extends SubsystemBase {
 
     private static ExtensionSubsystem extensionSubsystem;
 
-    private static double setpoint = ArmPosition.StartingConfig.pivot;
+    private static double setpoint = ArmPosition.Manual.pivot;
 
-    private double manualSetpoint = ArmPosition.StartingConfig.pivot;
+    private double manualSetpoint;
 
     private boolean isClimbing;
 
     private static int startingDelay = 0;
 
-    private static double lastPivotPosition = ArmPosition.StartingConfig.pivot;
+    private static double lastPivotPosition = ArmPosition.Manual.pivot;
 
     
 
@@ -111,7 +111,7 @@ public class PivotSubsystem extends SubsystemBase {
 
         climbingClamp.configure(config, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
 
-        // manualSetpoint = getPivotEncoder();
+        
 
         System.out.println(getPivotEncoder());
 
@@ -125,8 +125,12 @@ public class PivotSubsystem extends SubsystemBase {
             e.printStackTrace();
         }
 
-        pidController = new ProfiledPIDController(0.2, 0, 0, new TrapezoidProfile.Constraints(150, 100));
+        pidController = new ProfiledPIDController(0.275, 0, 0, new TrapezoidProfile.Constraints(200, 150));
         pidController.setTolerance(0.1);
+
+        manualSetpoint = -30;//getPivotEncoder();
+        lastPivotPosition = manualSetpoint;
+        setpoint = manualSetpoint;
     }
 
     public static void resetStartDelay() {
@@ -223,6 +227,10 @@ public class PivotSubsystem extends SubsystemBase {
 
     public void setIsClimbing(){
         isClimbing = true;
+    }
+
+    public void resetPID() {
+        pidController.reset(getPivotEncoder());
     }
 
     public void setClimbingClampSpeed(double speed){

@@ -222,12 +222,13 @@ public final class Constants {
     public enum ArmPosition {
         Travel(-1, -.5, -1),
         L1(-30.87451171875, 9.765625E-4, 16.96533203125),
-        L2(-32.00830078125, -0.00537109375, 0.74755859375),
-        L3(-42.65185546875, -6.64501953125, 5.4833984375),
-        L4(-51.948974609375, -21.0, 12.2900390625),
-        HighAlgae(-39.593017578125, -18.86669921875, -1),
-        LowAlgae(-36.4453125, -7.4169921875, -1),
+        L2(-33.149169921875, 0.03173828125, 0.0),
+        L3(-42.545654296875, -7.36865234375, 5.32958984375),
+        L4(-53.49609375, -20.640625, 12.388671875), // Original: (-51.948974609375, -21.0, 12.2900390625) different rn because the new pvc
+        HighAlgae(-41.78173828125, -6.76416015625, 17.70703125),
+        LowAlgae(-33.37744140625, -0.037109375, 17.7041015625),
         Ground(0.134521484375, 0, 17.20068359375),
+        GroundP(-8.1962890625, -0.005859375, 11.43017578125),
         HumanP(-34.74365234375, 0.0029296875, 12.40283203125),
         Climb1(-34.94189453125, 0, 12.14306640625),
         Climb2(-9.537841796875, 0, 12.64990234375),
@@ -238,7 +239,7 @@ public final class Constants {
         public double extension;
         public double manipulator;
 
-        public static ArmPosition currentPosition = ArmPosition.StartingConfig;
+        public static ArmPosition currentPosition = ArmPosition.Manual;
 
         ArmPosition(double pivot, double extension, double manipulator) {
             this.pivot = pivot;

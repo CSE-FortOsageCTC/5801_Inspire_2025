@@ -101,7 +101,7 @@ public class RobotContainer {
     // Configure the trigger bindings
     configureBindings();
 
-    ArmPosition.setPosition(ArmPosition.StartingConfig);
+    // ArmPosition.setPosition(ArmPosition.StartingConfig);
 
     // Create the auto chooser
     autoChooser = new AutoChooser();
@@ -123,10 +123,10 @@ public class RobotContainer {
     manipulatorSubsystem.setDefaultCommand(armDefaultCommand);
     // Initialize Driver Button Functions
     driver_Start_ZeroHeading.onTrue(new InstantCommand(() -> s_Swerve.zeroHeading()));
-    driver_X_Function.whileTrue(new AlignToApril(AlignPosition.LeftOffset, true));
-    driver_B_Function.whileTrue(new AlignToApril(AlignPosition.RightOffset, true));
+    driver_X_Function.whileTrue(new AlignToApril(AlignPosition.LeftOffset, true, 0));
+    driver_B_Function.whileTrue(new AlignToApril(AlignPosition.RightOffset, true, 0));
     driver_Y_Function.whileTrue(new AutoPickupPiece(0));
-    driver_A_Function.whileTrue(new AlignToApril(AlignPosition.CenterOffset, true));
+    driver_A_Function.whileTrue(new AlignToApril(AlignPosition.CenterOffset, true, 0));
 
     driverStartButton.onTrue(new ClimbCommand(driver));
 

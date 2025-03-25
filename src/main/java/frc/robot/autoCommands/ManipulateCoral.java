@@ -50,7 +50,7 @@ public class ManipulateCoral extends Command {
 
     @Override
     public boolean isFinished() {
-        return timer >= 30 || (intakeSubsystem.hasPiece() && isL1);
+        return timer >= 10 || (intakeSubsystem.hasPiece() && isL1);
     }
 
     @Override

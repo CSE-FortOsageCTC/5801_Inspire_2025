@@ -20,9 +20,14 @@ public class AlignToApril extends Command {
     private Translation2d translation;
     private double rotation;
 
+    private int waitFor;
+    private int counter = 0;
+
     private boolean isRed;
 
-    public AlignToApril(AlignPosition alignPos, boolean isScoring) {
+    public AlignToApril(AlignPosition alignPos, boolean isScoring, int waitFor) {
+
+        this.waitFor = waitFor;
 
         this.isScoring = isScoring;
         this.alignPos = alignPos;
@@ -41,13 +46,17 @@ public class AlignToApril extends Command {
 
     @Override
     public void execute() {
-        Rotation2d rotationTag = AlignPosition.getAlignOffset().getRotation();
-        translation = s_Swerve.translateToApril().times(Constants.Swerve.maxSpeed);
-        if (!isScoring) {
-            rotationTag = rotationTag.rotateBy(Rotation2d.fromDegrees(180));
+        if (counter >= waitFor) {
+            Rotation2d rotationTag = AlignPosition.getAlignOffset().getRotation();
+            translation = s_Swerve.translateToApril().times(Constants.Swerve.maxSpeed);
+            if (!isScoring) {
+                rotationTag = rotationTag.rotateBy(Rotation2d.fromDegrees(180));
+            }
+            rotation = s_Swerve.rotateToApril(rotationTag.getDegrees()) * Constants.Swerve.maxAngularVelocity;
+            s_Swerve.drive(translation, rotation, true, false);
         }
-        rotation = s_Swerve.rotateToApril(rotationTag.getDegrees()) * Constants.Swerve.maxAngularVelocity;
-        s_Swerve.drive(translation, rotation, true, false); //TODO: Change to regular drive command
+
+        counter++;
 
     }
 
@@ -61,6 +70,8 @@ public class AlignToApril extends Command {
         AlignPosition.setIsScoring(true);
         s_Swerve.drive(new Translation2d(0, 0), 0, true, false);
         s_Swerve.resetAlignApril();
+
+        counter = 0;
     }
 
 }

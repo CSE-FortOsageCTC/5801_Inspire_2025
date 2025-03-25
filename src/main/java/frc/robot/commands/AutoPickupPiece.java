@@ -8,6 +8,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -37,7 +38,8 @@ public class AutoPickupPiece extends Command {
     public Rotation2d yaw;
     private AutoRotateUtil autoRotateUtil;
 
-    public PIDController xTranslationPidController;
+    public PIDController inUsePID;
+    public PIDController autoXTranslationPID;
 
     public Pose2d position;
 
@@ -60,7 +62,7 @@ public class AutoPickupPiece extends Command {
 
         targetLimelight = limelightRight;
 
-        debouncer = new Debouncer(.5);
+        debouncer = new Debouncer(.05);
 
         // creating yTranslationPidController and setting the toleance and setpoint
         // yTranslationPidController = new PIDController(.2, 0, 0);
@@ -68,9 +70,9 @@ public class AutoPickupPiece extends Command {
         // yTranslationPidController.setSetpoint(0);
 
         // creating xTranslationPidController and setting the toleance and setpoint
-        xTranslationPidController = new PIDController(1.6, 0, 0);
-        xTranslationPidController.setTolerance(1);
-        xTranslationPidController.setSetpoint(0);
+        inUsePID = DriverStation.isAutonomous()? new PIDController(1.2, 0, 0):new PIDController(1.6, 0, 0);
+        inUsePID.setTolerance(1);
+        inUsePID.setSetpoint(0);
 
         // puts the value of P,I and D onto the SmartDashboard
         // Will remove later
@@ -103,14 +105,21 @@ public class AutoPickupPiece extends Command {
         double leftDistance = getDistance(limelightLeft);
         double rightDistance = getDistance(limelightRight);
 
-        ArmPosition.setPosition(ArmPosition.StartingConfig);
+        ArmPosition.setPosition(ArmPosition.GroundP);
         // LimelightHelpers.Flush();
+
+        if (DriverStation.isTeleop()) {
+            limelightLeft.setPipeline(2);
+            limelightRight.setPipeline(2);
+        }
 
         if(leftDistance < rightDistance){
             targetLimelight = limelightLeft;
         } else {
             targetLimelight = limelightRight;
         }
+
+        swerve.drive(new Translation2d(0, 0), 0, true, true);
     }
 
     @Override
@@ -125,6 +134,7 @@ public class AutoPickupPiece extends Command {
         boolean pieceDetected = intakeSubsystem.hasPiece(); // piece is detected in the robot
 
         if (pieceDetected) {
+            System.out.println("Has piece :D");
             detectedDelayCount++;
         }
 
@@ -149,7 +159,7 @@ public class AutoPickupPiece extends Command {
             // Calculates the x and y speed values for the translation movement
             // double ySpeed = yTranslationPidController.calculate(xValue);
 
-            double xSpeed = xTranslationPidController.calculate(yValue);
+            double xSpeed = inUsePID.calculate(yValue);
             double angularSpeed = autoRotateUtil.calculateRotationSpeed() * Constants.Swerve.maxAngularVelocity;
 
             // moves the swerve subsystem
@@ -159,8 +169,11 @@ public class AutoPickupPiece extends Command {
 
             swerve.drive(translation, rotation, false, true);
         } else {
-            if (PivotSubsystem.atPosition() && ArmPosition.Ground.equals(ArmPosition.getPosition()) && isAligned()) {
-                swerve.drive(new Translation2d(-0.15, 0).times(Constants.Swerve.maxSpeed), 0, false, true);
+            if (ArmPosition.Ground.equals(ArmPosition.getPosition()) && isAligned()) {
+                System.out.println("is creeping forward");
+                swerve.drive(new Translation2d(-0.25, 0).times(Constants.Swerve.maxSpeed), 0, false, true);
+            } else {
+                swerve.drive(new Translation2d(0, 0).times(Constants.Swerve.maxSpeed), 0, false, true);
             }
         }
     }
@@ -172,7 +185,7 @@ public class AutoPickupPiece extends Command {
     @Override
     public boolean isFinished() {
         // return false;
-        return detectedDelayCount >= 5;
+        return detectedDelayCount >= 1;
     }
 
     @Override
@@ -180,7 +193,7 @@ public class AutoPickupPiece extends Command {
         swerve.drive(new Translation2d(0, 0), 0, true, true);
         intakeSubsystem.setIntakeSpeed(0);
         detectedDelayCount = 0;
-        xTranslationPidController.reset();
+        inUsePID.reset();
         // yTranslationPidController.reset();
         autoRotateUtil.reset();
 
@@ -188,6 +201,10 @@ public class AutoPickupPiece extends Command {
 
         hasSeenPiece = false;
         counter = 0;
+        if (DriverStation.isTeleop()) {
+            limelightLeft.setPipeline(0);
+            limelightRight.setPipeline(0);
+        }
 
         //TODO: go to StartingConfig after intaking :)
 

@@ -15,6 +15,7 @@ import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
 
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.ArmPosition;
@@ -109,13 +110,18 @@ public class IntakeSubsystem extends SubsystemBase {
         SmartDashboard.putNumber("Proximity", getProximity());
         if (!hasPiece && getProximity() < 50 && (ArmPosition.Ground.equals(ArmPosition.getPosition()) || ArmPosition.HumanP.equals(ArmPosition.getPosition())) && PivotSubsystem.nearSetpoint() && ManipulatorSubsystem.nearSetpoint()) {
             hasPiece = true;
-            limelightLeft.setPipeline(0);
-            limelightRight.setPipeline(0);
+            if (DriverStation.isAutonomous()) {
+                limelightLeft.setPipeline(0);
+                limelightRight.setPipeline(0);
+            }
         } else if (hasPiece && getProximity() > 50) {
             hasPiece = false;
-            limelightLeft.setPipeline(2);
-            limelightRight.setPipeline(2);
+            if (DriverStation.isAutonomous()) {
+                limelightLeft.setPipeline(2);
+                limelightRight.setPipeline(2);
+            }
             System.out.println("We changed pipelines to 2 (Coral Detection)");
         }
+        
     }
 }

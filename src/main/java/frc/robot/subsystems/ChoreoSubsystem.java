@@ -14,8 +14,10 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.AlignPosition;
 import frc.robot.Constants;
+import frc.robot.LimelightHelpers;
 import frc.robot.Constants.ArmPosition;
 import frc.robot.autoCommands.ManipulateCoral;
+import frc.robot.autoCommands.ResetArm;
 import frc.robot.commands.AlignToApril;
 import frc.robot.commands.AutoPickupPiece;
 
@@ -63,6 +65,12 @@ public class ChoreoSubsystem extends SubsystemBase {
         // the bind")));
     }
 
+    private void switchPipelines(int pipeline) {
+        
+        LimeLightSubsystem.getLeftInstance().setPipeline(pipeline);
+        LimeLightSubsystem.getRightInstance().setPipeline(pipeline);
+    }
+
     private boolean isRed() {
         Optional<DriverStation.Alliance> alliance = DriverStation.getAlliance();
         System.out.println(alliance);
@@ -106,7 +114,7 @@ public class ChoreoSubsystem extends SubsystemBase {
                         new InstantCommand(() -> s_Swerve.setHeading(Rotation2d.fromDegrees(0))), // rotateBy(180);
                         traj_startToIJ.cmd(),
                         new InstantCommand(() -> ArmPosition.setPosition(ArmPosition.L4)),
-                        new AlignToApril(AlignPosition.RightOffset, true),
+                        new AlignToApril(AlignPosition.RightOffset, true, 0),
                         new ManipulateCoral(false),
                         new InstantCommand(() -> ArmPosition.setPosition(ArmPosition.StartingConfig))));
 
@@ -132,27 +140,32 @@ public class ChoreoSubsystem extends SubsystemBase {
                         // new InstantCommand(() -> ArmPosition.setPosition(ArmPosition.StartingConfig)),
                         new InstantCommand(() -> s_Swerve.setHeading(Rotation2d.fromDegrees(0))),
                         traj_startToIJ.cmd(),
-                        new InstantCommand(() -> ArmPosition.setPosition(scoringPosition)),
-                        new AlignToApril(AlignPosition.RightOffset, true).withTimeout(3),
+                        new InstantCommand(() -> ArmPosition.setPosition(ArmPosition.L4)),
+                        new AlignToApril(AlignPosition.RightOffset, true, 0).withTimeout(3),
                         new ManipulateCoral(false),
-                        new InstantCommand(() -> ArmPosition.setPosition(ArmPosition.StartingConfig)),
+                        new ResetArm(),
                         traj_IJtoHP.cmd(),
                         // new AlignToApril(AlignPosition.CenterOffset, false).withTimeout(3),
-                        new WaitCommand(0.5),
                         new AutoPickupPiece(0).withTimeout(4),
-                        traj_HPtoIJ.cmd(),
-                        new InstantCommand(() -> ArmPosition.setPosition(scoringPosition)),
-                        new AlignToApril(AlignPosition.RightOffset, true).withTimeout(4),
-                        new ManipulateCoral(false),
+                        // new InstantCommand(() -> switchPipelines(0)),
                         new InstantCommand(() -> ArmPosition.setPosition(ArmPosition.StartingConfig)),
+                        traj_HPtoKL.cmd(),
+                        new InstantCommand(() -> s_Swerve.drive(new Translation2d(0,0), 0, true, true)),
+                        new InstantCommand(() -> ArmPosition.setPosition(ArmPosition.L4)),
+                        new AlignToApril(AlignPosition.RightOffset, true, 30).withTimeout(4),
+                        new ManipulateCoral(false),
+                        new ResetArm(),
                         traj_KLtoHP.cmd(),
                         // new AlignToApril(AlignPosition.CenterOffset, false),
                         new AutoPickupPiece(0).withTimeout(4),
+                        new InstantCommand(() -> switchPipelines(0)),
+                        new InstantCommand(() -> ArmPosition.setPosition(ArmPosition.StartingConfig)),
                         traj_HPtoKL.cmd(),
-                        new InstantCommand(() -> ArmPosition.setPosition(scoringPosition)),
-                        new AlignToApril(AlignPosition.RightOffset, true),
+                        new InstantCommand(() -> s_Swerve.drive(new Translation2d(0,0), 0, true, true)),
+                        new InstantCommand(() -> ArmPosition.setPosition(ArmPosition.L4)),
+                        new AlignToApril(AlignPosition.LeftOffset, true, 30),
                         new ManipulateCoral(false),
-                        new InstantCommand(() -> ArmPosition.setPosition(ArmPosition.StartingConfig))
+                        new ResetArm()
                         ));
 
 
@@ -168,7 +181,7 @@ public class ChoreoSubsystem extends SubsystemBase {
         AutoTrajectory traj_HPtoEF = routine.trajectory("HPToEF");
         AutoTrajectory traj_CDtoHP = routine.trajectory("CDtoHP");
         AutoTrajectory traj_KLtoHP = routine.trajectory("KLtoHP");
-        AutoTrajectory traj_HPtoKL = routine.trajectory("HPtoKL");
+        AutoTrajectory traj_HPtoCD = routine.trajectory("HPtoCD");
 
         ArmPosition scoringPosition = ArmPosition.L4;
 
@@ -176,28 +189,35 @@ public class ChoreoSubsystem extends SubsystemBase {
         routine.active().onTrue(
                 Commands.sequence(
                         // traj_startToIJ.resetOdometry(), //rotateBy(180);
+                        // new InstantCommand(() -> ArmPosition.setPosition(ArmPosition.StartingConfig)),
                         new InstantCommand(() -> s_Swerve.setHeading(Rotation2d.fromDegrees(0))),
                         traj_startToEF.cmd(),
-                        new InstantCommand(() -> ArmPosition.setPosition(scoringPosition)),
-                        new AlignToApril(AlignPosition.LeftOffset, true).withTimeout(3),
+                        new InstantCommand(() -> ArmPosition.setPosition(ArmPosition.L4)),
+                        new AlignToApril(AlignPosition.RightOffset, true, 0).withTimeout(3),
                         new ManipulateCoral(false),
-                        new InstantCommand(() -> ArmPosition.setPosition(ArmPosition.StartingConfig)),
+                        new ResetArm(),
                         traj_EFtoHP.cmd(),
                         // new AlignToApril(AlignPosition.CenterOffset, false).withTimeout(3),
                         new AutoPickupPiece(0).withTimeout(4),
-                        traj_HPtoEF.cmd(),
-                        new InstantCommand(() -> ArmPosition.setPosition(scoringPosition)),
-                        new AlignToApril(AlignPosition.RightOffset, true).withTimeout(4),
-                        new ManipulateCoral(false),
+                        // new InstantCommand(() -> switchPipelines(0)),
                         new InstantCommand(() -> ArmPosition.setPosition(ArmPosition.StartingConfig)),
-                        traj_KLtoHP.cmd(),
+                        traj_HPtoCD.cmd(),
+                        new InstantCommand(() -> s_Swerve.drive(new Translation2d(0,0), 0, true, true)),
+                        new InstantCommand(() -> ArmPosition.setPosition(ArmPosition.L4)),
+                        new AlignToApril(AlignPosition.RightOffset, true, 30).withTimeout(4),
+                        new ManipulateCoral(false),
+                        new ResetArm(),
+                        traj_CDtoHP.cmd(),
                         // new AlignToApril(AlignPosition.CenterOffset, false),
                         new AutoPickupPiece(0).withTimeout(4),
-                        traj_HPtoKL.cmd(),
-                        new InstantCommand(() -> ArmPosition.setPosition(scoringPosition)),
-                        new AlignToApril(AlignPosition.RightOffset, true),
+                        new InstantCommand(() -> switchPipelines(0)),
+                        new InstantCommand(() -> ArmPosition.setPosition(ArmPosition.StartingConfig)),
+                        traj_HPtoCD.cmd(),
+                        new InstantCommand(() -> s_Swerve.drive(new Translation2d(0,0), 0, true, true)),
+                        new InstantCommand(() -> ArmPosition.setPosition(ArmPosition.L4)),
+                        new AlignToApril(AlignPosition.LeftOffset, true, 30),
                         new ManipulateCoral(false),
-                        new InstantCommand(() -> ArmPosition.setPosition(ArmPosition.StartingConfig))
+                        new ResetArm()
                         ));
 
 

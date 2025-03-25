@@ -127,6 +127,11 @@ public class ExtensionSubsystem extends SubsystemBase {
         return Math.abs(encoder - ArmPosition.getPosition().extension) <= 2.5;
     }
 
+    public static boolean nearSetpointAuto() {
+        double encoder = extensionSubsystem.getExtensionEncoder();
+        return Math.abs(encoder - ArmPosition.getPosition().extension) <= 7.5;
+    }
+
     public void setSetpoint(double setpoint) {
         ArmPosition.setPosition(ArmPosition.Manual);
         lastExtensionPosition = ArmPosition.Manual;
@@ -170,6 +175,10 @@ public class ExtensionSubsystem extends SubsystemBase {
 
     public ArmPosition getArmPosition() {
         return lastExtensionPosition;
+    }
+
+    public void resetPID() {
+        pidController.reset(getExtensionEncoder());
     }
 
     @Override

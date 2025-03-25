@@ -30,7 +30,8 @@ public class LEDSubsystem extends SubsystemBase {
     private ManipulatorSubsystem manipulatorSubsystem;
     private IntakeSubsystem intakeSubsystem;
 
-    private Debouncer isCoralDebouncer;
+    private Debouncer isCoralDebouncerLeft;
+    private Debouncer isCoralDebouncerRight;
 
     private double timer;
     private boolean isStrobing;
@@ -59,7 +60,8 @@ public class LEDSubsystem extends SubsystemBase {
         candle1.clearAnimation(1);
         candle1.clearAnimation(2);
 
-        isCoralDebouncer = new Debouncer(0.05);
+        isCoralDebouncerLeft = new Debouncer(0.05);
+        isCoralDebouncerRight = new Debouncer(0.05);
 
         timer = 0;
         isStrobing = false;
@@ -100,7 +102,8 @@ public class LEDSubsystem extends SubsystemBase {
         if (isStrobing) {
             setStrobe();
         } else if (PivotSubsystem.nearSetpoint() && ManipulatorSubsystem.nearSetpoint() && ExtensionSubsystem.nearSetpoint()
-        && !currentArmPos.equals(ArmPosition.Ground) && !currentArmPos.equals(ArmPosition.StartingConfig) && !currentArmPos.equals(ArmPosition.Manual) && !currentArmPos.equals(ArmPosition.Travel)) {
+        && !currentArmPos.equals(ArmPosition.Ground) && !currentArmPos.equals(ArmPosition.StartingConfig) && !currentArmPos.equals(ArmPosition.Manual) && !currentArmPos.equals(ArmPosition.Travel)
+        && !currentArmPos.equals(ArmPosition.GroundP)) {
             setRainbow();
         } else if (intakeSubsystem.hasPiece()) {
             
@@ -109,7 +112,7 @@ public class LEDSubsystem extends SubsystemBase {
             } else {
                 setColor(fullBlue[0], fullBlue[1], fullBlue[2]);
             }
-        } else if (isCoralDebouncer.calculate(LimeLightSubsystem.getLeftInstance().isCoral()) || isCoralDebouncer.calculate(LimeLightSubsystem.getRightInstance().isCoral())) {
+        } else if (isCoralDebouncerLeft.calculate(LimeLightSubsystem.getLeftInstance().isCoral()) || isCoralDebouncerRight.calculate(LimeLightSubsystem.getRightInstance().isCoral())) {
             setColor(241, 250, 61); // Team "Safety Green" *eyeroll*
         } else {
             setBlack();
