@@ -37,6 +37,10 @@ public final class Constants {
 
     // True if new Ground Intake : False if Central MO intake
     public static final boolean isGroundIntake = true;
+    
+
+    public static final double coralIntakeSpeed = -1;
+    public static final double algaeIntakeSpeed = -1;
 
     public static final class Swerve {
         public static final int pigeonID = 10;
@@ -112,6 +116,7 @@ public final class Constants {
         /** Meters per Second */
 
         public static final double maxSpeed = 11; // TODO: This must be tuned to specific robot
+
 
         /** Radians per Second */
         public static final double maxAngularVelocity = 13.0; // TODO: This must be tuned to specific robot
@@ -201,7 +206,7 @@ public final class Constants {
                 kMaxAngularSpeedRadiansPerSecond, kMaxAngularSpeedRadiansPerSecondSquared);
     }
 
-    public static final double wristUpperLimitExtended = 17.648437;
+    public static final double wristUpperLimitExtended = 21.49755859375; //17.648437;
     public static final double wristLowerLimit = 0;
     public static final double pivotUpperLimit = 0;
     public static final double pivotLowerLimit = -60;
@@ -222,16 +227,18 @@ public final class Constants {
     public enum ArmPosition {
         Travel(-1, -.5, -1),
         L1(-30.87451171875, 9.765625E-4, 16.96533203125),
-        L2(-33.149169921875, 0.03173828125, 0.0),
+        L2(-29.92041015625, -1.021484375, 0.0458984375),
         L3(-42.545654296875, -7.36865234375, 5.32958984375),
-        L4(-53.49609375, -20.640625, 12.388671875), // Original: (-51.948974609375, -21.0, 12.2900390625) different rn because the new pvc
+        L4(-52.3505859375, -20.640625, 12.07958984375), // Original: (-51.948974609375, -21.0, 12.2900390625) different rn because the new pvc
         HighAlgae(-41.78173828125, -6.76416015625, 17.70703125),
         LowAlgae(-33.37744140625, -0.037109375, 17.7041015625),
         Ground(0.134521484375, 0, 17.20068359375),
         GroundP(-8.1962890625, -0.005859375, 11.43017578125),
         HumanP(-34.74365234375, 0.0029296875, 12.40283203125),
         Climb1(-34.94189453125, 0, 12.14306640625),
-        Climb2(-9.537841796875, 0, 12.64990234375),
+        Climb2(-7, 0, 12.64990234375),
+        Net(-59.96630859375, -21.33740234375, 17.20068359375),
+        NetP(-59.97314453125, -2.77880859375, 21.56494140625),
         StartingConfig(-30.032470703125, 0, 0),
         Manual(-1, -1, -1);
 
@@ -253,11 +260,20 @@ public final class Constants {
 
         public static void setPosition(ArmPosition position) {
             // If trying to go to Ground and previous setpoint was anything near the reef, set it to StartingConfig instead
-            if (Ground.equals(position) && (L1.equals(currentPosition) || L2.equals(currentPosition) || L3.equals(currentPosition) 
-             || L4.equals(currentPosition) || HighAlgae.equals(currentPosition) || LowAlgae.equals(currentPosition))) {
+            // if (Ground.equals(position) && (L1.equals(currentPosition) || L2.equals(currentPosition) || L3.equals(currentPosition) 
+            //  || L4.equals(currentPosition) || HighAlgae.equals(currentPosition) || LowAlgae.equals(currentPosition))) {
 
-                currentPosition = StartingConfig;
+                // currentPosition = StartingConfig;
+                // return;                
+            //}
+
+            if (Net.equals(position) && !NetP.equals(currentPosition)) {
+
+                currentPosition = NetP;
                 return;                
+            } else if (Net.equals(position) && NetP.equals(currentPosition)) {
+                currentPosition = Net;
+                return;
             }
 
             currentPosition = position;

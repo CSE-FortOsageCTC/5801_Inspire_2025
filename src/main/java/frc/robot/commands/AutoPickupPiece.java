@@ -92,7 +92,7 @@ public class AutoPickupPiece extends Command {
         double dX = 10000;
         double dY = 10000;
 
-        if (limelight.pieceDetected()){
+        if (limelight.isCoral()){
             dX = limelight.getX();
             dY = limelight.getY();
         }
@@ -148,7 +148,7 @@ public class AutoPickupPiece extends Command {
             autoRotateUtil.updateTargetAngle(-xValue * 2);
 
             if (isAligned()) {
-                intakeSubsystem.setIntakeSpeed(-1);
+                intakeSubsystem.setIntakeSpeed(Constants.coralIntakeSpeed, Constants.algaeIntakeSpeed);
                 ArmPosition.setPosition(ArmPosition.Ground);
                 System.out.println("It should be moving the arm right now");
                 hasSeenPiece = true;
@@ -191,7 +191,7 @@ public class AutoPickupPiece extends Command {
     @Override
     public void end(boolean over) {
         swerve.drive(new Translation2d(0, 0), 0, true, true);
-        intakeSubsystem.setIntakeSpeed(0);
+        intakeSubsystem.setIntakeSpeed(0,0);
         detectedDelayCount = 0;
         inUsePID.reset();
         // yTranslationPidController.reset();

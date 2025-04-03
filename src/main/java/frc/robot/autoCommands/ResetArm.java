@@ -8,7 +8,15 @@ import frc.robot.subsystems.PivotSubsystem;
 
 public class ResetArm extends Command{
 
+    private boolean hasPause = false;
+    private int counter = 25;
+
+    public ResetArm(boolean hasPause) {
+        this.hasPause = hasPause;
+    }
+    
     public ResetArm() {
+
     }
 
     @Override
@@ -19,8 +27,15 @@ public class ResetArm extends Command{
     }
 
     @Override
+    public void execute() {
+        if (ExtensionSubsystem.nearSetpointAuto()) {
+            counter--;
+        }
+    }
+
+    @Override
     public boolean isFinished() {
-        return ExtensionSubsystem.nearSetpointAuto();
+        return (ExtensionSubsystem.nearSetpointAuto() && !hasPause) || (hasPause && counter == 0);
     }
 
 

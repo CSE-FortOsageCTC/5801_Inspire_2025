@@ -151,7 +151,7 @@ public class ManipulatorSubsystem extends SubsystemBase {
     @Override
     public void periodic() {
         // SmartDashboard.putNumber("Wrist Kraken Encoder", getWristEncoder());
-        // SmartDashboard.putNumber("Wrist Absolute Encoder", wristEncoder.get());
+        SmartDashboard.putNumber("Wrist Absolute Encoder", getWristEncoder());
         // SmartDashboard.putNumber("HSV CanAndColor", getHSVHue());
         // pidController.setP(0.3);
 

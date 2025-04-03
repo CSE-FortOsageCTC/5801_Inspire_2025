@@ -14,15 +14,16 @@ import org.w3c.dom.css.RGBColor;
 import com.ctre.phoenix.ParamEnum;
 import com.ctre.phoenix.led.CANdle;
 import com.ctre.phoenix.led.RainbowAnimation;
+import com.ctre.phoenix.led.RgbFadeAnimation;
 import com.ctre.phoenix.led.StrobeAnimation;
-import com.ctre.phoenix.led.TwinkleAnimation;
 
 
 public class LEDSubsystem extends SubsystemBase {
     private CANdle candle1 = new CANdle(42);
     private RainbowAnimation rainbowAnimation = new RainbowAnimation(1, .8, 31);
-    private TwinkleAnimation larsonAnimation = new TwinkleAnimation(65,105,225);
+    // private TwinkleAnimation larsonAnimation = new TwinkleAnimation(65,105,225);
     private StrobeAnimation strobeAnimation = new StrobeAnimation(65, 105, 225, 255, 0.2,31);
+    private RgbFadeAnimation rgbFadeAnimation = new RgbFadeAnimation(255, 0.8, 31);
 
     private static LEDSubsystem ledSubsystem;
     private PivotSubsystem pivotSubsystem;
@@ -81,6 +82,10 @@ public class LEDSubsystem extends SubsystemBase {
         candle1.animate(rainbowAnimation, 1);
     }
 
+    public void setRgbFade() {
+        candle1.animate(rgbFadeAnimation, 1);
+    }
+
     public void setBlack() {
         candle1.clearAnimation(1);
         candle1.setLEDs(0, 0, 0);
@@ -116,6 +121,7 @@ public class LEDSubsystem extends SubsystemBase {
             setColor(241, 250, 61); // Team "Safety Green" *eyeroll*
         } else {
             setBlack();
+            // setRgbFade();
         }
 
     }

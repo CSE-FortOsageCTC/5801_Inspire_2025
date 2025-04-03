@@ -70,8 +70,8 @@ public class Swerve extends SubsystemBase {
     // public ProfiledPIDController translationYController = new
     // ProfiledPIDController(10, 0, 0, new TrapezoidProfile.Constraints(1, .5));
 
-    public PIDController translationXController = new PIDController(0.6, 0, 0);
-    public PIDController translationYController = new PIDController(0.6, 0, 0);
+    public ProfiledPIDController translationXController = new ProfiledPIDController(0.5, 0, 0, new TrapezoidProfile.Constraints(400, 200));
+    public ProfiledPIDController translationYController = new ProfiledPIDController(0.5, 0, 0,new TrapezoidProfile.Constraints(400, 200));
 
     private final PIDController autoXController = new PIDController(10.0, 0.0, 0.0);
     private final PIDController autoYController = new PIDController(10.0, 0.0, 0.0);
@@ -419,8 +419,8 @@ public class Swerve extends SubsystemBase {
             speedY = 0;
         }
         // Added clamps
-        speedX = MathUtil.clamp(speedX, -0.17, 0.17);
-        speedY = MathUtil.clamp(speedY, -0.17, 0.17);
+        // speedX = MathUtil.clamp(speedX, -0.17, 0.17);
+        // speedY = MathUtil.clamp(speedY, -0.17, 0.17);
         return new Translation2d(speedX, speedY);
 
     }
@@ -491,8 +491,9 @@ public class Swerve extends SubsystemBase {
     }
 
     public void resetAlignApril() {
-        translationXController.reset();
-        translationYController.reset();
+        Pose2d postion=swerveEstimator.getEstimatedPosition();
+        translationXController.reset(postion.getX());
+        translationYController.reset(postion.getY());
         s_AutoRotateUtil.reset();
     }
 

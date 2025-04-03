@@ -3,6 +3,7 @@ package frc.robot.autoCommands;
 import java.security.cert.Extension;
 
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.Constants;
 import frc.robot.subsystems.ExtensionSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.ManipulatorSubsystem;
@@ -18,7 +19,9 @@ public class ManipulateCoral extends Command {
 
     private boolean isL1;
 
-    private double speed = -1;
+    private double speed = Constants.coralIntakeSpeed;
+    private double algaeSpeed = Constants.algaeIntakeSpeed;
+
 
     public ManipulateCoral(boolean isL1) {
 
@@ -28,6 +31,7 @@ public class ManipulateCoral extends Command {
 
         if (isL1) {
             speed = 0.5;
+            algaeSpeed = 0.5;
         }
 
         addRequirements(intakeSubsystem);
@@ -44,7 +48,7 @@ public class ManipulateCoral extends Command {
             if (!isL1) {
                 timer++;
             }
-            intakeSubsystem.setIntakeSpeed(speed);
+            intakeSubsystem.setIntakeSpeed(speed, algaeSpeed);
         }
     }
 
@@ -55,7 +59,7 @@ public class ManipulateCoral extends Command {
 
     @Override
     public void end(boolean isFinished) {
-        intakeSubsystem.setIntakeSpeed(0);
+        intakeSubsystem.setIntakeSpeed(0, 0);
 
         timer = 0;
         startDelay = 10;

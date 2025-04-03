@@ -58,8 +58,8 @@ public class IntakeSubsystem extends SubsystemBase {
 
         coralConfig.smartCurrentLimit(20, 20);
 
-        algaeConfig.smartCurrentLimit(20, 20);
-        algaeConfig.follow(54, false);
+        algaeConfig.smartCurrentLimit(30, 20);
+        //algaeConfig.follow(54, false);
 
         coralIntake.configure(coralConfig, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
         algaeIntake.configure(algaeConfig, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
@@ -79,11 +79,13 @@ public class IntakeSubsystem extends SubsystemBase {
         // canandcolor.setSettings(cacSettings);
     }
 
-    public void setIntakeSpeed(double speed) {
-        if (hasPiece() && speed < 0 && ArmPosition.Ground.equals(ArmPosition.getPosition())) {
-            speed = 0;
+    public void setIntakeSpeed(double coralSpeed, double algaeSpeed) {
+        if (hasPiece() && coralSpeed < 0 && ArmPosition.Ground.equals(ArmPosition.getPosition())) {
+            coralSpeed = 0;
+            algaeSpeed = 0;
         }
-        coralIntake.set(speed);
+        coralIntake.set(coralSpeed);
+        algaeIntake.set(algaeSpeed);
     }
 
     public double getProximity() {

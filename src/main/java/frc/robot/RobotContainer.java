@@ -107,9 +107,12 @@ public class RobotContainer {
     autoChooser = new AutoChooser();
 
     // Add options to the chooser
-    autoChooser.addRoutine("onePiece", s_choreoSubsystem::onePieceAuto);
-    autoChooser.addRoutine("two piece ij", s_choreoSubsystem::twoPieceIJAuto);
-    autoChooser.addRoutine("two piece ef", s_choreoSubsystem::twoPieceEFAuto);
+    autoChooser.addRoutine("1P-GH", s_choreoSubsystem::onePieceAuto);
+    autoChooser.addRoutine("3P-IJ", s_choreoSubsystem::twoPieceIJAuto);
+    autoChooser.addRoutine("3P-EF", s_choreoSubsystem::twoPieceEFAuto);
+    
+    autoChooser.addRoutine("3P-IJ-Push", s_choreoSubsystem::twoPieceIJPush);
+    autoChooser.addRoutine("3P-EF-Push", s_choreoSubsystem::twoPieceEFPush);
     //autoChooser.addRoutine("L2 IJ", s_choreoSubsystem::twoPieceIJAutoL2); //If we need an L2 Auto
 
     // autoChooser.addCmd("Example Auto Command", this::exampleAutoCommand);
@@ -122,7 +125,7 @@ public class RobotContainer {
     s_Swerve.setDefaultCommand(new DefaultTeleop(driver, operator));
     manipulatorSubsystem.setDefaultCommand(armDefaultCommand);
     // Initialize Driver Button Functions
-    driver_Start_ZeroHeading.onTrue(new InstantCommand(() -> s_Swerve.zeroHeading()));
+    driver_Back_Function.onTrue(new InstantCommand(() -> s_Swerve.zeroHeading()));
     driver_X_Function.whileTrue(new AlignToApril(AlignPosition.LeftOffset, true, 0));
     driver_B_Function.whileTrue(new AlignToApril(AlignPosition.RightOffset, true, 0));
     driver_Y_Function.whileTrue(new AutoPickupPiece(0));
@@ -140,6 +143,7 @@ public class RobotContainer {
     operatorRightDPad.onTrue(new InstantCommand(() -> ArmPosition.setPosition(ArmPosition.L1)));
     operatorUpDPad.onTrue(new InstantCommand(() -> ArmPosition.setPosition(ArmPosition.HighAlgae)));
     operatorDownDPad.onTrue(new InstantCommand(() -> ArmPosition.setPosition(ArmPosition.LowAlgae)));
+    operatorStart.onTrue(new InstantCommand(() -> ArmPosition.setPosition(ArmPosition.Net)));
 
 
 

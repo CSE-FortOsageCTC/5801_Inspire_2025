@@ -106,7 +106,7 @@ public class PivotSubsystem extends SubsystemBase {
 
         climbingClamp = new SparkMax(20, MotorType.kBrushless);
         config = new SparkMaxConfig();
-        config.smartCurrentLimit(20);
+        config.smartCurrentLimit(35);
         config.idleMode(IdleMode.kCoast);
 
         climbingClamp.configure(config, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
@@ -125,7 +125,7 @@ public class PivotSubsystem extends SubsystemBase {
             e.printStackTrace();
         }
 
-        pidController = new ProfiledPIDController(0.275, 0, 0, new TrapezoidProfile.Constraints(200, 150));
+        pidController = new ProfiledPIDController(0.275, 0, 0, new TrapezoidProfile.Constraints(500, 200));
         pidController.setTolerance(0.1);
 
         manualSetpoint = -30;//getPivotEncoder();
