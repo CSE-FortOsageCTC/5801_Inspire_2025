@@ -487,6 +487,7 @@ public class Swerve extends SubsystemBase {
     public void alignAprilTag(AlignPosition alignPos, boolean isScoring) {
 
         AlignPosition.setPosition(alignPos, isScoring);
+        resetAlignApril();
 
     }
 

@@ -107,12 +107,12 @@ public class RobotContainer {
     autoChooser = new AutoChooser();
 
     // Add options to the chooser
-    autoChooser.addRoutine("1P-GH", s_choreoSubsystem::onePieceAuto);
-    autoChooser.addRoutine("3P-IJ", s_choreoSubsystem::twoPieceIJAuto);
-    autoChooser.addRoutine("3P-EF", s_choreoSubsystem::twoPieceEFAuto);
+    // autoChooser.addRoutine("1P-GH", s_choreoSubsystem::onePieceAuto);
+    // autoChooser.addRoutine("3P-IJ", s_choreoSubsystem::twoPieceIJAuto);
+    // autoChooser.addRoutine("3P-EF", s_choreoSubsystem::twoPieceEFAuto);
     
-    autoChooser.addRoutine("3P-IJ-Push", s_choreoSubsystem::twoPieceIJPush);
-    autoChooser.addRoutine("3P-EF-Push", s_choreoSubsystem::twoPieceEFPush);
+    // autoChooser.addRoutine("3P-IJ-Push", s_choreoSubsystem::twoPieceIJPush);
+    // autoChooser.addRoutine("3P-EF-Push", s_choreoSubsystem::twoPieceEFPush);
 
     autoChooser.addRoutine("EFLollipopTest", s_choreoSubsystem::lollipopEFAuto);
     //autoChooser.addRoutine("L2 IJ", s_choreoSubsystem::twoPieceIJAutoL2); //If we need an L2 Auto
