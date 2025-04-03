@@ -21,6 +21,7 @@ import frc.robot.autoCommands.PushForPoints;
 import frc.robot.autoCommands.ResetArm;
 import frc.robot.commands.AlignToApril;
 import frc.robot.commands.AutoPickupPiece;
+import frc.robot.commands.IntakeCommand;
 
 import java.sql.Driver;
 import java.util.Optional;
@@ -62,12 +63,12 @@ public class ChoreoSubsystem extends SubsystemBase {
                 isRed(),
                 s_Swerve);
 
-        // autoFactory.bind("hi", new InstantCommand(() -> System.out.println("this is
-        // the bind")));
+        // autoFactory.bind("ArmGround", new InstantCommand(() -> ArmPosition.setPosition(ArmPosition.Ground)));
+        // autoFactory.bind("GroundIntake", new InstantCommand(() -> IntakeSubsystem.getInstance().setIntakeSpeed(-1, -1)));
     }
 
     private void switchPipelines(int pipeline) {
-        
+
         LimeLightSubsystem.getLeftInstance().setPipeline(pipeline);
         LimeLightSubsystem.getRightInstance().setPipeline(pipeline);
     }
@@ -111,7 +112,8 @@ public class ChoreoSubsystem extends SubsystemBase {
         routine.active().onTrue(
                 Commands.sequence(
                         // traj_startToIJ.resetOdometry(),
-                        // new InstantCommand(() -> ArmPosition.setPosition(ArmPosition.StartingConfig)),
+                        // new InstantCommand(() ->
+                        // ArmPosition.setPosition(ArmPosition.StartingConfig)),
                         new InstantCommand(() -> s_Swerve.setHeading(Rotation2d.fromDegrees(0))), // rotateBy(180);
                         traj_startToHG.cmd(),
                         new InstantCommand(() -> ArmPosition.setPosition(ArmPosition.L4)),
@@ -138,7 +140,8 @@ public class ChoreoSubsystem extends SubsystemBase {
         routine.active().onTrue(
                 Commands.sequence(
                         // traj_startToIJ.resetOdometry(), //rotateBy(180);
-                        // new InstantCommand(() -> ArmPosition.setPosition(ArmPosition.StartingConfig)),
+                        // new InstantCommand(() ->
+                        // ArmPosition.setPosition(ArmPosition.StartingConfig)),
                         new InstantCommand(() -> s_Swerve.setHeading(Rotation2d.fromDegrees(0))),
                         traj_startToIJ.cmd(),
                         new InstantCommand(() -> ArmPosition.setPosition(ArmPosition.L4)),
@@ -151,7 +154,7 @@ public class ChoreoSubsystem extends SubsystemBase {
                         // new InstantCommand(() -> switchPipelines(0)),
                         new InstantCommand(() -> ArmPosition.setPosition(ArmPosition.StartingConfig)),
                         traj_HPtoKL.cmd(),
-                        new InstantCommand(() -> s_Swerve.drive(new Translation2d(0,0), 0, true, true)),
+                        new InstantCommand(() -> s_Swerve.drive(new Translation2d(0, 0), 0, true, true)),
                         new InstantCommand(() -> ArmPosition.setPosition(ArmPosition.L4)),
                         new AlignToApril(AlignPosition.RightOffset, true, 30).withTimeout(4),
                         new ManipulateCoral(false),
@@ -162,13 +165,11 @@ public class ChoreoSubsystem extends SubsystemBase {
                         new InstantCommand(() -> switchPipelines(0)),
                         new InstantCommand(() -> ArmPosition.setPosition(ArmPosition.StartingConfig)),
                         traj_HPtoKL.cmd(),
-                        new InstantCommand(() -> s_Swerve.drive(new Translation2d(0,0), 0, true, true)),
+                        new InstantCommand(() -> s_Swerve.drive(new Translation2d(0, 0), 0, true, true)),
                         new InstantCommand(() -> ArmPosition.setPosition(ArmPosition.L4)),
                         new AlignToApril(AlignPosition.LeftOffset, true, 30),
                         new ManipulateCoral(false),
-                        new ResetArm()
-                        ));
-
+                        new ResetArm()));
 
         return routine;
     }
@@ -190,7 +191,8 @@ public class ChoreoSubsystem extends SubsystemBase {
         routine.active().onTrue(
                 Commands.sequence(
                         // traj_startToIJ.resetOdometry(), //rotateBy(180);
-                        // new InstantCommand(() -> ArmPosition.setPosition(ArmPosition.StartingConfig)),
+                        // new InstantCommand(() ->
+                        // ArmPosition.setPosition(ArmPosition.StartingConfig)),
                         new InstantCommand(() -> s_Swerve.setHeading(Rotation2d.fromDegrees(0))),
                         traj_startToEF.cmd(),
                         new InstantCommand(() -> ArmPosition.setPosition(ArmPosition.L4)),
@@ -203,7 +205,7 @@ public class ChoreoSubsystem extends SubsystemBase {
                         // new InstantCommand(() -> switchPipelines(0)),
                         new InstantCommand(() -> ArmPosition.setPosition(ArmPosition.StartingConfig)),
                         traj_HPtoCD.cmd(),
-                        new InstantCommand(() -> s_Swerve.drive(new Translation2d(0,0), 0, true, true)),
+                        new InstantCommand(() -> s_Swerve.drive(new Translation2d(0, 0), 0, true, true)),
                         new InstantCommand(() -> ArmPosition.setPosition(ArmPosition.L4)),
                         new AlignToApril(AlignPosition.RightOffset, true, 30).withTimeout(4),
                         new ManipulateCoral(false),
@@ -214,13 +216,11 @@ public class ChoreoSubsystem extends SubsystemBase {
                         new InstantCommand(() -> switchPipelines(0)),
                         new InstantCommand(() -> ArmPosition.setPosition(ArmPosition.StartingConfig)),
                         traj_HPtoCD.cmd(),
-                        new InstantCommand(() -> s_Swerve.drive(new Translation2d(0,0), 0, true, true)),
+                        new InstantCommand(() -> s_Swerve.drive(new Translation2d(0, 0), 0, true, true)),
                         new InstantCommand(() -> ArmPosition.setPosition(ArmPosition.L4)),
                         new AlignToApril(AlignPosition.LeftOffset, true, 30),
                         new ManipulateCoral(false),
-                        new ResetArm()
-                        ));
-
+                        new ResetArm()));
 
         return routine;
     }
@@ -242,7 +242,8 @@ public class ChoreoSubsystem extends SubsystemBase {
         routine.active().onTrue(
                 Commands.sequence(
                         // traj_startToIJ.resetOdometry(), //rotateBy(180);
-                        // new InstantCommand(() -> ArmPosition.setPosition(ArmPosition.StartingConfig)),
+                        // new InstantCommand(() ->
+                        // ArmPosition.setPosition(ArmPosition.StartingConfig)),
                         new PushForPoints(),
                         new InstantCommand(() -> s_Swerve.setHeading(Rotation2d.fromDegrees(0))),
                         traj_startToEF.cmd(),
@@ -256,7 +257,7 @@ public class ChoreoSubsystem extends SubsystemBase {
                         // new InstantCommand(() -> switchPipelines(0)),
                         new InstantCommand(() -> ArmPosition.setPosition(ArmPosition.StartingConfig)),
                         traj_HPtoCD.cmd(),
-                        new InstantCommand(() -> s_Swerve.drive(new Translation2d(0,0), 0, true, true)),
+                        new InstantCommand(() -> s_Swerve.drive(new Translation2d(0, 0), 0, true, true)),
                         new InstantCommand(() -> ArmPosition.setPosition(ArmPosition.L4)),
                         new AlignToApril(AlignPosition.RightOffset, true, 30).withTimeout(4),
                         new ManipulateCoral(false),
@@ -267,13 +268,11 @@ public class ChoreoSubsystem extends SubsystemBase {
                         new InstantCommand(() -> switchPipelines(0)),
                         new InstantCommand(() -> ArmPosition.setPosition(ArmPosition.StartingConfig)),
                         traj_HPtoCD.cmd(),
-                        new InstantCommand(() -> s_Swerve.drive(new Translation2d(0,0), 0, true, true)),
+                        new InstantCommand(() -> s_Swerve.drive(new Translation2d(0, 0), 0, true, true)),
                         new InstantCommand(() -> ArmPosition.setPosition(ArmPosition.L4)),
                         new AlignToApril(AlignPosition.LeftOffset, true, 30),
                         new ManipulateCoral(false),
-                        new ResetArm()
-                        ));
-
+                        new ResetArm()));
 
         return routine;
     }
@@ -294,7 +293,8 @@ public class ChoreoSubsystem extends SubsystemBase {
         routine.active().onTrue(
                 Commands.sequence(
                         // traj_startToIJ.resetOdometry(), //rotateBy(180);
-                        // new InstantCommand(() -> ArmPosition.setPosition(ArmPosition.StartingConfig)),
+                        // new InstantCommand(() ->
+                        // ArmPosition.setPosition(ArmPosition.StartingConfig)),
                         new PushForPoints(),
                         new InstantCommand(() -> s_Swerve.setHeading(Rotation2d.fromDegrees(0))),
                         traj_startToIJ.cmd(),
@@ -308,7 +308,7 @@ public class ChoreoSubsystem extends SubsystemBase {
                         // new InstantCommand(() -> switchPipelines(0)),
                         new InstantCommand(() -> ArmPosition.setPosition(ArmPosition.StartingConfig)),
                         traj_HPtoKL.cmd(),
-                        new InstantCommand(() -> s_Swerve.drive(new Translation2d(0,0), 0, true, true)),
+                        new InstantCommand(() -> s_Swerve.drive(new Translation2d(0, 0), 0, true, true)),
                         new InstantCommand(() -> ArmPosition.setPosition(ArmPosition.L4)),
                         new AlignToApril(AlignPosition.RightOffset, true, 30).withTimeout(4),
                         new ManipulateCoral(false),
@@ -319,14 +319,41 @@ public class ChoreoSubsystem extends SubsystemBase {
                         new InstantCommand(() -> switchPipelines(0)),
                         new InstantCommand(() -> ArmPosition.setPosition(ArmPosition.StartingConfig)),
                         traj_HPtoKL.cmd(),
-                        new InstantCommand(() -> s_Swerve.drive(new Translation2d(0,0), 0, true, true)),
+                        new InstantCommand(() -> s_Swerve.drive(new Translation2d(0, 0), 0, true, true)),
                         new InstantCommand(() -> ArmPosition.setPosition(ArmPosition.L4)),
                         new AlignToApril(AlignPosition.LeftOffset, true, 30),
                         new ManipulateCoral(false),
-                        new ResetArm()
-                        ));
+                        new ResetArm()));
 
+        return routine;
+    }
 
+    public AutoRoutine lollipopEFAuto() {
+        // System.out.println("this is before the auto routine");
+        AutoRoutine routine = autoFactory.newRoutine("lollipopEF");
+
+        // System.out.println("this is the top of the auto code");
+
+        // Load the routine's trajectories
+        AutoTrajectory traj_startToEF = routine.trajectory("startToEF");
+        AutoTrajectory traj_EFto3 = routine.trajectory("EFto3");
+
+        // When the routine begins, reset odometry and start the first trajectory
+        routine.active().onTrue(
+            Commands.sequence(
+                // traj_startToIJ.resetOdometry(),
+                // new InstantCommand(() ->
+                // ArmPosition.setPosition(ArmPosition.StartingConfig)),
+                new InstantCommand(() -> s_Swerve.setHeading(Rotation2d.fromDegrees(0))), // rotateBy(180);
+                traj_startToEF.cmd(),
+                new InstantCommand(() -> ArmPosition.setPosition(ArmPosition.L4)),
+                new AlignToApril(AlignPosition.LeftOffset, true, 0),
+                new ManipulateCoral(false),
+                new InstantCommand(() -> ArmPosition.setPosition(ArmPosition.StartingConfig)),
+                traj_EFto3.cmd(),
+                new InstantCommand(() -> IntakeSubsystem.getInstance().setIntakeSpeed(0, 0))
+
+        ));
         return routine;
     }
 

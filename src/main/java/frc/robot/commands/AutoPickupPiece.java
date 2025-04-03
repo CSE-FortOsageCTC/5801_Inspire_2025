@@ -170,7 +170,7 @@ public class AutoPickupPiece extends Command {
             swerve.drive(translation, rotation, false, true);
         } else {
             if (ArmPosition.Ground.equals(ArmPosition.getPosition()) && isAligned()) {
-                System.out.println("is creeping forward");
+                //System.out.println("is creeping forward");
                 swerve.drive(new Translation2d(-0.25, 0).times(Constants.Swerve.maxSpeed), 0, false, true);
             } else {
                 swerve.drive(new Translation2d(0, 0).times(Constants.Swerve.maxSpeed), 0, false, true);
