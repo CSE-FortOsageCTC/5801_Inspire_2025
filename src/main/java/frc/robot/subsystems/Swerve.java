@@ -70,8 +70,8 @@ public class Swerve extends SubsystemBase {
     // public ProfiledPIDController translationYController = new
     // ProfiledPIDController(10, 0, 0, new TrapezoidProfile.Constraints(1, .5));
 
-    public PIDController translationXController = new PIDController(0.5, 0, 0);
-    public PIDController translationYController = new PIDController(0.5, 0, 0);
+    public ProfiledPIDController translationXController = new ProfiledPIDController(0.5, 0, 0, new TrapezoidProfile.Constraints(400, 200));
+    public ProfiledPIDController translationYController = new ProfiledPIDController(0.5, 0, 0,new TrapezoidProfile.Constraints(400, 200));
 
     private final PIDController autoXController = new PIDController(10.0, 0.0, 0.0);
     private final PIDController autoYController = new PIDController(10.0, 0.0, 0.0);
@@ -404,7 +404,7 @@ public class Swerve extends SubsystemBase {
     public Translation2d translateToApril() {
         double speedX;
         double speedY;
-        if (!translationXController.atSetpoint()) {
+        if (!translationXController.atGoal()) {
             speedX = translationXController.calculate(swerveEstimator.getEstimatedPosition().getX(),
                     AlignPosition.getAlignOffset().getX());
 
@@ -412,7 +412,7 @@ public class Swerve extends SubsystemBase {
             speedX = 0;
         }
 
-        if (!translationYController.atSetpoint()) {
+        if (!translationYController.atGoal()) {
             speedY = translationYController.calculate(swerveEstimator.getEstimatedPosition().getY(),
                     AlignPosition.getAlignOffset().getY());
         } else {
@@ -487,19 +487,18 @@ public class Swerve extends SubsystemBase {
     public void alignAprilTag(AlignPosition alignPos, boolean isScoring) {
 
         AlignPosition.setPosition(alignPos, isScoring);
-        resetAlignApril();
 
     }
 
     public void resetAlignApril() {
-        // Pose2d postion=swerveEstimator.getEstimatedPosition();
-        translationXController.reset();
-        translationYController.reset();
+        Pose2d postion=swerveEstimator.getEstimatedPosition();
+        translationXController.reset(postion.getX());
+        translationYController.reset(postion.getY());
         s_AutoRotateUtil.reset();
     }
 
     public boolean alignAprilFinished() {
-        return translationXController.atSetpoint() && translationYController.atSetpoint()
+        return translationXController.atGoal() && translationYController.atGoal()
                 && s_AutoRotateUtil.isFinished();
     }
 

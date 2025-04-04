@@ -346,9 +346,10 @@ public class ChoreoSubsystem extends SubsystemBase {
                 // ArmPosition.setPosition(ArmPosition.StartingConfig)),
                 new InstantCommand(() -> s_Swerve.setHeading(Rotation2d.fromDegrees(0))),
                 traj_startToEF.cmd().withTimeout(1),
+                
                 new InstantCommand(() -> ArmPosition.setPosition(ArmPosition.L4)),
-                new AlignToApril(AlignPosition.LeftOffset, true, 0).withTimeout(0.1),
-                new AlignToApril(AlignPosition.LeftOffset, true, 0).withTimeout(0.1),
+                // new AlignToApril(AlignPosition.LeftOffset, true, 0).withTimeout(0.1),
+                // new AlignToApril(AlignPosition.LeftOffset, true, 0).withTimeout(0.1),
                 new AlignToApril(AlignPosition.LeftOffset, true, 0).withTimeout(3),
                 new ManipulateCoral(false),
                 new InstantCommand(() -> ArmPosition.setPosition(ArmPosition.StartingConfig)),
