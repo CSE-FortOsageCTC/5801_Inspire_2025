@@ -11,18 +11,24 @@ public class ResetArm extends Command{
     private boolean hasPause = false;
     private int counter = 25;
 
+    private ArmPosition armPosition;
+
     public ResetArm(boolean hasPause) {
         this.hasPause = hasPause;
     }
+
+    public ResetArm(ArmPosition armPosition) {
+        this.armPosition = armPosition;
+    }
     
     public ResetArm() {
-
+        armPosition = ArmPosition.StartingConfig;
     }
 
     @Override
     public void initialize() {
         
-        ArmPosition.setPosition(ArmPosition.StartingConfig);
+        ArmPosition.setPosition(armPosition);
 
     }
 

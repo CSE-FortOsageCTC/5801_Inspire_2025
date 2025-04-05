@@ -1,5 +1,9 @@
 package frc.robot.subsystems;
 
+import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.configs.TalonFXConfigurator;
+import com.ctre.phoenix6.hardware.DeviceIdentifier;
+import com.ctre.phoenix6.hardware.TalonFX;
 import com.reduxrobotics.sensors.canandcolor.Canandcolor;
 import com.reduxrobotics.sensors.canandcolor.CanandcolorSettings;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
@@ -23,7 +27,7 @@ import frc.robot.Constants.ArmPosition;
 public class IntakeSubsystem extends SubsystemBase {
 
     private static SparkMax coralIntake;
-    private static SparkMax algaeIntake;
+    private static TalonFX algaeIntake;
 
     private static IntakeSubsystem intakeSubsystem;
 
@@ -46,23 +50,19 @@ public class IntakeSubsystem extends SubsystemBase {
 
     private IntakeSubsystem() {
         coralIntake = new SparkMax(54, MotorType.kBrushless);
-        algaeIntake = new SparkMax(55, MotorType.kBrushless);
-
-        //coralIntake.
+        algaeIntake = new TalonFX(55);
 
         limelightRight = LimeLightSubsystem.getRightInstance();
         limelightLeft = LimeLightSubsystem.getLeftInstance();
 
         SparkMaxConfig coralConfig = new SparkMaxConfig();
-        SparkMaxConfig algaeConfig = new SparkMaxConfig();
 
         coralConfig.smartCurrentLimit(20, 20);
 
-        algaeConfig.smartCurrentLimit(30, 20);
         //algaeConfig.follow(54, false);
 
         coralIntake.configure(coralConfig, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
-        algaeIntake.configure(algaeConfig, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
+        // algaeIntake.configure(algaeConfig, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
 
         laserCan = new LaserCan(30);
 

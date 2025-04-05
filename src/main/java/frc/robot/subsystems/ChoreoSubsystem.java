@@ -107,6 +107,7 @@ public class ChoreoSubsystem extends SubsystemBase {
 
         // Load the routine's trajectories
         AutoTrajectory traj_startToHG = routine.trajectory("startToHG");
+        AutoTrajectory traj_ABToNet = routine.trajectory("ABToNet");
 
         // When the routine begins, reset odometry and start the first trajectory
         routine.active().onTrue(
@@ -115,11 +116,26 @@ public class ChoreoSubsystem extends SubsystemBase {
                         // new InstantCommand(() ->
                         // ArmPosition.setPosition(ArmPosition.StartingConfig)),
                         new InstantCommand(() -> s_Swerve.setHeading(Rotation2d.fromDegrees(0))), // rotateBy(180);
-                        traj_startToHG.cmd(),
-                        new InstantCommand(() -> ArmPosition.setPosition(ArmPosition.L4)),
+                        // traj_startToHG.cmd(),
+                        //new InstantCommand(() -> ArmPosition.setPosition(ArmPosition.L4)),
                         new AlignToApril(AlignPosition.LeftOffset, true, 0),
+                        new InstantCommand(() -> ArmPosition.setPosition(ArmPosition.L4)),
                         new ManipulateCoral(false),
-                        new InstantCommand(() -> ArmPosition.setPosition(ArmPosition.StartingConfig))));
+                        new ResetArm(),
+                        new AlignToApril(AlignPosition.CenterOffset, true, 0),
+                        new InstantCommand(() -> ArmPosition.setPosition(ArmPosition.LowAlgae)),
+                        new InstantCommand(() -> IntakeSubsystem.getInstance().setIntakeSpeed(0, 0.5)),
+                        new WaitCommand(1.5),
+                        new InstantCommand(() -> ArmPosition.setPosition(ArmPosition.NetP)),
+                        traj_ABToNet.cmd(),
+                        new InstantCommand(() -> s_Swerve.drive(new Translation2d(0, 0), 0, true, true)),
+                        new ResetArm(ArmPosition.Net),
+                        new InstantCommand(() -> IntakeSubsystem.getInstance().setIntakeSpeed(0, -0.5)),
+                        new WaitCommand(1),
+                        new InstantCommand(() -> IntakeSubsystem.getInstance().setIntakeSpeed(0, 0)),
+                        new ResetArm()
+                )
+            );
 
         return routine;
     }
