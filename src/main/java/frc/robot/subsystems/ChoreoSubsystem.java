@@ -108,6 +108,9 @@ public class ChoreoSubsystem extends SubsystemBase {
         // Load the routine's trajectories
         AutoTrajectory traj_startToHG = routine.trajectory("startToHG");
         AutoTrajectory traj_ABToNet = routine.trajectory("ABToNet");
+        AutoTrajectory traj_NettoIJ = routine.trajectory("NetToIJ");
+        AutoTrajectory traj_IJtoNet = routine.trajectory("IJtoNet");
+        AutoTrajectory traj_GetRP = routine.trajectory("GetRP");
 
         // When the routine begins, reset odometry and start the first trajectory
         routine.active().onTrue(
@@ -123,6 +126,7 @@ public class ChoreoSubsystem extends SubsystemBase {
                         new ManipulateCoral(false),
                         new ResetArm(),
                         new AlignToApril(AlignPosition.CenterOffset, true, 0),
+                        new InstantCommand(() -> switchPipelines(0)),
                         new InstantCommand(() -> ArmPosition.setPosition(ArmPosition.LowAlgae)),
                         new InstantCommand(() -> IntakeSubsystem.getInstance().setIntakeSpeed(0, 0.5)),
                         new WaitCommand(1.5),
@@ -131,9 +135,23 @@ public class ChoreoSubsystem extends SubsystemBase {
                         new InstantCommand(() -> s_Swerve.drive(new Translation2d(0, 0), 0, true, true)),
                         new ResetArm(ArmPosition.Net),
                         new InstantCommand(() -> IntakeSubsystem.getInstance().setIntakeSpeed(0, -0.5)),
-                        new WaitCommand(1),
+                        new WaitCommand(0.25),
                         new InstantCommand(() -> IntakeSubsystem.getInstance().setIntakeSpeed(0, 0)),
-                        new ResetArm()
+                        new ResetArm(),
+                        new InstantCommand(() -> ArmPosition.setPosition(ArmPosition.HighAlgae)),
+                        traj_NettoIJ.cmd(),
+                        new InstantCommand(() -> IntakeSubsystem.getInstance().setIntakeSpeed(0, 0.5)),
+                        new AlignToApril(AlignPosition.CenterOffset, true, 0),
+                        new WaitCommand(0.5),
+                        new InstantCommand(() -> ArmPosition.setPosition(ArmPosition.NetP)),
+                        traj_IJtoNet.cmd(),
+                        new InstantCommand(() -> s_Swerve.drive(new Translation2d(0, 0), 0, true, true)),
+                        new ResetArm(ArmPosition.Net),
+                        new InstantCommand(() -> IntakeSubsystem.getInstance().setIntakeSpeed(0, -0.5)),
+                        new WaitCommand(0.25),
+                        new InstantCommand(() -> IntakeSubsystem.getInstance().setIntakeSpeed(0, 0)),
+                        new ResetArm(),
+                        traj_GetRP.cmd()
                 )
             );
 
@@ -355,7 +373,7 @@ public class ChoreoSubsystem extends SubsystemBase {
         AutoTrajectory traj_EFto3 = routine.trajectory("EFtoThree");
         
         AutoTrajectory traj_3ToAB = routine.trajectory("threeToAB");
-        AutoTrajectory traj_ABto2 = routine.trajectory("ABtoTwo");
+        AutoTrajectory traj_ABto2 = routine.trajectory("ABtoTwoEF");
         AutoTrajectory traj_2ToAB = routine.trajectory("twoToAB");
 
         // When the routine begins, reset odometry and start the first trajectory
@@ -373,18 +391,23 @@ public class ChoreoSubsystem extends SubsystemBase {
                 new AlignToApril(AlignPosition.LeftOffset, true, 0).withTimeout(1),
                 new ManipulateCoral(false),
                 new ResetArm(),
+                new InstantCommand(() -> switchPipelines(0)),
                 traj_EFto3.cmd(),
                 new InstantCommand(() -> IntakeSubsystem.getInstance().setIntakeSpeed(0, 0)),
                 new InstantCommand(() -> ArmPosition.setPosition(ArmPosition.StartingConfig)),
+                new InstantCommand(() -> switchPipelines(0)),
                 traj_3ToAB.cmd(),
                 new InstantCommand(() -> s_Swerve.drive(new Translation2d(0, 0), 0, true, true)),
                 new AlignToApril(AlignPosition.RightOffset, true, 0).withTimeout(4),
                 new InstantCommand(() -> ArmPosition.setPosition(ArmPosition.L4)),
+                // new AlignToApril(AlignPosition.LeftOffset, true, 0).withTimeout(4),
                 new ManipulateCoral(false),
                 new ResetArm(),
+                new InstantCommand(() -> switchPipelines(0)),
                 traj_ABto2.cmd(),
                 new InstantCommand(() -> IntakeSubsystem.getInstance().setIntakeSpeed(0, 0)),
                 new InstantCommand(() -> ArmPosition.setPosition(ArmPosition.StartingConfig)),
+                new InstantCommand(() -> switchPipelines(0)),
                 traj_2ToAB.cmd(),
                 new InstantCommand(() -> s_Swerve.drive(new Translation2d(0, 0), 0, true, true)),
                 new AlignToApril(AlignPosition.LeftOffset, true, 0).withTimeout(4),
@@ -425,18 +448,23 @@ public class ChoreoSubsystem extends SubsystemBase {
                 new AlignToApril(AlignPosition.RightOffset, true, 0).withTimeout(1),
                 new ManipulateCoral(false),
                 new ResetArm(),
+                new InstantCommand(() -> switchPipelines(0)),
                 traj_IJto1.cmd(),
                 new InstantCommand(() -> IntakeSubsystem.getInstance().setIntakeSpeed(0, 0)),
                 new InstantCommand(() -> ArmPosition.setPosition(ArmPosition.StartingConfig)),
+                new InstantCommand(() -> switchPipelines(0)),
                 traj_1ToAB.cmd(),
                 new InstantCommand(() -> s_Swerve.drive(new Translation2d(0, 0), 0, true, true)),
                 new AlignToApril(AlignPosition.LeftOffset, true, 0).withTimeout(4),
                 new InstantCommand(() -> ArmPosition.setPosition(ArmPosition.L4)),
+                // new AlignToApril(AlignPosition.LeftOffset, true, 0).withTimeout(4),
                 new ManipulateCoral(false),
+                new InstantCommand(() -> switchPipelines(0)),
                 new ResetArm(),
                 traj_ABto2.cmd(),
                 new InstantCommand(() -> IntakeSubsystem.getInstance().setIntakeSpeed(0, 0)),
                 new InstantCommand(() -> ArmPosition.setPosition(ArmPosition.StartingConfig)),
+                new InstantCommand(() -> switchPipelines(0)),
                 traj_2ToAB.cmd(),
                 new InstantCommand(() -> s_Swerve.drive(new Translation2d(0, 0), 0, true, true)),
                 new ResetArm(),

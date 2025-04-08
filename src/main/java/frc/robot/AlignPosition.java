@@ -98,7 +98,8 @@ public enum AlignPosition {
             case CenterOffset:
                 double hpOffset = isRed? Constants.redCoralDy:Constants.blueCoralDy;
                 System.out.println(hpOffset);
-                theta = Math.atan2(isScoring? Constants.scoringDy:hpOffset, 0) + rotationRadians;
+                theta = Math.atan2(isScoring? Constants.centerDy:hpOffset, 0) + rotationRadians;
+                distance = Constants.centerDy;
                 tagX = isScoring ? getNearestScoringPos().getX() : getNearestHumanPos().getX();
                 tagY = isScoring ? getNearestScoringPos().getY() : getNearestHumanPos().getY();
                 correctedPos();

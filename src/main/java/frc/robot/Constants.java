@@ -32,8 +32,9 @@ public final class Constants {
 
     public static final double scoringDx = Units.inchesToMeters(7);
     public static final double scoringDy = Units.inchesToMeters(18); // might need to change at comp :)
-    public static final double redCoralDy = Units.inchesToMeters(17);
-    public static final double blueCoralDy = Units.inchesToMeters(17);
+    public static final double centerDy = Units.inchesToMeters(19);
+    public static final double redCoralDy = Units.inchesToMeters(18);
+    public static final double blueCoralDy = Units.inchesToMeters(18);
 
     // True if new Ground Intake : False if Central MO intake
     public static final boolean isGroundIntake = true;
@@ -237,7 +238,7 @@ public final class Constants {
         HumanP(-34.74365234375, 0.0029296875, 12.40283203125),
         Climb1(-45.785400390625, -4.8828125E-4, 13.1533203125),
         Climb2(-12.561767578125, -0.00244140625, 17.3291015625),
-        Net(-59.96630859375, -21.33740234375, 17.20068359375),
+        Net(-59.96142578125, -21.3369140625, 21.56298828125),
         NetP(-59.97314453125, -2.77880859375, 21.56494140625),
         StartingConfig(-38.552490234375, 0.0068359375, 0.0),
         Manual(-1, -1, -1);
