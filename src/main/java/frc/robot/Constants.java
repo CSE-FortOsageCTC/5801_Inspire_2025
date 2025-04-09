@@ -33,6 +33,8 @@ public final class Constants {
     public static final double scoringDx = Units.inchesToMeters(7);
     public static final double scoringDy = Units.inchesToMeters(18); // might need to change at comp :)
     public static final double centerDy = Units.inchesToMeters(19);
+    public static final double lOneDx = Units.inchesToMeters(1);
+    public static final double lOneDy = Units.inchesToMeters(21);
     public static final double redCoralDy = Units.inchesToMeters(18);
     public static final double blueCoralDy = Units.inchesToMeters(18);
 
@@ -224,10 +226,11 @@ public final class Constants {
     public static final int blueHumanPTagStart = 12;
     public static final int redHumanPTagStart = 1;
 
-    // Original "claw" intake from Central MO
+    // Original "claw" intake from Central MO (einstien)
+    //ur mom lol (get owned noob!)
     public enum ArmPosition {
         Travel(-1, -.5, -1),
-        L1(-30.87451171875, 9.765625E-4, 16.96533203125),
+        L1 (-29.418701171875, -0.8544921875, 21.56298828125),
         L2(-29.92041015625, -1.021484375, 0.0458984375),
         L3(-42.545654296875, -7.36865234375, 5.32958984375),
         L4(-52.3505859375, -20.640625, 12.07958984375), // Original: (-51.948974609375, -21.0, 12.2900390625) different rn because the new pvc
@@ -237,7 +240,7 @@ public final class Constants {
         GroundP(-8.1962890625, -0.005859375, 11.43017578125),
         HumanP(-34.74365234375, 0.0029296875, 12.40283203125),
         Climb1(-45.785400390625, -4.8828125E-4, 13.1533203125),
-        Climb2(-12.561767578125, -0.00244140625, 17.3291015625),
+        Climb2(-10.561767578125, -0.00244140625, 17.3291015625),
         Net(-59.96142578125, -21.3369140625, 21.56298828125),
         NetP(-59.97314453125, -2.77880859375, 21.56494140625),
         StartingConfig(-38.552490234375, 0.0068359375, 0.0),

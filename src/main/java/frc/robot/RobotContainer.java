@@ -131,7 +131,8 @@ public class RobotContainer {
     driver_Back_Function.onTrue(new InstantCommand(() -> s_Swerve.zeroHeading()));
     driver_X_Function.whileTrue(new AlignToApril(AlignPosition.LeftOffset, true, 0));
     driver_B_Function.whileTrue(new AlignToApril(AlignPosition.RightOffset, true, 0));
-    driver_Y_Function.whileTrue(new AutoPickupPiece(0));
+    // driver_Y_Function.whileTrue(new AutoPickupPiece(0));
+    driver_Y_Function.whileTrue(new AlignToApril(AlignPosition.L1Offset, true, 0));
     driver_A_Function.whileTrue(new AlignToApril(AlignPosition.CenterOffset, true, 0));
 
     driverStartButton.onTrue(new ClimbCommand(driver));

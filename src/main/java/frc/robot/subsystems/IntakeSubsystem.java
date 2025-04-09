@@ -57,7 +57,7 @@ public class IntakeSubsystem extends SubsystemBase {
 
         SparkMaxConfig coralConfig = new SparkMaxConfig();
 
-        coralConfig.smartCurrentLimit(20, 20);
+        coralConfig.smartCurrentLimit(30, 30);
 
         //algaeConfig.follow(54, false);
 

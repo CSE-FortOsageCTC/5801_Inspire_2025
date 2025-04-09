@@ -17,6 +17,7 @@ public enum AlignPosition {
     LeftOffset(),
     CenterOffset(),
     RightOffset(),
+    L1Offset(),
     NoPos();
 
     private static AlignPosition alignPosition;
@@ -106,6 +107,14 @@ public enum AlignPosition {
                 break;
             case RightOffset:
                 theta = Math.atan2(Constants.scoringDy, -Constants.scoringDx) + rotationRadians;
+                tagX = isScoring ? getNearestScoringPos().getX() : getNearestHumanPos().getX();
+                tagY = isScoring ? getNearestScoringPos().getY() : getNearestHumanPos().getY();
+                correctedPos();
+                break;
+            case L1Offset:
+                theta = Math.atan2(Constants.lOneDy, -Constants.lOneDx) + (rotationRadians);
+                rotationDegrees += 29;
+                distance = Math.sqrt(((Constants.lOneDx * Constants.lOneDx)) + (Constants.lOneDy * Constants.lOneDy));
                 tagX = isScoring ? getNearestScoringPos().getX() : getNearestHumanPos().getX();
                 tagY = isScoring ? getNearestScoringPos().getY() : getNearestHumanPos().getY();
                 correctedPos();
