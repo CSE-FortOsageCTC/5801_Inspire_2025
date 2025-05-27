@@ -25,8 +25,8 @@ public class IntakeCommand extends Command {
         if (intaking) {
             speed = Constants.coralIntakeSpeed;
         } else if (!intaking && ArmPosition.getPosition().equals(ArmPosition.L1)) {
-            speed = 1;
-            algaeSpeed = 1;
+            speed = 0.7;
+            algaeSpeed = 0.7;
         } else if (!intaking) {
             speed = 1;
             algaeSpeed = 1;

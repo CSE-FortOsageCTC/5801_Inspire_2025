@@ -37,7 +37,7 @@ public class ClimbCommand extends Command{
 
         if(joystick.getPOV() == 0 && joystick.getRawButton(XboxController.Button.kStart.value)){
             ArmPosition.setPosition(ArmPosition.Climb1);
-        } else if (joystick.getRawButton(XboxController.Button.kBack.value) && joystick.getRawButton(XboxController.Button.kStart.value)){
+        } else if (joystick.getRawButton(XboxController.Button.kLeftBumper.value) && joystick.getRawButton(XboxController.Button.kStart.value)){
             speed = -0.4;
             // isIrreversible = true;
         } else if (joystick.getPOV() == 180 && joystick.getRawButton(XboxController.Button.kStart.value)){

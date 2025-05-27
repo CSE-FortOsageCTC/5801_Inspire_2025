@@ -113,7 +113,7 @@ public enum AlignPosition {
                 break;
             case L1Offset:
                 theta = Math.atan2(Constants.lOneDy, -Constants.lOneDx) + (rotationRadians);
-                rotationDegrees += 29;
+                rotationDegrees += 32;
                 distance = Math.sqrt(((Constants.lOneDx * Constants.lOneDx)) + (Constants.lOneDy * Constants.lOneDy));
                 tagX = isScoring ? getNearestScoringPos().getX() : getNearestHumanPos().getX();
                 tagY = isScoring ? getNearestScoringPos().getY() : getNearestHumanPos().getY();

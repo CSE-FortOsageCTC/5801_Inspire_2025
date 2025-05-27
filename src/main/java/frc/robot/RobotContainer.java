@@ -128,7 +128,7 @@ public class RobotContainer {
     s_Swerve.setDefaultCommand(new DefaultTeleop(driver, operator));
     manipulatorSubsystem.setDefaultCommand(armDefaultCommand);
     // Initialize Driver Button Functions
-    driver_Back_Function.onTrue(new InstantCommand(() -> s_Swerve.zeroHeading()));
+    // driver_Back_Function.onTrue(new InstantCommand(() -> s_Swerve.zeroHeading()));
     driver_X_Function.whileTrue(new AlignToApril(AlignPosition.LeftOffset, true, 0));
     driver_B_Function.whileTrue(new AlignToApril(AlignPosition.RightOffset, true, 0));
     // driver_Y_Function.whileTrue(new AutoPickupPiece(0));
