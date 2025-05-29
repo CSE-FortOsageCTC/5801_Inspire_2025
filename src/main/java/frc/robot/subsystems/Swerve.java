@@ -68,6 +68,8 @@ public class Swerve extends SubsystemBase {
     public Pose3d poseB = new Pose3d();
 
     public Orchestra orchestra = new Orchestra();
+    List<String> music = new ArrayList<String>();
+   
 
     public boolean isRed;
     // public ProfiledPIDController translationXController = new
@@ -126,7 +128,7 @@ public class Swerve extends SubsystemBase {
             orchestra.addInstrument(mod.mDriveMotor);
             orchestra.addInstrument(mod.mAngleMotor);
         }
-        List<String> music = new ArrayList<String>();
+
         music.add("midis/jeopardy.chrp");
         music.add("midis/freeBird.chrp");
         music.add("midis/mario.chrp");
@@ -155,11 +157,21 @@ public class Swerve extends SubsystemBase {
     }
 
     public void playOrchestra() {
+        int index = (int)(Math.random() * music.size());
+        orchestra.loadMusic(music.get(index));
         orchestra.play();
     }
 
     public void stopOrchestra() {
         orchestra.stop();
+    }
+
+    public void restartOrchestra() {
+        if (!orchestra.isPlaying()) {
+            int index = (int)(Math.random() * music.size());
+            orchestra.loadMusic(music.get(index));
+            orchestra.play();
+        }
     }
 
     public void updatePoseEstimator() {
