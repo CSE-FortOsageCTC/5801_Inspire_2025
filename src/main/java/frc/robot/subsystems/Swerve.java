@@ -126,7 +126,7 @@ public class Swerve extends SubsystemBase {
             orchestra.addInstrument(mod.mAngleMotor);
         }
 
-        // orchestra.loadMusic("midis/jeopardy.chrp");
+        orchestra.loadMusic("midis/freeBird.chrp");
 
         playOrchestra();
 

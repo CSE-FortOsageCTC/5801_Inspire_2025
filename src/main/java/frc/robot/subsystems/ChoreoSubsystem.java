@@ -21,6 +21,7 @@ import frc.robot.autoCommands.PushForPoints;
 import frc.robot.autoCommands.ResetArm;
 import frc.robot.commands.AlignToApril;
 import frc.robot.commands.AutoPickupPiece;
+import frc.robot.commands.AutoPopPickup;
 import frc.robot.commands.IntakeCommand;
 
 import java.sql.Driver;
@@ -99,6 +100,7 @@ public class ChoreoSubsystem extends SubsystemBase {
 
     }
 
+    // MARK: One Piece Auto
     public AutoRoutine onePieceAuto() {
         System.out.println("this is before the auto routine");
         AutoRoutine routine = autoFactory.newRoutine("onePiece");
@@ -415,6 +417,64 @@ public class ChoreoSubsystem extends SubsystemBase {
                 new InstantCommand(() -> ArmPosition.setPosition(ArmPosition.L4)),
                 new ManipulateCoral(false),
                 new InstantCommand(() -> ArmPosition.setPosition(ArmPosition.StartingConfig))
+
+        ));
+        return routine;
+    }
+    public AutoRoutine lollipopEFAutoTest() {
+        // System.out.println("this is before the auto routine");
+        AutoRoutine routine = autoFactory.newRoutine("lollipopEF");
+
+        // System.out.println("this is the top of the auto code");
+
+        // Load the routine's trajectories
+        AutoTrajectory traj_startToEF = routine.trajectory("startToEF");
+        AutoTrajectory traj_EFto3 = routine.trajectory("EFtoThree");
+        
+        AutoTrajectory traj_3ToAB = routine.trajectory("threeToAB");
+        AutoTrajectory traj_ABto2 = routine.trajectory("ABtoTwoEF");
+        AutoTrajectory traj_2ToAB = routine.trajectory("twoToAB");
+
+        // When the routine begins, reset odometry and start the first trajectory
+        routine.active().onTrue(
+            Commands.sequence(
+                // traj_startToIJ.resetOdometry(),
+                // new InstantCommand(() ->
+                // ArmPosition.setPosition(ArmPosition.StartingConfig)),
+                new InstantCommand(() -> s_Swerve.setHeading(Rotation2d.fromDegrees(0))),
+                traj_startToEF.cmd().withTimeout(1),
+                
+                new InstantCommand(() -> ArmPosition.setPosition(ArmPosition.L4)),
+                // new AlignToApril(AlignPosition.LeftOffset, true, 0).withTimeout(0.1),
+                // new AlignToApril(AlignPosition.LeftOffset, true, 0).withTimeout(0.1),
+                new AlignToApril(AlignPosition.LeftOffset, true, 0).withTimeout(1),
+                new ManipulateCoral(false),
+                new ResetArm(),
+                new InstantCommand(() -> switchPipelines(0)),
+                traj_EFto3.cmd(),
+                new InstantCommand(() -> s_Swerve.drive(new Translation2d(0, 0), 0, true, true)),
+                new AutoPopPickup(0)
+                // new InstantCommand(() -> IntakeSubsystem.getInstance().setIntakeSpeed(0, 0)),
+                // new InstantCommand(() -> ArmPosition.setPosition(ArmPosition.StartingConfig)),
+                // new InstantCommand(() -> switchPipelines(0)),
+                // traj_3ToAB.cmd(),
+                // new InstantCommand(() -> s_Swerve.drive(new Translation2d(0, 0), 0, true, true)),
+                // new AlignToApril(AlignPosition.RightOffset, true, 0).withTimeout(2.5),
+                // new InstantCommand(() -> ArmPosition.setPosition(ArmPosition.L4)),
+                // // new AlignToApril(AlignPosition.LeftOffset, true, 0).withTimeout(4),
+                // new ManipulateCoral(false),
+                // new ResetArm(),
+                // new InstantCommand(() -> switchPipelines(0)),
+                // traj_ABto2.cmd(),
+                // new InstantCommand(() -> IntakeSubsystem.getInstance().setIntakeSpeed(0, 0)),
+                // new InstantCommand(() -> ArmPosition.setPosition(ArmPosition.StartingConfig)),
+                // new InstantCommand(() -> switchPipelines(0)),
+                // traj_2ToAB.cmd(),
+                // new InstantCommand(() -> s_Swerve.drive(new Translation2d(0, 0), 0, true, true)),
+                // new AlignToApril(AlignPosition.LeftOffset, true, 0).withTimeout(2.5),
+                // new InstantCommand(() -> ArmPosition.setPosition(ArmPosition.L4)),
+                // new ManipulateCoral(false),
+                // new InstantCommand(() -> ArmPosition.setPosition(ArmPosition.StartingConfig))
 
         ));
         return routine;

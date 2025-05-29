@@ -128,8 +128,8 @@ public class AutoPickupPiece extends Command {
         //kI = SmartDashboard.getNumber("AlignI", 0);
         //kD = SmartDashboard.getNumber("AlignD", 0);
 
-        SmartDashboard.putNumber("Xvalue", xValue);
-        SmartDashboard.putNumber("Areavalue", areaValue);
+        // SmartDashboard.putNumber("Xvalue", xValue);
+        // SmartDashboard.putNumber("Areavalue", areaValue);
 
         boolean pieceDetected = intakeSubsystem.hasPiece(); // piece is detected in the robot
 
@@ -144,7 +144,7 @@ public class AutoPickupPiece extends Command {
             xValue = targetLimelight.getX(); // gets the limelight X Coordinate
             yValue = MathUtil.clamp(targetLimelight.getY(), 0, 200); // gets the limelight Y Coordinate
             areaValue = targetLimelight.getArea(); // gets the area percentage from the limelight
-            SmartDashboard.putNumber("Limelight Area", areaValue);
+            // SmartDashboard.putNumber("Limelight Area", areaValue);
             autoRotateUtil.updateTargetAngle(-xValue * 2);
 
             if (isAligned()) {
@@ -165,7 +165,7 @@ public class AutoPickupPiece extends Command {
             // moves the swerve subsystem
             Translation2d translation = new Translation2d(xSpeed, 0);
             double rotation = angularSpeed;
-            SmartDashboard.putNumber("rotation speed", rotation);
+            // SmartDashboard.putNumber("rotation speed", rotation);
 
             swerve.drive(translation, rotation, false, true);
         } else {

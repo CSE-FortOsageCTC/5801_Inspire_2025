@@ -115,6 +115,7 @@ public class RobotContainer {
 
     autoChooser.addRoutine("EF-Lollipop", s_choreoSubsystem::lollipopEFAuto);
     autoChooser.addRoutine("IJ-Lollipop", s_choreoSubsystem::lollipopIJAuto);
+    autoChooser.addRoutine("LolipopTest", s_choreoSubsystem::lollipopEFAutoTest);
     //autoChooser.addRoutine("L2 IJ", s_choreoSubsystem::twoPieceIJAutoL2); //If we need an L2 Auto
 
     // autoChooser.addCmd("Example Auto Command", this::exampleAutoCommand);
