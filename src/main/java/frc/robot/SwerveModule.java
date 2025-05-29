@@ -1,5 +1,6 @@
 package frc.robot;
 
+import com.ctre.phoenix6.configs.AudioConfigs;
 import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.controls.VelocityVoltage;
@@ -17,8 +18,8 @@ public class SwerveModule {
     public int moduleNumber;
     private Rotation2d angleOffset;
 
-    private TalonFX mAngleMotor;
-    private TalonFX mDriveMotor;
+    public TalonFX mAngleMotor;
+    public TalonFX mDriveMotor;
     private CANcoder angleEncoder;
     private CTREConfigs ctreConfigs;
 
@@ -36,6 +37,8 @@ public class SwerveModule {
         this.moduleNumber = moduleNumber;
         this.angleOffset = moduleConstants.angleOffset;
 
+        AudioConfigs audioConfigs = new AudioConfigs().withAllowMusicDurDisable(true);
+
         ctreConfigs = new CTREConfigs();
 
         /* Angle Encoder Config */
@@ -45,12 +48,15 @@ public class SwerveModule {
         /* Angle Motor Config */
         mAngleMotor = new TalonFX(moduleConstants.angleMotorID);
         mAngleMotor.getConfigurator().apply(ctreConfigs.swerveAngleFXConfig);
+        mAngleMotor.getConfigurator().apply(audioConfigs);
         resetToAbsolute();
 
         /* Drive Motor Config */
         mDriveMotor = new TalonFX(moduleConstants.driveMotorID);
         mDriveMotor.getConfigurator().apply(ctreConfigs.swerveDriveFXConfig);
         mDriveMotor.getConfigurator().setPosition(0.0);
+        mDriveMotor.getConfigurator().apply(audioConfigs);
+        
     }
 
     public void setDesiredState(SwerveModuleState desiredState, boolean isOpenLoop) {

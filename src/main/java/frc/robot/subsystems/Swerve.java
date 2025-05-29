@@ -2,9 +2,11 @@ package frc.robot.subsystems;
 
 import java.util.List;
 
+import com.ctre.phoenix6.Orchestra;
 import com.ctre.phoenix6.configs.MountPoseConfigs;
 import com.ctre.phoenix6.configs.Pigeon2Configuration;
 import com.ctre.phoenix6.configs.Pigeon2Configurator;
+import com.ctre.phoenix6.controls.MusicTone;
 import com.ctre.phoenix6.hardware.Pigeon2;
 
 import choreo.trajectory.SwerveSample;
@@ -64,6 +66,8 @@ public class Swerve extends SubsystemBase {
     public Pose3d poseA = new Pose3d();
     public Pose3d poseB = new Pose3d();
 
+    public Orchestra orchestra = new Orchestra();
+
     public boolean isRed;
     // public ProfiledPIDController translationXController = new
     // ProfiledPIDController(10, 0, 0, new TrapezoidProfile.Constraints(1, .5));
@@ -95,6 +99,7 @@ public class Swerve extends SubsystemBase {
         // configuration.withMountPose(new MountPoseConfigs().withMountPoseYaw(isRed? 180:0));
         // gyro.getConfigurator().apply(configuration);
 
+
         gyro.reset();
         //gyro.setYaw(isRed? 180:0);
         f_Limelight = LimeLightSubsystem.getRightInstance();
@@ -116,6 +121,15 @@ public class Swerve extends SubsystemBase {
                 new SwerveModule(3, Constants.Swerve.Mod3.constants)
         };
 
+        for(SwerveModule mod : mSwerveMods){
+            orchestra.addInstrument(mod.mDriveMotor);
+            orchestra.addInstrument(mod.mAngleMotor);
+        }
+
+        // orchestra.loadMusic("midis/jeopardy.chrp");
+
+        playOrchestra();
+
         // swerveOdometry = new SwerveDriveOdometry(Constants.Swerve.swerveKinematics,
         // getGyroYaw(), getModulePositions());
         swerveEstimator = new SwerveDrivePoseEstimator(Constants.Swerve.swerveKinematics, getGyroRot2d(),
@@ -129,6 +143,14 @@ public class Swerve extends SubsystemBase {
         // 0.5, Units.degreesToRadians(.5)));
 
         swerveEstimator.resetPosition(getGyroRot2d(), getModulePositions(), new Pose2d(8.77, 4.05, new Rotation2d()));
+    }
+
+    public void playOrchestra() {
+        orchestra.play();
+    }
+
+    public void stopOrchestra() {
+        orchestra.stop();
     }
 
     public void updatePoseEstimator() {
@@ -570,9 +592,14 @@ public class Swerve extends SubsystemBase {
         AlignPosition currentAlignPosition = AlignPosition.getPosition();
 
         // for(SwerveModule mod : mSwerveMods){
+        //     mod.mDriveMotor.setControl(new MusicTone(1500));
+        //     mod.mAngleMotor.setControl(new MusicTone(1500));
         // // SmartDashboard.putNumber("Mod " + mod.moduleNumber + " CANcoder",
-        // mod.getCANcoder().getDegrees());
+        // //mod.getCANcoder().getDegrees());
         // }
+
+        
+
         Pose2d estimatedPose = swerveEstimator.getEstimatedPosition();
         poseA = new Pose3d(estimatedPose);
         publisher.set(poseA);

@@ -219,6 +219,12 @@ public class LimeLightSubsystem extends SubsystemBase {
         return LimelightHelpers.getDetectorClass(limelightString).equals("coral") && getY() >= -2 && getY() <= 15;
     }
 
+
+    public boolean isPopsicle() {
+    //System.out.println(LimelightHelpers.getDetectorClass(limelightString));
+        return LimelightHelpers.getDetectorClass(limelightString).contains("algae") && getY() >= -15 && getY() <= 2;
+    }
+
     public double getLastBotPoseTimestamp() {
         return this.lastBotPoseTimestamp;
     }

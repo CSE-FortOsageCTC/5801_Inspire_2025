@@ -9,11 +9,10 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.POVButton;
-import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import frc.robot.Constants.ArmPosition;
 import frc.robot.commands.AlignToApril;
 import frc.robot.commands.ArmDefault;
-import frc.robot.commands.AutoPickupPiece;
+import frc.robot.commands.AutoPopPickup;
 import frc.robot.commands.ClimbCommand;
 import frc.robot.commands.DefaultTeleop;
 import frc.robot.commands.IntakeCommand;
@@ -132,7 +131,8 @@ public class RobotContainer {
     driver_X_Function.whileTrue(new AlignToApril(AlignPosition.LeftOffset, true, 0));
     driver_B_Function.whileTrue(new AlignToApril(AlignPosition.RightOffset, true, 0));
     // driver_Y_Function.whileTrue(new AutoPickupPiece(0));
-    driver_Y_Function.whileTrue(new AlignToApril(AlignPosition.L1Offset, true, 0));
+    //driver_Y_Function.whileTrue(new AlignToApril(AlignPosition.L1Offset, true, 0));
+    driver_Y_Function.whileTrue(new AutoPopPickup(0));
     driver_A_Function.whileTrue(new AlignToApril(AlignPosition.CenterOffset, true, 0));
 
     driverStartButton.onTrue(new ClimbCommand(driver));

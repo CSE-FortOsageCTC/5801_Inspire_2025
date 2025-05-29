@@ -14,6 +14,7 @@ import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import frc.robot.subsystems.ExtensionSubsystem;
 import frc.robot.subsystems.LimeLightSubsystem;
 import frc.robot.subsystems.PivotSubsystem;
+import frc.robot.subsystems.Swerve;
 
 /**
  * The methods in this class are called automatically corresponding to each
@@ -68,6 +69,7 @@ public class Robot extends TimedRobot {
   /** This function is called once each time the robot enters Disabled mode. */
   @Override
   public void disabledInit() {
+    Swerve.getInstance().playOrchestra();
   }
 
   @Override
@@ -81,6 +83,8 @@ public class Robot extends TimedRobot {
   @Override
   public void autonomousInit() {
     m_autonomousCommand = m_robotContainer.getAutonomousCommand();
+
+    Swerve.getInstance().stopOrchestra();
 
     // schedule the autonomous command (example)
     if (m_autonomousCommand != null) {
@@ -104,6 +108,8 @@ public class Robot extends TimedRobot {
     if (m_autonomousCommand != null) {
       m_autonomousCommand.cancel();
     }
+
+    Swerve.getInstance().stopOrchestra();
 
     PivotSubsystem.getInstance().resetPID();
     ExtensionSubsystem.getInstance().resetPID();
