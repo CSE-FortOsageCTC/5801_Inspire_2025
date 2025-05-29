@@ -1,5 +1,6 @@
 package frc.robot.subsystems;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.ctre.phoenix6.Orchestra;
@@ -125,8 +126,16 @@ public class Swerve extends SubsystemBase {
             orchestra.addInstrument(mod.mDriveMotor);
             orchestra.addInstrument(mod.mAngleMotor);
         }
+        List<String> music = new ArrayList<String>();
+        music.add("midis/jeopardy.chrp");
+        music.add("midis/freeBird.chrp");
+        music.add("midis/mario.chrp");
+        music.add("midis/pirate.chrp");
+        music.add("midis/pokemon.chrp");
+        music.add("midis/star.chrp");
 
-        orchestra.loadMusic("midis/freeBird.chrp");
+        int index = (int)(Math.random() * music.size());
+        orchestra.loadMusic(music.get(index));
 
         playOrchestra();
 
