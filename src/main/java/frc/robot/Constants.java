@@ -15,7 +15,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.lib.util.COTSTalonFXSwerveConstants;
 import frc.lib.util.SwerveModuleConstants;
 
-//This is a comment. A bad one. Don't do this.
 public final class Constants {
     public static final double stickDeadband = 0.125;
 
