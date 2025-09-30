@@ -31,6 +31,7 @@ public class LEDSubsystem extends SubsystemBase {
     pwm.setSpeed(0.99);
 
     if(alliance.get().equals(Alliance.Blue)){
+      /**yip yap yip yap, code do stuff*/
       pwm.setSpeed(0.87);
     } else { 
       pwm.setSpeed(0.61);
