@@ -24,6 +24,9 @@ public class LEDSubsystem extends SubsystemBase {
     pwm = new PWM(1);
   }
 
+  /**
+   * Makes the LEDs stay in place
+   */
   public void setLEDs () {
     Optional<DriverStation.Alliance> alliance = DriverStation.getAlliance();
 
