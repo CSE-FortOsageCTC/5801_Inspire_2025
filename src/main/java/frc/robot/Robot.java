@@ -63,37 +63,37 @@ public class Robot extends TimedRobot {
     // music.add("midis/guilesTheme.chrp");
     // music.add("midis/TTFATF.chrp");
     // music.add("midis/Sans.chrp");
-    // music.add("midis/doom.chrp");
+    music.add("midis/doom.chrp");
 
 
     
 
 
-    // int index = (int)(Math.random() * music.size());
-    // orchestra.loadMusic(music.get(index));
+    int index = (int)(Math.random() * music.size());
+    orchestra.loadMusic(music.get(index));
 
-    // playOrchestra();
+    playOrchestra();
   }
  
 
   
-//   public void playOrchestra() {
-//     int index = (int)(Math.random() * music.size());
-//     orchestra.loadMusic(music.get(index));
-//     orchestra.play();
-// }
+  public void playOrchestra() {
+    int index = (int)(Math.random() * music.size());
+    orchestra.loadMusic(music.get(index));
+    orchestra.play();
+}
 
-// public void stopOrchestra() {
-//     orchestra.stop();
-// }
+public void stopOrchestra() {
+    orchestra.stop();
+}
 
-// public void restartOrchestra() {
-//     if (!orchestra.isPlaying()) {
-//         int index = (int)(Math.random() * music.size());
-//         orchestra.loadMusic(music.get(index));
-//         orchestra.play();
-//     }
-// }
+public void restartOrchestra() {
+    if (!orchestra.isPlaying()) {
+        int index = (int)(Math.random() * music.size());
+        orchestra.loadMusic(music.get(index));
+        orchestra.play();
+    }
+}
 
 public void addAllInstruments(){
   Swerve.getInstance().addInstruments(orchestra);
@@ -170,7 +170,7 @@ public void addAllInstruments(){
       m_autonomousCommand.cancel();
     }
     // playOrchestra();
-    //stopOrchestra();
+    stopOrchestra();
 
     IntakeSubsystem.getInstance().setIntakeSpeed(0, 0);
 
