@@ -3,6 +3,8 @@ package frc.robot.subsystems;
 
 import java.util.concurrent.TimeUnit;
 
+import com.ctre.phoenix6.Orchestra;
+import com.ctre.phoenix6.configs.AudioConfigs;
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.ControlRequest;
@@ -16,6 +18,7 @@ import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import frc.robot.AlignPosition;
 import frc.robot.Constants;
 import frc.robot.Constants.ArmPosition;
+import frc.robot.SwerveModule;
 
 import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
@@ -74,6 +77,10 @@ public class PivotSubsystem extends SubsystemBase {
 
         TalonFXConfiguration pivotConfig = new TalonFXConfiguration();
         CurrentLimitsConfigs currentLimitsConfigs = new CurrentLimitsConfigs();
+        AudioConfigs audioConfigs = new AudioConfigs().withAllowMusicDurDisable(true);
+        pivotFollower.getConfigurator().apply(audioConfigs);
+        pivotMaster.getConfigurator().apply(audioConfigs);
+
 
         // currentLimitsConfigs.withSupplyCurrentLimit(120);
         // currentLimitsConfigs.withSupplyCurrentLimitEnable(true);
@@ -131,6 +138,11 @@ public class PivotSubsystem extends SubsystemBase {
         manualSetpoint = -30;//getPivotEncoder();
         lastPivotPosition = manualSetpoint;
         setpoint = manualSetpoint;
+    }
+
+    public void addInstruments(Orchestra orchestra){
+        orchestra.addInstrument(pivotFollower);
+        orchestra.addInstrument(pivotMaster);
     }
 
     public static void resetStartDelay() {

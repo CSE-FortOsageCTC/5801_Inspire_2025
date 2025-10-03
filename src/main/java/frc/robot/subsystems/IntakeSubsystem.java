@@ -1,5 +1,7 @@
 package frc.robot.subsystems;
 
+import com.ctre.phoenix6.Orchestra;
+import com.ctre.phoenix6.configs.AudioConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.configs.TalonFXConfigurator;
 import com.ctre.phoenix6.hardware.DeviceIdentifier;
@@ -22,6 +24,7 @@ import com.revrobotics.spark.SparkBase.ResetMode;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.CTREConfigs;
 import frc.robot.Constants.ArmPosition;
 
 public class IntakeSubsystem extends SubsystemBase {
@@ -52,6 +55,9 @@ public class IntakeSubsystem extends SubsystemBase {
         coralIntake = new SparkMax(54, MotorType.kBrushless);
         algaeIntake = new TalonFX(55);
 
+        AudioConfigs audioConfigs = new AudioConfigs().withAllowMusicDurDisable(true);
+        algaeIntake.getConfigurator().apply(audioConfigs);
+
         limelightRight = LimeLightSubsystem.getRightInstance();
         limelightLeft = LimeLightSubsystem.getLeftInstance();
 
@@ -77,6 +83,11 @@ public class IntakeSubsystem extends SubsystemBase {
         // cacSettings.setLampLEDBrightness(0.2);
 
         // canandcolor.setSettings(cacSettings);
+    }
+
+    public void addInstruments(Orchestra orchestra){
+        orchestra.addInstrument(algaeIntake);
+
     }
 
     public void setIntakeSpeed(double coralSpeed, double algaeSpeed) {

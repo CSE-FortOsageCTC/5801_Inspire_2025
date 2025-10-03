@@ -33,7 +33,7 @@ public class LimeLightSubsystem extends SubsystemBase {
 
     private int currentPipeline = 0;
 
-    private String limelightString;
+    public String limelightString;
 
     public static LimeLightSubsystem getRightInstance() {
         if (limelightRight == null) {

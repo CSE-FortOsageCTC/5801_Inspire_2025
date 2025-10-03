@@ -74,13 +74,13 @@ public class AutoPopPickup extends Command {
         // yTranslationPidController.setSetpoint(0);
 
         // creating xTranslationPidController and setting the toleance and setpoint
-        inUsePID = DriverStation.isAutonomous()? new PIDController(1.4, 0, 0):new PIDController(0.3, 0, 0);
+        inUsePID = new PIDController(0.3, 0, 0);
         inUsePID.setTolerance(1);
         inUsePID.setSetpoint(-8);
 
-        rotationPID = new PIDController(.0145, 0, 0);
+        rotationPID = new PIDController(.02, 0, 0);
 
-        rotationPID.setTolerance(2);
+        rotationPID.setTolerance(1.5);
         rotationPID.setSetpoint(0);
 
         // puts the value of P,I and D onto the SmartDashboard
@@ -117,7 +117,7 @@ public class AutoPopPickup extends Command {
         double leftDistance = getDistance(limelightLeft);
         double rightDistance = getDistance(limelightRight);
 
-        // ArmPosition.setPosition(ArmPosition.GroundP);
+        ArmPosition.setPosition(ArmPosition.GroundP);
         // LimelightHelpers.Flush();
 
         if(leftDistance < rightDistance){
@@ -125,6 +125,8 @@ public class AutoPopPickup extends Command {
         } else {
             targetLimelight = limelightRight;
         }
+
+        System.out.println(targetLimelight.limelightString);
 
         swerve.drive(new Translation2d(0, 0), 0, true, true);
     }
@@ -204,7 +206,7 @@ public class AutoPopPickup extends Command {
         } else {
             if (ArmPosition.Ground.equals(ArmPosition.getPosition()) && isYAligned() && isXAligned()) {
                 //System.out.println("is creeping forward");
-                swerve.drive(new Translation2d(-0.25, 0).times(Constants.Swerve.maxSpeed), 0, false, true);
+                swerve.drive(new Translation2d(-0.22, 0).times(Constants.Swerve.maxSpeed), 0, false, true);
             } else {
                 swerve.drive(new Translation2d(0, 0).times(Constants.Swerve.maxSpeed), 0, false, true);
             }
@@ -213,7 +215,7 @@ public class AutoPopPickup extends Command {
 
     private boolean isYAligned() {
         // System.out.println(yValue);
-        return yValue >= -8.5;
+        return yValue >= -8;
     }
 
     private boolean isXAligned() {

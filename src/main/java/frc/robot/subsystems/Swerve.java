@@ -67,8 +67,7 @@ public class Swerve extends SubsystemBase {
     public Pose3d poseA = new Pose3d();
     public Pose3d poseB = new Pose3d();
 
-    public Orchestra orchestra = new Orchestra();
-    List<String> music = new ArrayList<String>();
+    
    
 
     public boolean isRed;
@@ -77,8 +76,8 @@ public class Swerve extends SubsystemBase {
     // public ProfiledPIDController translationYController = new
     // ProfiledPIDController(10, 0, 0, new TrapezoidProfile.Constraints(1, .5));
 
-    public ProfiledPIDController translationXController = new ProfiledPIDController(0.5, 0, 0, new TrapezoidProfile.Constraints(400, 250));
-    public ProfiledPIDController translationYController = new ProfiledPIDController(0.5, 0, 0,new TrapezoidProfile.Constraints(400, 250));
+    public ProfiledPIDController translationXController = new ProfiledPIDController(0.5, 0, 0, new TrapezoidProfile.Constraints(50, 250));
+    public ProfiledPIDController translationYController = new ProfiledPIDController(0.5, 0, 0,new TrapezoidProfile.Constraints(50, 250));
 
     private final PIDController autoXController = new PIDController(10.0, 0.0, 0.0);
     private final PIDController autoYController = new PIDController(10.0, 0.0, 0.0);
@@ -124,22 +123,8 @@ public class Swerve extends SubsystemBase {
                 new SwerveModule(3, Constants.Swerve.Mod3.constants)
         };
 
-        for(SwerveModule mod : mSwerveMods){
-            orchestra.addInstrument(mod.mDriveMotor);
-            orchestra.addInstrument(mod.mAngleMotor);
-        }
-
-        music.add("midis/jeopardy.chrp");
-        music.add("midis/freeBird.chrp");
-        music.add("midis/mario.chrp");
-        music.add("midis/pirate.chrp");
-        music.add("midis/pokemon.chrp");
-        music.add("midis/star.chrp");
-
-        int index = (int)(Math.random() * music.size());
-        orchestra.loadMusic(music.get(index));
-
-        playOrchestra();
+        
+        
 
         // swerveOdometry = new SwerveDriveOdometry(Constants.Swerve.swerveKinematics,
         // getGyroYaw(), getModulePositions());
@@ -156,23 +141,15 @@ public class Swerve extends SubsystemBase {
         swerveEstimator.resetPosition(getGyroRot2d(), getModulePositions(), new Pose2d(8.77, 4.05, new Rotation2d()));
     }
 
-    public void playOrchestra() {
-        int index = (int)(Math.random() * music.size());
-        orchestra.loadMusic(music.get(index));
-        orchestra.play();
-    }
-
-    public void stopOrchestra() {
-        orchestra.stop();
-    }
-
-    public void restartOrchestra() {
-        if (!orchestra.isPlaying()) {
-            int index = (int)(Math.random() * music.size());
-            orchestra.loadMusic(music.get(index));
-            orchestra.play();
+    public void addInstruments(Orchestra orchestra){
+        for(SwerveModule mod : mSwerveMods){
+            orchestra.addInstrument(mod.mDriveMotor);
+            orchestra.addInstrument(mod.mAngleMotor);
         }
+
     }
+
+   
 
     public void updatePoseEstimator() {
         SwerveModulePosition[] getModPos = getModulePositions();

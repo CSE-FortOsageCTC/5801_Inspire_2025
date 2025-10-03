@@ -2,6 +2,8 @@ package frc.robot.subsystems;
 
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
+import com.ctre.phoenix6.Orchestra;
+import com.ctre.phoenix6.configs.AudioConfigs;
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.hardware.TalonFX;
@@ -40,6 +42,9 @@ public class ManipulatorSubsystem extends SubsystemBase {
 
         intakeWrist = new TalonFX(56);
 
+        AudioConfigs audioConfigs = new AudioConfigs().withAllowMusicDurDisable(true);
+        intakeWrist.getConfigurator().apply(audioConfigs);
+
         intakeWrist.setNeutralMode(NeutralModeValue.Brake);
 
         intakeWrist.setPosition(0);
@@ -66,6 +71,11 @@ public class ManipulatorSubsystem extends SubsystemBase {
         }
 
         return manipulatorSubsystem;
+    }
+
+    public void addInstruments(Orchestra orchestra){
+        orchestra.addInstrument(intakeWrist);
+
     }
 
     public void setSetpoint(double setpoint) {

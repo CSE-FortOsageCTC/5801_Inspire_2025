@@ -106,16 +106,10 @@ public class RobotContainer {
     autoChooser = new AutoChooser();
 
     // Add options to the chooser
-    autoChooser.addRoutine("1P-GH", s_choreoSubsystem::onePieceAuto);
-    autoChooser.addRoutine("3P-IJ", s_choreoSubsystem::twoPieceIJAuto);
-    autoChooser.addRoutine("3P-EF", s_choreoSubsystem::twoPieceEFAuto);
-    
-    autoChooser.addRoutine("3P-IJ-Push", s_choreoSubsystem::twoPieceIJPush);
-    autoChooser.addRoutine("3P-EF-Push", s_choreoSubsystem::twoPieceEFPush);
-
-    autoChooser.addRoutine("EF-Lollipop", s_choreoSubsystem::lollipopEFAuto);
-    autoChooser.addRoutine("IJ-Lollipop", s_choreoSubsystem::lollipopIJAuto);
-    autoChooser.addRoutine("LolipopTest", s_choreoSubsystem::lollipopEFAutoTest);
+    // autoChooser.addRoutine("Middle Auto", s_choreoSubsystem::onePieceAuto);
+    autoChooser.addRoutine("IJ (Left)", s_choreoSubsystem::lollipopIJAutoPickup);
+    autoChooser.addRoutine("EF (Right)", s_choreoSubsystem::lollipopEFAutoPickup);
+    autoChooser.addRoutine("Demo Circle!", s_choreoSubsystem::demoCircle);
     //autoChooser.addRoutine("L2 IJ", s_choreoSubsystem::twoPieceIJAutoL2); //If we need an L2 Auto
 
     // autoChooser.addCmd("Example Auto Command", this::exampleAutoCommand);
@@ -132,8 +126,8 @@ public class RobotContainer {
     driver_X_Function.whileTrue(new AlignToApril(AlignPosition.LeftOffset, true, 0));
     driver_B_Function.whileTrue(new AlignToApril(AlignPosition.RightOffset, true, 0));
     // driver_Y_Function.whileTrue(new AutoPickupPiece(0));
-    //driver_Y_Function.whileTrue(new AlignToApril(AlignPosition.L1Offset, true, 0));
-    driver_Y_Function.whileTrue(new AutoPopPickup(0));
+    driver_Y_Function.whileTrue(new AlignToApril(AlignPosition.L1Offset, true, 0));
+    // driver_Y_Function.whileTrue(new AutoPopPickup(0));
     driver_A_Function.whileTrue(new AlignToApril(AlignPosition.CenterOffset, true, 0));
 
     driverStartButton.onTrue(new ClimbCommand(driver));
