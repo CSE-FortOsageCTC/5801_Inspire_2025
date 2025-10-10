@@ -24,6 +24,9 @@ public class LEDSubsystem extends SubsystemBase {
     pwm = new PWM(1);
   }
 
+  /**
+   * Sets color of LEDs
+   */
   public void setLEDs () {
     Optional<DriverStation.Alliance> alliance = DriverStation.getAlliance();
 
