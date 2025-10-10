@@ -25,7 +25,7 @@ public class LEDSubsystem extends SubsystemBase {
   }
 
   /**
-   * Sets color of LEDs fksdfjkasdjfkl;as
+   * Sets color of LEDs
    */
   public void setLEDs () {
     Optional<DriverStation.Alliance> alliance = DriverStation.getAlliance();
