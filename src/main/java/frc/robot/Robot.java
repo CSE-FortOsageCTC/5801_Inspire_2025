@@ -55,14 +55,14 @@ public class Robot extends TimedRobot {
     addAllInstruments();
 
     // music.add("midis/jeopardy.chrp");
-    // music.add("midis/freeBird.chrp");
+    music.add("midis/freeBird.chrp");
     // music.add("midis/marioOne.chrp");
-    // music.add("midis/marioTwo.chrp");
-    // music.add("midis/pirate.chrp");
+    music.add("midis/marioTwo.chrp");
+    music.add("midis/pirate.chrp");
     // music.add("midis/star.chrp");
     // music.add("midis/guilesTheme.chrp");
     // music.add("midis/TTFATF.chrp");
-    // music.add("midis/Sans.chrp");
+    music.add("midis/Sans.chrp");
     music.add("midis/doom.chrp");
 
 
@@ -145,7 +145,7 @@ public void addAllInstruments(){
   public void autonomousInit() {
     m_autonomousCommand = m_robotContainer.getAutonomousCommand();
 
-    //stopOrchestra();
+    stopOrchestra();
 
     // schedule the autonomous command (example)
     if (m_autonomousCommand != null) {

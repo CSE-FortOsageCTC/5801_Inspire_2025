@@ -82,7 +82,7 @@ public class DefaultTeleop extends Command {
         double throttleCalc = throttleLimiter.calculate(throttleAxis);
 
         Translation2d translation = new Translation2d(translationVal, strafeVal)
-                .times(-Constants.Swerve.maxSpeed * throttleCalc);
+                .times(-Constants.Swerve.maxSpeed * (throttleCalc * 1));
 
         s_Swerve.teleopDrive(translation, rotationVal * Constants.Swerve.maxAngularVelocity, robotCentricSup, true);
 

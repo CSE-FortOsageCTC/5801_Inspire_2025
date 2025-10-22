@@ -280,6 +280,10 @@ public final class Constants {
                 return;
             }
 
+            if (ArmPosition.Ground.equals(position) && (ArmPosition.L4.equals(currentPosition) || ArmPosition.L3.equals(currentPosition) || ArmPosition.L2.equals(currentPosition) || ArmPosition.L1.equals(currentPosition))) {
+                return;
+            }
+
             currentPosition = position;
         }
     }
