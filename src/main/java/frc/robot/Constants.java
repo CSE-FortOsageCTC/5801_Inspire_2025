@@ -32,11 +32,18 @@ public final class Constants {
 
     public static final double scoringDx = Units.inchesToMeters(7);
     public static final double scoringDy = Units.inchesToMeters(18); // might need to change at comp :)
-    public static final double redCoralDy = Units.inchesToMeters(17);
-    public static final double blueCoralDy = Units.inchesToMeters(17);
+    public static final double centerDy = Units.inchesToMeters(19);
+    public static final double lOneDx = Units.inchesToMeters(1);
+    public static final double lOneDy = Units.inchesToMeters(21);
+    public static final double redCoralDy = Units.inchesToMeters(18);
+    public static final double blueCoralDy = Units.inchesToMeters(18);
 
     // True if new Ground Intake : False if Central MO intake
     public static final boolean isGroundIntake = true;
+    
+
+    public static final double coralIntakeSpeed = -1;
+    public static final double algaeIntakeSpeed = -1;
 
     public static final class Swerve {
         public static final int pigeonID = 10;
@@ -112,6 +119,7 @@ public final class Constants {
         /** Meters per Second */
 
         public static final double maxSpeed = 11; // TODO: This must be tuned to specific robot
+
 
         /** Radians per Second */
         public static final double maxAngularVelocity = 13.0; // TODO: This must be tuned to specific robot
@@ -201,10 +209,10 @@ public final class Constants {
                 kMaxAngularSpeedRadiansPerSecond, kMaxAngularSpeedRadiansPerSecondSquared);
     }
 
-    public static final double wristUpperLimitExtended = 17.648437;
+    public static final double wristUpperLimitExtended = 21.49755859375; //17.648437;
     public static final double wristLowerLimit = 0;
     public static final double pivotUpperLimit = 0;
-    public static final double pivotLowerLimit = -55.00000000000000001;
+    public static final double pivotLowerLimit = -60;
     public static final double pivotExtensionLimit = -40;
     public static final double extensionUpperLimit = 0;
     public static final double extensionLowerLimit = -21.6;
@@ -218,26 +226,31 @@ public final class Constants {
     public static final int blueHumanPTagStart = 12;
     public static final int redHumanPTagStart = 1;
 
-    // Original "claw" intake from Central MO
+    // Original "claw" intake from Central MO (einstien)
+    //ur mom lol (get owned noob!)
     public enum ArmPosition {
         Travel(-1, -.5, -1),
-        L1(-25.1376953125, 0.09375, 16.82177734375),
-        L2(-27.8740234375, -0.8388671875, 3.107421875),
-        L3(-38.919921875, -6.87255859375, 5.53759765625),
-        L4(-46.866455078125, -18.39892578125, 8.78466796875),
-        HighAlgae(-39.593017578125, -18.86669921875, -1),
-        LowAlgae(-36.4453125, -7.4169921875, -1),
+        L1 (-29.418701171875, -0.8544921875, 21.56298828125),
+        L2(-29.869384765625, -0.8447265625, 1.619140625),
+        L3(-42.489501953125, -6.85302734375, 5.236328125),
+        L4(-52.29443359375, -20.2578125, 13.787109375), // Original: (-51.948974609375, -21.0, 12.2900390625) different rn because the new pvc
+        HighAlgae(-41.728271484375, -5.177734375, 17.84521484375),
+        LowAlgae(-33.37744140625, -0.037109375, 17.7041015625),
         Ground(0.134521484375, 0, 17.20068359375),
-        Climb1(-34.94189453125, 0, 12.14306640625),
-        Climb2(-9.537841796875, 0, 12.64990234375),
-        StartingConfig(-30.032470703125, 0, 0),
+        GroundP(-26.415283203125, -0.00146484375, 17.28955078125),
+        HumanP(-34.74365234375, 0.0029296875, 12.40283203125),
+        Climb1(-45.785400390625, -4.8828125E-4, 13.1533203125),
+        Climb2(-10.561767578125, -0.00244140625, 17.3291015625),
+        Net(-59.96142578125, -21.3369140625, 21.56298828125),
+        NetP(-59.97314453125, -2.77880859375, 21.56494140625),
+        StartingConfig(-38.552490234375, 0.0068359375, 0.0),
         Manual(-1, -1, -1);
 
         public double pivot;
         public double extension;
         public double manipulator;
 
-        public static ArmPosition currentPosition = ArmPosition.StartingConfig;
+        public static ArmPosition currentPosition = ArmPosition.Manual;
 
         ArmPosition(double pivot, double extension, double manipulator) {
             this.pivot = pivot;
@@ -251,11 +264,24 @@ public final class Constants {
 
         public static void setPosition(ArmPosition position) {
             // If trying to go to Ground and previous setpoint was anything near the reef, set it to StartingConfig instead
-            if (Ground.equals(position) && (L1.equals(currentPosition) || L2.equals(currentPosition) || L3.equals(currentPosition) 
-             || L4.equals(currentPosition) || HighAlgae.equals(currentPosition) || LowAlgae.equals(currentPosition))) {
+            // if (Ground.equals(position) && (L1.equals(currentPosition) || L2.equals(currentPosition) || L3.equals(currentPosition) 
+            //  || L4.equals(currentPosition) || HighAlgae.equals(currentPosition) || LowAlgae.equals(currentPosition))) {
 
-                currentPosition = StartingConfig;
+                // currentPosition = StartingConfig;
+                // return;                
+            //}
+
+            if (Net.equals(position) && !NetP.equals(currentPosition)) {
+
+                currentPosition = NetP;
                 return;                
+            } else if (Net.equals(position) && NetP.equals(currentPosition)) {
+                currentPosition = Net;
+                return;
+            }
+
+            if (ArmPosition.Ground.equals(position) && (ArmPosition.L4.equals(currentPosition) || ArmPosition.L3.equals(currentPosition) || ArmPosition.L2.equals(currentPosition) || ArmPosition.L1.equals(currentPosition))) {
+                return;
             }
 
             currentPosition = position;

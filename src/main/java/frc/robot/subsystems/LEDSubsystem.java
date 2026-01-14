@@ -1,5 +1,6 @@
 package frc.robot.subsystems;
 
+import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.util.Color;
@@ -13,21 +14,25 @@ import org.w3c.dom.css.RGBColor;
 import com.ctre.phoenix.ParamEnum;
 import com.ctre.phoenix.led.CANdle;
 import com.ctre.phoenix.led.RainbowAnimation;
+import com.ctre.phoenix.led.RgbFadeAnimation;
 import com.ctre.phoenix.led.StrobeAnimation;
-import com.ctre.phoenix.led.TwinkleAnimation;
 
 
 public class LEDSubsystem extends SubsystemBase {
     private CANdle candle1 = new CANdle(42);
     private RainbowAnimation rainbowAnimation = new RainbowAnimation(1, .8, 31);
-    private TwinkleAnimation larsonAnimation = new TwinkleAnimation(65,105,225);
+    // private TwinkleAnimation larsonAnimation = new TwinkleAnimation(65,105,225);
     private StrobeAnimation strobeAnimation = new StrobeAnimation(65, 105, 225, 255, 0.2,31);
+    private RgbFadeAnimation rgbFadeAnimation = new RgbFadeAnimation(255, 0.8, 31);
 
     private static LEDSubsystem ledSubsystem;
     private PivotSubsystem pivotSubsystem;
     private ExtensionSubsystem extensionSubsystem;
     private ManipulatorSubsystem manipulatorSubsystem;
     private IntakeSubsystem intakeSubsystem;
+
+    private Debouncer isCoralDebouncerLeft;
+    private Debouncer isCoralDebouncerRight;
 
     private double timer;
     private boolean isStrobing;
@@ -56,6 +61,9 @@ public class LEDSubsystem extends SubsystemBase {
         candle1.clearAnimation(1);
         candle1.clearAnimation(2);
 
+        isCoralDebouncerLeft = new Debouncer(0.05);
+        isCoralDebouncerRight = new Debouncer(0.05);
+
         timer = 0;
         isStrobing = false;
     }
@@ -72,6 +80,10 @@ public class LEDSubsystem extends SubsystemBase {
 
     public void setRainbow() {
         candle1.animate(rainbowAnimation, 1);
+    }
+
+    public void setRgbFade() {
+        candle1.animate(rgbFadeAnimation, 1);
     }
 
     public void setBlack() {
@@ -95,7 +107,8 @@ public class LEDSubsystem extends SubsystemBase {
         if (isStrobing) {
             setStrobe();
         } else if (PivotSubsystem.nearSetpoint() && ManipulatorSubsystem.nearSetpoint() && ExtensionSubsystem.nearSetpoint()
-        && !currentArmPos.equals(ArmPosition.Ground) && !currentArmPos.equals(ArmPosition.StartingConfig) && !currentArmPos.equals(ArmPosition.Manual) && !currentArmPos.equals(ArmPosition.Travel)) {
+        && !currentArmPos.equals(ArmPosition.Ground) && !currentArmPos.equals(ArmPosition.StartingConfig) && !currentArmPos.equals(ArmPosition.Manual) && !currentArmPos.equals(ArmPosition.Travel)
+        && !currentArmPos.equals(ArmPosition.GroundP)) {
             setRainbow();
         } else if (intakeSubsystem.hasPiece()) {
             
@@ -104,8 +117,11 @@ public class LEDSubsystem extends SubsystemBase {
             } else {
                 setColor(fullBlue[0], fullBlue[1], fullBlue[2]);
             }
+        } else if (isCoralDebouncerLeft.calculate(LimeLightSubsystem.getLeftInstance().isCoral()) || isCoralDebouncerRight.calculate(LimeLightSubsystem.getRightInstance().isCoral())) {
+            setColor(241, 250, 61); // Team "Safety Green" *eyeroll*
         } else {
             setBlack();
+            // setRgbFade();
         }
 
     }

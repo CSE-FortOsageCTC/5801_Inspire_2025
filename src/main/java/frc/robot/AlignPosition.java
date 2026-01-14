@@ -17,6 +17,7 @@ public enum AlignPosition {
     LeftOffset(),
     CenterOffset(),
     RightOffset(),
+    L1Offset(),
     NoPos();
 
     private static AlignPosition alignPosition;
@@ -50,12 +51,12 @@ public enum AlignPosition {
     }
 
     public static Pose2d getAlignOffset() {
-        SmartDashboard.putString("April Align Offset", "(" + alignOffset.getX() + ", " + alignOffset.getY() + ")");
+        // SmartDashboard.putString("April Align Offset", "(" + alignOffset.getX() + ", " + alignOffset.getY() + ")");
         return alignOffset;
     }
 
     public static void setPosition(AlignPosition alignPos, boolean isScoring) {
-        SmartDashboard.putString("Align Pos", alignPos.toString());
+        // SmartDashboard.putString("Align Pos", alignPos.toString());
         alignPosition = alignPos;
 
         // int tagID = s_LimeLightSubsystem.getAprilValue();
@@ -80,9 +81,9 @@ public enum AlignPosition {
         // double thetaRadians = Math.atan2(Constants.scoringDx, Constants.scoringDy);
         tagX = isScoring ? getNearestScoringPos().getX() : getNearestHumanPos().getX();
         tagY = isScoring ? getNearestScoringPos().getY() : getNearestHumanPos().getY();
-        SmartDashboard.putNumber("Tag X", tagX);
-        SmartDashboard.putNumber("Tag Y", tagY);
-        SmartDashboard.putNumber("Tag Rotation", rotationDegrees);
+        // SmartDashboard.putNumber("Tag X", tagX);
+        // SmartDashboard.putNumber("Tag Y", tagY);
+        // SmartDashboard.putNumber("Tag Rotation", rotationDegrees);
 
         distance = isScoring? 
         Math.sqrt(((Constants.scoringDx * Constants.scoringDx)) + (Constants.scoringDy * Constants.scoringDy)) : 
@@ -98,13 +99,22 @@ public enum AlignPosition {
             case CenterOffset:
                 double hpOffset = isRed? Constants.redCoralDy:Constants.blueCoralDy;
                 System.out.println(hpOffset);
-                theta = Math.atan2(isScoring? Constants.scoringDy:hpOffset, 0) + rotationRadians;
+                theta = Math.atan2(isScoring? Constants.centerDy:hpOffset, 0) + rotationRadians;
+                distance = Constants.centerDy;
                 tagX = isScoring ? getNearestScoringPos().getX() : getNearestHumanPos().getX();
                 tagY = isScoring ? getNearestScoringPos().getY() : getNearestHumanPos().getY();
                 correctedPos();
                 break;
             case RightOffset:
                 theta = Math.atan2(Constants.scoringDy, -Constants.scoringDx) + rotationRadians;
+                tagX = isScoring ? getNearestScoringPos().getX() : getNearestHumanPos().getX();
+                tagY = isScoring ? getNearestScoringPos().getY() : getNearestHumanPos().getY();
+                correctedPos();
+                break;
+            case L1Offset:
+                theta = Math.atan2(Constants.lOneDy, -Constants.lOneDx) + (rotationRadians);
+                rotationDegrees += 32;
+                distance = Math.sqrt(((Constants.lOneDx * Constants.lOneDx)) + (Constants.lOneDy * Constants.lOneDy));
                 tagX = isScoring ? getNearestScoringPos().getX() : getNearestHumanPos().getX();
                 tagY = isScoring ? getNearestScoringPos().getY() : getNearestHumanPos().getY();
                 correctedPos();
@@ -116,8 +126,8 @@ public enum AlignPosition {
 
         alignOffset = new Pose2d(correctedX, correctedY, Rotation2d.fromDegrees(rotationDegrees));
 
-        SmartDashboard.putNumber("Translated April X", alignOffset.getX());
-        SmartDashboard.putNumber("Translated April Y", alignOffset.getY());
+        // SmartDashboard.putNumber("Translated April X", alignOffset.getX());
+        // SmartDashboard.putNumber("Translated April Y", alignOffset.getY());
 
     }
 

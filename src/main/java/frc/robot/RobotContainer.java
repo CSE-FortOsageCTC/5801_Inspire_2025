@@ -9,11 +9,10 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.POVButton;
-import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import frc.robot.Constants.ArmPosition;
 import frc.robot.commands.AlignToApril;
 import frc.robot.commands.ArmDefault;
-import frc.robot.commands.AutoPickupPiece;
+import frc.robot.commands.AutoPopPickup;
 import frc.robot.commands.ClimbCommand;
 import frc.robot.commands.DefaultTeleop;
 import frc.robot.commands.IntakeCommand;
@@ -23,6 +22,7 @@ import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.LEDSubsystem;
 import frc.robot.subsystems.LimeLightSubsystem;
 import frc.robot.subsystems.ManipulatorSubsystem;
+import frc.robot.subsystems.PivotSubsystem;
 import frc.robot.subsystems.Swerve;
 
 /**
@@ -44,6 +44,7 @@ public class RobotContainer {
   private final ExtensionSubsystem elevatorSubsystem = ExtensionSubsystem.getInstance();
   private final ManipulatorSubsystem manipulatorSubsystem = ManipulatorSubsystem.getInstance();
   private final IntakeSubsystem intakeSubsystem = IntakeSubsystem.getInstance();
+  private final PivotSubsystem pivotSubsystem = PivotSubsystem.getInstance();
   private final LEDSubsystem ledsubsystem = LEDSubsystem.getInstance();
   private final Joystick driver = new Joystick(0);
   private final Joystick operator = new Joystick(1);
@@ -99,13 +100,16 @@ public class RobotContainer {
     // Configure the trigger bindings
     configureBindings();
 
+    // ArmPosition.setPosition(ArmPosition.StartingConfig);
+
     // Create the auto chooser
     autoChooser = new AutoChooser();
 
     // Add options to the chooser
-    autoChooser.addRoutine("onePiece", s_choreoSubsystem::onePieceAuto);
-    autoChooser.addRoutine("two piece ij", s_choreoSubsystem::twoPieceIJAutoL2);
-    autoChooser.addRoutine("two piece ef", s_choreoSubsystem::twoPieceEFAuto);
+    // autoChooser.addRoutine("Middle Auto", s_choreoSubsystem::onePieceAuto);
+    autoChooser.addRoutine("IJ (Left)", s_choreoSubsystem::lollipopIJAutoPickup);
+    autoChooser.addRoutine("EF (Right)", s_choreoSubsystem::lollipopEFAutoPickup);
+    autoChooser.addRoutine("Demo Circle!", s_choreoSubsystem::demoCircle);
     //autoChooser.addRoutine("L2 IJ", s_choreoSubsystem::twoPieceIJAutoL2); //If we need an L2 Auto
 
     // autoChooser.addCmd("Example Auto Command", this::exampleAutoCommand);
@@ -118,11 +122,13 @@ public class RobotContainer {
     s_Swerve.setDefaultCommand(new DefaultTeleop(driver, operator));
     manipulatorSubsystem.setDefaultCommand(armDefaultCommand);
     // Initialize Driver Button Functions
-    driver_Start_ZeroHeading.onTrue(new InstantCommand(() -> s_Swerve.zeroHeading()));
-    driver_X_Function.whileTrue(new AlignToApril(AlignPosition.LeftOffset, true));
-    driver_B_Function.whileTrue(new AlignToApril(AlignPosition.RightOffset, true));
-    driver_Y_Function.whileTrue(new AutoPickupPiece(0));
-    driver_A_Function.whileTrue(new AlignToApril(AlignPosition.CenterOffset, true));
+    // driver_Back_Function.onTrue(new InstantCommand(() -> s_Swerve.zeroHeading()));
+    driver_X_Function.whileTrue(new AlignToApril(AlignPosition.LeftOffset, true, 0));
+    driver_B_Function.whileTrue(new AlignToApril(AlignPosition.RightOffset, true, 0));
+    // driver_Y_Function.whileTrue(new AutoPickupPiece(0));
+    driver_Y_Function.whileTrue(new AlignToApril(AlignPosition.L1Offset, true, 0));
+    // driver_Y_Function.whileTrue(new AutoPopPickup(0));
+    driver_A_Function.whileTrue(new AlignToApril(AlignPosition.CenterOffset, true, 0));
 
     driverStartButton.onTrue(new ClimbCommand(driver));
 
@@ -136,6 +142,7 @@ public class RobotContainer {
     operatorRightDPad.onTrue(new InstantCommand(() -> ArmPosition.setPosition(ArmPosition.L1)));
     operatorUpDPad.onTrue(new InstantCommand(() -> ArmPosition.setPosition(ArmPosition.HighAlgae)));
     operatorDownDPad.onTrue(new InstantCommand(() -> ArmPosition.setPosition(ArmPosition.LowAlgae)));
+    operatorStart.onTrue(new InstantCommand(() -> ArmPosition.setPosition(ArmPosition.Net)));
 
 
 

@@ -4,10 +4,23 @@
 
 package frc.robot;
 
+import java.security.cert.Extension;
+import java.util.ArrayList;
+import java.util.List;
+
+import com.ctre.phoenix6.Orchestra;
+
+import au.grapplerobotics.CanBridge;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
+import frc.robot.subsystems.ExtensionSubsystem;
+import frc.robot.subsystems.IntakeSubsystem;
+import frc.robot.subsystems.LimeLightSubsystem;
+import frc.robot.subsystems.ManipulatorSubsystem;
+import frc.robot.subsystems.PivotSubsystem;
+import frc.robot.subsystems.Swerve;
 
 /**
  * The methods in this class are called automatically corresponding to each
@@ -21,6 +34,9 @@ public class Robot extends TimedRobot {
 
   private final RobotContainer m_robotContainer;
 
+  public Orchestra orchestra = new Orchestra();
+  List<String> music = new ArrayList<String>();
+
   /**
    * This function is run when the robot is first started up and should be used
    * for any
@@ -30,10 +46,63 @@ public class Robot extends TimedRobot {
     // Instantiate our RobotContainer. This will perform all our button bindings,
     // and put our
     // autonomous chooser on the dashboard.
+    // CanBridge.runTCP();
+
     m_robotContainer = new RobotContainer();
 
     RobotModeTriggers.autonomous().whileTrue(m_robotContainer.autoChooser.selectedCommandScheduler());
+
+    addAllInstruments();
+
+    // music.add("midis/jeopardy.chrp");
+    music.add("midis/freeBird.chrp");
+    // music.add("midis/marioOne.chrp");
+    music.add("midis/marioTwo.chrp");
+    music.add("midis/pirate.chrp");
+    // music.add("midis/star.chrp");
+    // music.add("midis/guilesTheme.chrp");
+    // music.add("midis/TTFATF.chrp");
+    music.add("midis/Sans.chrp");
+    music.add("midis/doom.chrp");
+
+
+    
+
+
+    int index = (int)(Math.random() * music.size());
+    orchestra.loadMusic(music.get(index));
+
+    playOrchestra();
   }
+ 
+
+  
+  public void playOrchestra() {
+    int index = (int)(Math.random() * music.size());
+    orchestra.loadMusic(music.get(index));
+    orchestra.play();
+}
+
+public void stopOrchestra() {
+    orchestra.stop();
+}
+
+public void restartOrchestra() {
+    if (!orchestra.isPlaying()) {
+        int index = (int)(Math.random() * music.size());
+        orchestra.loadMusic(music.get(index));
+        orchestra.play();
+    }
+}
+
+public void addAllInstruments(){
+  Swerve.getInstance().addInstruments(orchestra);
+  ExtensionSubsystem.getInstance().addInstruments(orchestra);
+  PivotSubsystem.getInstance().addInstruments(orchestra);
+  ManipulatorSubsystem.getInstance().addInstruments(orchestra);
+  IntakeSubsystem.getInstance().addInstruments(orchestra);
+
+}
 
   /**
    * This function is called every 20 ms, no matter the mode. Use this for items
@@ -60,10 +129,12 @@ public class Robot extends TimedRobot {
   /** This function is called once each time the robot enters Disabled mode. */
   @Override
   public void disabledInit() {
+    // stopOrchestra();
   }
 
   @Override
   public void disabledPeriodic() {
+    // restartOrchestra();
   }
 
   /**
@@ -74,10 +145,14 @@ public class Robot extends TimedRobot {
   public void autonomousInit() {
     m_autonomousCommand = m_robotContainer.getAutonomousCommand();
 
+    stopOrchestra();
+
     // schedule the autonomous command (example)
     if (m_autonomousCommand != null) {
       m_autonomousCommand.schedule();
     }
+
+    PivotSubsystem.getInstance().resetPID();
   }
 
   /** This function is called periodically during autonomous. */
@@ -94,6 +169,16 @@ public class Robot extends TimedRobot {
     if (m_autonomousCommand != null) {
       m_autonomousCommand.cancel();
     }
+    // playOrchestra();
+    stopOrchestra();
+
+    IntakeSubsystem.getInstance().setIntakeSpeed(0, 0);
+
+    PivotSubsystem.getInstance().resetPID();
+    ExtensionSubsystem.getInstance().resetPID();
+
+    LimeLightSubsystem.getLeftInstance().setPipeline(0);
+    LimeLightSubsystem.getRightInstance().setPipeline(0);
   }
 
   /** This function is called periodically during operator control. */

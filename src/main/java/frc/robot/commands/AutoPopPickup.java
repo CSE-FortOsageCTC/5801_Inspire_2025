@@ -22,7 +22,7 @@ import frc.robot.subsystems.LimeLightSubsystem;
 import frc.robot.subsystems.PivotSubsystem;
 import frc.robot.subsystems.Swerve;
 
-public class AutoPickupPiece extends Command {
+public class AutoPopPickup extends Command {
     public LimeLightSubsystem limelightRight;
     public LimeLightSubsystem limelightLeft;
     public LimeLightSubsystem targetLimelight;
@@ -40,6 +40,8 @@ public class AutoPickupPiece extends Command {
 
     public PIDController inUsePID;
     public PIDController autoXTranslationPID;
+    public PIDController rotationPID;
+
 
     public Pose2d position;
 
@@ -51,7 +53,9 @@ public class AutoPickupPiece extends Command {
     public int detectedDelayCount = 0;
 
 
-    public AutoPickupPiece(int waitFor) {
+
+
+    public AutoPopPickup(int waitFor) {
         swerve = Swerve.getInstance();
         intakeSubsystem = IntakeSubsystem.getInstance();
         autoRotateUtil = new AutoRotateUtil(0);
@@ -70,9 +74,14 @@ public class AutoPickupPiece extends Command {
         // yTranslationPidController.setSetpoint(0);
 
         // creating xTranslationPidController and setting the toleance and setpoint
-        inUsePID = DriverStation.isAutonomous()? new PIDController(1.2, 0, 0):new PIDController(1.6, 0, 0);
+        inUsePID = new PIDController(0.3, 0, 0);
         inUsePID.setTolerance(1);
-        inUsePID.setSetpoint(0);
+        inUsePID.setSetpoint(-8);
+
+        rotationPID = new PIDController(.02, 0, 0);
+
+        rotationPID.setTolerance(1.5);
+        rotationPID.setSetpoint(0);
 
         // puts the value of P,I and D onto the SmartDashboard
         // Will remove later
@@ -85,39 +94,39 @@ public class AutoPickupPiece extends Command {
     }
 
     private boolean pieceSeen() {
-        return targetLimelight.pieceDetected() && targetLimelight.isCoral();
+        return targetLimelight.isPopsicle();
     }
 
     private double getDistance(LimeLightSubsystem limelight) {
         double dX = 10000;
         double dY = 10000;
 
-        if (limelight.isCoral()){
+        if (limelight.isPopsicle()){
             dX = limelight.getX();
             dY = limelight.getY();
         }
 
-        return Math.hypot(dX, dY * dY);
+        return Math.hypot(dX, dY);
     }
 
     @Override
     public void initialize() {
+        limelightLeft.setPipeline(2);
+        limelightRight.setPipeline(2);
+
         double leftDistance = getDistance(limelightLeft);
         double rightDistance = getDistance(limelightRight);
 
         ArmPosition.setPosition(ArmPosition.GroundP);
         // LimelightHelpers.Flush();
 
-        if (DriverStation.isTeleop()) {
-            limelightLeft.setPipeline(2);
-            limelightRight.setPipeline(2);
-        }
-
         if(leftDistance < rightDistance){
             targetLimelight = limelightLeft;
         } else {
             targetLimelight = limelightRight;
         }
+
+        System.out.println(targetLimelight.limelightString);
 
         swerve.drive(new Translation2d(0, 0), 0, true, true);
     }
@@ -142,12 +151,17 @@ public class AutoPickupPiece extends Command {
 
         if (debouncer.calculate(pieceSeen()) && !pieceDetected && counter >= waitFor && !hasSeenPiece) {
             xValue = targetLimelight.getX(); // gets the limelight X Coordinate
-            yValue = MathUtil.clamp(targetLimelight.getY(), 0, 200); // gets the limelight Y Coordinate
+            yValue = MathUtil.clamp(targetLimelight.getY(), -20, 200); // gets the limelight Y Coordinate
             areaValue = targetLimelight.getArea(); // gets the area percentage from the limelight
             // SmartDashboard.putNumber("Limelight Area", areaValue);
-            autoRotateUtil.updateTargetAngle(-xValue * 2);
+            
+            
 
-            if (isAligned()) {
+            //System.out.println(xValue);
+
+            double angularSpeed = rotationPID.calculate(-xValue);
+
+            if (isYAligned() && isXAligned()) {
                 intakeSubsystem.setIntakeSpeed(Constants.coralIntakeSpeed, Constants.algaeIntakeSpeed);
                 ArmPosition.setPosition(ArmPosition.Ground);
                 System.out.println("It should be moving the arm right now");
@@ -159,27 +173,53 @@ public class AutoPickupPiece extends Command {
             // Calculates the x and y speed values for the translation movement
             // double ySpeed = yTranslationPidController.calculate(xValue);
 
-            double xSpeed = inUsePID.calculate(yValue);
-            double angularSpeed = autoRotateUtil.calculateRotationSpeed() * Constants.Swerve.maxAngularVelocity;
+            
+            double xSpeed = inUsePID.calculate(-yValue);
+
+            // System.out.println(isYAligned());
+
+            
 
             // moves the swerve subsystem
-            Translation2d translation = new Translation2d(xSpeed, 0);
-            double rotation = angularSpeed;
-            // SmartDashboard.putNumber("rotation speed", rotation);
 
-            swerve.drive(translation, rotation, false, true);
+            Translation2d translation = new Translation2d(xSpeed, 0);
+            
+            double rotation = angularSpeed * Constants.Swerve.maxAngularVelocity;
+            // SmartDashboard.putNumber("rotation speed", rotation);
+            // if (!isYAligned() && !isXAligned()) {
+            //     swerve.drive(translation, rotation, false, true);
+            // } else if (isYAligned() && !isXAligned()) {
+            //     swerve.drive(new Translation2d(0, 0), rotation, false, true);
+            // } else if (!isYAligned() && isXAligned()) {
+            //     swerve.drive(translation, 0, false, true);
+            // } else if (isYAligned() && isXAligned()) {
+            //     swerve.drive(new Translation2d(0, 0), 0, false, true);
+            // }
+            if (!isYAligned()) {
+                swerve.drive(translation, rotation, false, true);
+            } else if (isYAligned() && !isXAligned()) {
+                swerve.drive(new Translation2d(0, 0), rotation, false, true);
+            } else if (isYAligned() && isXAligned()) {
+                swerve.drive(new Translation2d(0, 0), 0, false, true);
+            }
+            
         } else {
-            if (ArmPosition.Ground.equals(ArmPosition.getPosition()) && isAligned()) {
+            if (ArmPosition.Ground.equals(ArmPosition.getPosition()) && isYAligned() && isXAligned()) {
                 //System.out.println("is creeping forward");
-                swerve.drive(new Translation2d(-0.25, 0).times(Constants.Swerve.maxSpeed), 0, false, true);
+                swerve.drive(new Translation2d(-0.22, 0).times(Constants.Swerve.maxSpeed), 0, false, true);
             } else {
                 swerve.drive(new Translation2d(0, 0).times(Constants.Swerve.maxSpeed), 0, false, true);
             }
         }
     }
 
-    private boolean isAligned() {
-        return yValue <= 1 && Math.abs(xValue) <= 3;
+    private boolean isYAligned() {
+        // System.out.println(yValue);
+        return yValue >= -8;
+    }
+
+    private boolean isXAligned() {
+        return rotationPID.atSetpoint();//Math.abs(xValue) <= 2;
     }
 
     @Override
@@ -201,10 +241,9 @@ public class AutoPickupPiece extends Command {
 
         hasSeenPiece = false;
         counter = 0;
-        if (DriverStation.isTeleop()) {
-            limelightLeft.setPipeline(0);
-            limelightRight.setPipeline(0);
-        }
+        limelightLeft.setPipeline(0);
+        limelightRight.setPipeline(0);
+    
 
         //TODO: go to StartingConfig after intaking :)
 

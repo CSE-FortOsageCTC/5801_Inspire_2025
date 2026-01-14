@@ -8,6 +8,7 @@ public class AutoRotateUtil {
     private final PIDController pidController;
 
     private double m_angle;
+    private double lastError;
 
     public AutoRotateUtil(double angle) {
 
@@ -22,6 +23,7 @@ public class AutoRotateUtil {
         // SmartDashboard.putNumber("kP", 0.01);
         // SmartDashboard.putNumber("kI", 0);
         // SmartDashboard.putNumber("kD", 0);
+        lastError = 180;
     }
 
     public void initialize() {
@@ -52,6 +54,8 @@ public class AutoRotateUtil {
 
         double feedForward = 0.5;
 
+        lastError = headingError;
+
         if (Math.abs(headingError) > Constants.feedForwardAngle) {
             return (headingError < 0) ? feedForward : -feedForward;
         } else {
@@ -66,6 +70,9 @@ public class AutoRotateUtil {
         m_angle = angle;
 
     }
+    public double getLastError(){
+        return lastError;
+    }
 
     public boolean isFinished() {
         return pidController.atSetpoint();
@@ -73,6 +80,7 @@ public class AutoRotateUtil {
 
     public void end() {
         pidController.reset();
+        lastError = 180;
     }
 
 }

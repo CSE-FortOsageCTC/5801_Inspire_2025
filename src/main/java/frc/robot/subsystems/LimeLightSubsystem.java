@@ -31,7 +31,9 @@ public class LimeLightSubsystem extends SubsystemBase {
     private static LimeLightSubsystem limelight;
     private boolean isRed;
 
-    private String limelightString;
+    private int currentPipeline = 0;
+
+    public String limelightString;
 
     public static LimeLightSubsystem getRightInstance() {
         if (limelightRight == null) {
@@ -214,7 +216,13 @@ public class LimeLightSubsystem extends SubsystemBase {
     }
 
     public boolean isCoral() {
-        return LimelightHelpers.getDetectorClass(limelightString).equals("coral");
+        return LimelightHelpers.getDetectorClass(limelightString).equals("coral") && getY() >= -2 && getY() <= 15;
+    }
+
+
+    public boolean isPopsicle() {
+    //System.out.println(LimelightHelpers.getDetectorClass(limelightString));
+        return LimelightHelpers.getDetectorClass(limelightString).contains("algae") && getY() >= -15 && getY() <= 2;
     }
 
     public double getLastBotPoseTimestamp() {
@@ -227,12 +235,13 @@ public class LimeLightSubsystem extends SubsystemBase {
 
         // // table.getEntry("pipeline").setNumber(value);
         // table.putValue("pipeline", value);
-
-        LimelightHelpers.setPipelineIndex(limelightString, pipelineValue);
+        currentPipeline = pipelineValue;
+        
     }
 
     @Override
     public void periodic() {
         //UpdateBotPose();
+        LimelightHelpers.setPipelineIndex(limelightString, currentPipeline);
     }
 }

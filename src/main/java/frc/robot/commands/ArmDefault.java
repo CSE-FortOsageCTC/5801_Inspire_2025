@@ -57,8 +57,10 @@ public class ArmDefault extends Command {
             pivotSubsystem.setSetpoint(pivotSubsystem.getManualSetpoint() + 0.2);
         }
 
-        // if (PivotSubsystem.getServo() == 0){//(PivotSubsystem.getStartingDelay() >= 250) {
+        // if (PivotSubsystem.getStartingDelay() >= 50) {
         //     pivotSubsystem.setPosition();
+        // } else {
+        //     // ArmPosition.setPosition(ArmPosition.StartingConfig);
         // }
 
         pivotSubsystem.setPosition();

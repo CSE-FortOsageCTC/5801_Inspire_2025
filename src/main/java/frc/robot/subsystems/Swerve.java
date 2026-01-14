@@ -1,10 +1,13 @@
 package frc.robot.subsystems;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import com.ctre.phoenix6.Orchestra;
 import com.ctre.phoenix6.configs.MountPoseConfigs;
 import com.ctre.phoenix6.configs.Pigeon2Configuration;
 import com.ctre.phoenix6.configs.Pigeon2Configurator;
+import com.ctre.phoenix6.controls.MusicTone;
 import com.ctre.phoenix6.hardware.Pigeon2;
 
 import choreo.trajectory.SwerveSample;
@@ -64,14 +67,17 @@ public class Swerve extends SubsystemBase {
     public Pose3d poseA = new Pose3d();
     public Pose3d poseB = new Pose3d();
 
+    
+   
+
     public boolean isRed;
     // public ProfiledPIDController translationXController = new
     // ProfiledPIDController(10, 0, 0, new TrapezoidProfile.Constraints(1, .5));
     // public ProfiledPIDController translationYController = new
     // ProfiledPIDController(10, 0, 0, new TrapezoidProfile.Constraints(1, .5));
 
-    public PIDController translationXController = new PIDController(0.6, 0, 0);
-    public PIDController translationYController = new PIDController(0.6, 0, 0);
+    public ProfiledPIDController translationXController = new ProfiledPIDController(0.5, 0, 0, new TrapezoidProfile.Constraints(50, 250));
+    public ProfiledPIDController translationYController = new ProfiledPIDController(0.5, 0, 0,new TrapezoidProfile.Constraints(50, 250));
 
     private final PIDController autoXController = new PIDController(10.0, 0.0, 0.0);
     private final PIDController autoYController = new PIDController(10.0, 0.0, 0.0);
@@ -95,6 +101,7 @@ public class Swerve extends SubsystemBase {
         // configuration.withMountPose(new MountPoseConfigs().withMountPoseYaw(isRed? 180:0));
         // gyro.getConfigurator().apply(configuration);
 
+
         gyro.reset();
         //gyro.setYaw(isRed? 180:0);
         f_Limelight = LimeLightSubsystem.getRightInstance();
@@ -103,8 +110,8 @@ public class Swerve extends SubsystemBase {
 
         autoHeadingController.enableContinuousInput(-Math.PI, Math.PI);
 
-        translationXController.setTolerance(0.01);
-        translationYController.setTolerance(0.01);
+        translationXController.setTolerance(0.015);
+        translationYController.setTolerance(0.015);
 
         publisher = NetworkTableInstance.getDefault().getStructTopic("MyPose", Pose3d.struct).publish();
         arrayPublisher = NetworkTableInstance.getDefault().getStructArrayTopic("MyPoseArray", Pose3d.struct).publish();
@@ -115,6 +122,9 @@ public class Swerve extends SubsystemBase {
                 new SwerveModule(2, Constants.Swerve.Mod2.constants),
                 new SwerveModule(3, Constants.Swerve.Mod3.constants)
         };
+
+        
+        
 
         // swerveOdometry = new SwerveDriveOdometry(Constants.Swerve.swerveKinematics,
         // getGyroYaw(), getModulePositions());
@@ -130,6 +140,16 @@ public class Swerve extends SubsystemBase {
 
         swerveEstimator.resetPosition(getGyroRot2d(), getModulePositions(), new Pose2d(8.77, 4.05, new Rotation2d()));
     }
+
+    public void addInstruments(Orchestra orchestra){
+        for(SwerveModule mod : mSwerveMods){
+            orchestra.addInstrument(mod.mDriveMotor);
+            orchestra.addInstrument(mod.mAngleMotor);
+        }
+
+    }
+
+   
 
     public void updatePoseEstimator() {
         SwerveModulePosition[] getModPos = getModulePositions();
@@ -404,7 +424,7 @@ public class Swerve extends SubsystemBase {
     public Translation2d translateToApril() {
         double speedX;
         double speedY;
-        if (!translationXController.atSetpoint()) {
+        if (!translationXController.atGoal()) {
             speedX = translationXController.calculate(swerveEstimator.getEstimatedPosition().getX(),
                     AlignPosition.getAlignOffset().getX());
 
@@ -412,15 +432,15 @@ public class Swerve extends SubsystemBase {
             speedX = 0;
         }
 
-        if (!translationYController.atSetpoint()) {
+        if (!translationYController.atGoal()) {
             speedY = translationYController.calculate(swerveEstimator.getEstimatedPosition().getY(),
                     AlignPosition.getAlignOffset().getY());
         } else {
             speedY = 0;
         }
         // Added clamps
-        speedX = MathUtil.clamp(speedX, -0.17, 0.17);
-        speedY = MathUtil.clamp(speedY, -0.17, 0.17);
+        // speedX = MathUtil.clamp(speedX, -0.17, 0.17);
+        // speedY = MathUtil.clamp(speedY, -0.17, 0.17);
         return new Translation2d(speedX, speedY);
 
     }
@@ -491,8 +511,9 @@ public class Swerve extends SubsystemBase {
     }
 
     public void resetAlignApril() {
-        translationXController.reset();
-        translationYController.reset();
+        Pose2d postion=swerveEstimator.getEstimatedPosition();
+        translationXController.reset(postion.getX());
+        translationYController.reset(postion.getY());
         s_AutoRotateUtil.reset();
     }
 
@@ -569,9 +590,14 @@ public class Swerve extends SubsystemBase {
         AlignPosition currentAlignPosition = AlignPosition.getPosition();
 
         // for(SwerveModule mod : mSwerveMods){
+        //     mod.mDriveMotor.setControl(new MusicTone(1500));
+        //     mod.mAngleMotor.setControl(new MusicTone(1500));
         // // SmartDashboard.putNumber("Mod " + mod.moduleNumber + " CANcoder",
-        // mod.getCANcoder().getDegrees());
+        // //mod.getCANcoder().getDegrees());
         // }
+
+        
+
         Pose2d estimatedPose = swerveEstimator.getEstimatedPosition();
         poseA = new Pose3d(estimatedPose);
         publisher.set(poseA);

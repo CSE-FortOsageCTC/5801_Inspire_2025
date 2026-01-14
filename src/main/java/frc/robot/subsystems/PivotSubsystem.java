@@ -3,6 +3,8 @@ package frc.robot.subsystems;
 
 import java.util.concurrent.TimeUnit;
 
+import com.ctre.phoenix6.Orchestra;
+import com.ctre.phoenix6.configs.AudioConfigs;
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.ControlRequest;
@@ -16,6 +18,7 @@ import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import frc.robot.AlignPosition;
 import frc.robot.Constants;
 import frc.robot.Constants.ArmPosition;
+import frc.robot.SwerveModule;
 
 import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
@@ -46,7 +49,7 @@ public class PivotSubsystem extends SubsystemBase {
 
     private static ExtensionSubsystem extensionSubsystem;
 
-    private static double setpoint;
+    private static double setpoint = ArmPosition.Manual.pivot;
 
     private double manualSetpoint;
 
@@ -54,7 +57,7 @@ public class PivotSubsystem extends SubsystemBase {
 
     private static int startingDelay = 0;
 
-    private static double lastPivotPosition = ArmPosition.getPosition().pivot;
+    private static double lastPivotPosition = ArmPosition.Manual.pivot;
 
     
 
@@ -74,6 +77,10 @@ public class PivotSubsystem extends SubsystemBase {
 
         TalonFXConfiguration pivotConfig = new TalonFXConfiguration();
         CurrentLimitsConfigs currentLimitsConfigs = new CurrentLimitsConfigs();
+        AudioConfigs audioConfigs = new AudioConfigs().withAllowMusicDurDisable(true);
+        pivotFollower.getConfigurator().apply(audioConfigs);
+        pivotMaster.getConfigurator().apply(audioConfigs);
+
 
         // currentLimitsConfigs.withSupplyCurrentLimit(120);
         // currentLimitsConfigs.withSupplyCurrentLimitEnable(true);
@@ -94,7 +101,7 @@ public class PivotSubsystem extends SubsystemBase {
 
         pivotEncoder = new DutyCycleEncoder(1);
 
-        System.out.println(pivotEncoder.get());
+        System.out.println(getPivotEncoder());
 
         AlignPosition noPos = AlignPosition.NoPos; //Do not remove! The robot will break.
 
@@ -106,21 +113,36 @@ public class PivotSubsystem extends SubsystemBase {
 
         climbingClamp = new SparkMax(20, MotorType.kBrushless);
         config = new SparkMaxConfig();
-        config.smartCurrentLimit(20);
+        config.smartCurrentLimit(35);
         config.idleMode(IdleMode.kCoast);
 
         climbingClamp.configure(config, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
 
-        manualSetpoint = getPivotEncoder();
+        
 
-        System.out.println(pivotEncoder.get());
+        System.out.println(getPivotEncoder());
 
         isClimbing = false;
 
-        pivotMaster.setPosition((pivotEncoder.get() - 0.2458) * -52.71);
+        pivotMaster.setPosition((pivotEncoder.get() - 0.237) * -57.566);
 
-        pidController = new ProfiledPIDController(0.2, 0, 0, new TrapezoidProfile.Constraints(150, 100));
+        try {
+            TimeUnit.SECONDS.sleep(2);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        pidController = new ProfiledPIDController(0.275, 0, 0, new TrapezoidProfile.Constraints(500, 200));
         pidController.setTolerance(0.1);
+
+        manualSetpoint = -30;//getPivotEncoder();
+        lastPivotPosition = manualSetpoint;
+        setpoint = manualSetpoint;
+    }
+
+    public void addInstruments(Orchestra orchestra){
+        orchestra.addInstrument(pivotFollower);
+        orchestra.addInstrument(pivotMaster);
     }
 
     public static void resetStartDelay() {
@@ -187,7 +209,7 @@ public class PivotSubsystem extends SubsystemBase {
             pidController.reset(getPivotEncoder());
         }
 
-        SmartDashboard.putNumber("Pivot Setpoint", setpoint);
+        
         double calculation = MathUtil.clamp(pidController.calculate(getPivotEncoder(), setpoint), -1, 1);
         privSetSpeed(calculation);
         lastPivotPosition = setpoint;
@@ -219,6 +241,10 @@ public class PivotSubsystem extends SubsystemBase {
         isClimbing = true;
     }
 
+    public void resetPID() {
+        pidController.reset(getPivotEncoder());
+    }
+
     public void setClimbingClampSpeed(double speed){
         // if (climbingClamp.getBusVoltage() > 10){
         //     speed = 0;
@@ -233,11 +259,12 @@ public class PivotSubsystem extends SubsystemBase {
     public void periodic() {
         SmartDashboard.putNumber("Pivot Kraken Encoder", getPivotEncoder());
         SmartDashboard.putNumber("Pivot Absolute Encoder", pivotEncoder.get());
+        SmartDashboard.putNumber("Pivot Setpoint", setpoint);
         // pidController.setPID(0.3, 0, 0);
         if (DriverStation.isDisabled()) {
             resetStartDelay();
         }
-        if (startingDelay < 250) {
+        if (startingDelay < 50) {
             startingDelay++;
         }
 

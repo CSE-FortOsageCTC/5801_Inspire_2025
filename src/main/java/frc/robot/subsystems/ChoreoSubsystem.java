@@ -14,10 +14,15 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.AlignPosition;
 import frc.robot.Constants;
+import frc.robot.LimelightHelpers;
 import frc.robot.Constants.ArmPosition;
 import frc.robot.autoCommands.ManipulateCoral;
+import frc.robot.autoCommands.PushForPoints;
+import frc.robot.autoCommands.ResetArm;
 import frc.robot.commands.AlignToApril;
 import frc.robot.commands.AutoPickupPiece;
+import frc.robot.commands.AutoPopPickup;
+import frc.robot.commands.IntakeCommand;
 
 import java.sql.Driver;
 import java.util.Optional;
@@ -59,8 +64,14 @@ public class ChoreoSubsystem extends SubsystemBase {
                 isRed(),
                 s_Swerve);
 
-        // autoFactory.bind("hi", new InstantCommand(() -> System.out.println("this is
-        // the bind")));
+        autoFactory.bind("ArmGround", new InstantCommand(() -> ArmPosition.setPosition(ArmPosition.Ground)));
+        autoFactory.bind("GroundIntake", new InstantCommand(() -> IntakeSubsystem.getInstance().setIntakeSpeed(-1, -1)));
+    }
+
+    private void switchPipelines(int pipeline) {
+
+        LimeLightSubsystem.getLeftInstance().setPipeline(pipeline);
+        LimeLightSubsystem.getRightInstance().setPipeline(pipeline);
     }
 
     private boolean isRed() {
@@ -89,6 +100,7 @@ public class ChoreoSubsystem extends SubsystemBase {
 
     }
 
+    // MARK: One Piece Auto
     public AutoRoutine onePieceAuto() {
         System.out.println("this is before the auto routine");
         AutoRoutine routine = autoFactory.newRoutine("onePiece");
@@ -96,150 +108,203 @@ public class ChoreoSubsystem extends SubsystemBase {
         System.out.println("this is the top of the auto code");
 
         // Load the routine's trajectories
-        AutoTrajectory traj_startToIJ = routine.trajectory("startToIJ");
+        AutoTrajectory traj_startToHG = routine.trajectory("startToHG");
+        AutoTrajectory traj_ABToNet = routine.trajectory("ABToNet");
+        AutoTrajectory traj_NettoIJ = routine.trajectory("NetToIJ");
+        AutoTrajectory traj_IJtoNet = routine.trajectory("IJtoNet");
+        AutoTrajectory traj_GetRP = routine.trajectory("GetRP");
 
         // When the routine begins, reset odometry and start the first trajectory
         routine.active().onTrue(
                 Commands.sequence(
                         // traj_startToIJ.resetOdometry(),
-                        new InstantCommand(() -> ArmPosition.setPosition(ArmPosition.Ground)),
+                        // new InstantCommand(() ->
+                        // ArmPosition.setPosition(ArmPosition.StartingConfig)),
                         new InstantCommand(() -> s_Swerve.setHeading(Rotation2d.fromDegrees(0))), // rotateBy(180);
-                        traj_startToIJ.cmd(),
+                        // traj_startToHG.cmd(),
+                        //new InstantCommand(() -> ArmPosition.setPosition(ArmPosition.L4)),
+                        new AlignToApril(AlignPosition.RightOffset, true, 0).withTimeout(3),
+                        new AlignToApril(AlignPosition.RightOffset, true, 0).withTimeout(1),
                         new InstantCommand(() -> ArmPosition.setPosition(ArmPosition.L4)),
-                        new AlignToApril(AlignPosition.RightOffset, true),
                         new ManipulateCoral(false),
-                        new InstantCommand(() -> ArmPosition.setPosition(ArmPosition.Ground))));
+                        new ResetArm(),
+                        new AlignToApril(AlignPosition.CenterOffset, true, 0).withTimeout(3),
+                        new InstantCommand(() -> switchPipelines(0)),
+                        new InstantCommand(() -> ArmPosition.setPosition(ArmPosition.LowAlgae)),
+                        new InstantCommand(() -> IntakeSubsystem.getInstance().setIntakeSpeed(0, 0.5)),
+                        new WaitCommand(1.5),
+                        new InstantCommand(() -> ArmPosition.setPosition(ArmPosition.NetP)),
+                        traj_ABToNet.cmd(),
+                        new InstantCommand(() -> s_Swerve.drive(new Translation2d(0, 0), 0, true, true)),
+                        new ResetArm(ArmPosition.Net),
+                        new InstantCommand(() -> IntakeSubsystem.getInstance().setIntakeSpeed(0, -0.5)),
+                        new WaitCommand(0.25),
+                        new InstantCommand(() -> IntakeSubsystem.getInstance().setIntakeSpeed(0, 0)),
+                        new ResetArm(),
+                        new InstantCommand(() -> ArmPosition.setPosition(ArmPosition.HighAlgae)),
+                        traj_NettoIJ.cmd(),
+                        new InstantCommand(() -> IntakeSubsystem.getInstance().setIntakeSpeed(0, 0.5)),
+                        new AlignToApril(AlignPosition.CenterOffset, true, 0).withTimeout(3),
+                        new WaitCommand(0.5),
+                        new InstantCommand(() -> ArmPosition.setPosition(ArmPosition.NetP)),
+                        traj_IJtoNet.cmd(),
+                        new InstantCommand(() -> s_Swerve.drive(new Translation2d(0, 0), 0, true, true)),
+                        new ResetArm(ArmPosition.Net),
+                        new InstantCommand(() -> IntakeSubsystem.getInstance().setIntakeSpeed(0, -0.5)),
+                        new WaitCommand(0.25),
+                        new InstantCommand(() -> IntakeSubsystem.getInstance().setIntakeSpeed(0, 0)),
+                        new ResetArm(),
+                        traj_GetRP.cmd()
+                )
+            );
 
         return routine;
     }
 
-    public AutoRoutine twoPieceIJAuto() {
-        AutoRoutine routine = autoFactory.newRoutine("threePiece");
+    // MARK: Lollipop EF Pickup
+    public AutoRoutine lollipopEFAutoPickup() {
+        // System.out.println("this is before the auto routine");
+        AutoRoutine routine = autoFactory.newRoutine("lollipopEF");
 
-        // Load the routine's trajectories
-        AutoTrajectory traj_startToIJ = routine.trajectory("startToIJ");
-        AutoTrajectory traj_IJtoHP = routine.trajectory("IJToHP");
-        AutoTrajectory traj_HPtoIJ = routine.trajectory("HPToIJ");
-        AutoTrajectory traj_KLtoHP = routine.trajectory("KLtoHP");
-
-        // When the routine begins, reset odometry and start the first trajectory
-        routine.active().onTrue(
-                Commands.sequence(
-                        // traj_startToIJ.resetOdometry(), //rotateBy(180);
-                        new InstantCommand(() -> s_Swerve.setHeading(Rotation2d.fromDegrees(0))),//traj_startToIJ.getRawTrajectory().getInitialPose(isRed()).get().getRotation())),
-                        traj_startToIJ.cmd(),
-                        new InstantCommand(() -> ArmPosition.setPosition(ArmPosition.L2)),
-                        new AlignToApril(AlignPosition.RightOffset, true).withTimeout(3),
-                        new ManipulateCoral(false),
-                        new InstantCommand(() -> ArmPosition.setPosition(ArmPosition.Ground)),
-                        traj_IJtoHP.cmd(),
-                        new AlignToApril(AlignPosition.CenterOffset, false).withTimeout(3),
-                        new ManipulateCoral(true),
-                        traj_HPtoIJ.cmd(),
-                        new InstantCommand(() -> ArmPosition.setPosition(ArmPosition.L2)),
-                        new AlignToApril(AlignPosition.LeftOffset, true).withTimeout(4),
-                        new ManipulateCoral(false),
-                        new InstantCommand(() -> ArmPosition.setPosition(ArmPosition.Ground))
-                        // traj_KLtoHP.cmd(),
-                        // new AlignToApril(AlignPosition.CenterOffset, false),
-                        // new ManipulateCoral(true),
-                        // traj_HPtoKL.cmd(),
-                        // new InstantCommand(() -> ArmPosition.setPosition(ArmPosition.L4)),
-                        // new AlignToApril(AlignPosition.RightOffset, true),
-                        // new ManipulateCoral(false),
-                        // new InstantCommand(() -> ArmPosition.setPosition(ArmPosition.HumanP))
-                        ));
-
-
-        return routine;
-    }
-
-    public AutoRoutine twoPieceEFAuto() {
-        AutoRoutine routine = autoFactory.newRoutine("threePiece");
+        // System.out.println("this is the top of the auto code");
 
         // Load the routine's trajectories
         AutoTrajectory traj_startToEF = routine.trajectory("startToEF");
-        AutoTrajectory traj_EFtoHP = routine.trajectory("EFToHP");
-        AutoTrajectory traj_HPtoEF = routine.trajectory("HPToEF");
-        AutoTrajectory traj_CDtoHP = routine.trajectory("CDtoHP");
-        AutoTrajectory traj_KLtoHP = routine.trajectory("KLtoHP");
-        AutoTrajectory traj_HPtoKL = routine.trajectory("HPtoKL");
+        AutoTrajectory traj_EFto3 = routine.trajectory("EFtoThree");
+        
+        AutoTrajectory traj_3ToAB = routine.trajectory("threeToAB");
+        AutoTrajectory traj_ABto2 = routine.trajectory("ABtoTwoEF");
+        AutoTrajectory traj_2ToAB = routine.trajectory("twoToAB");
 
         // When the routine begins, reset odometry and start the first trajectory
         routine.active().onTrue(
-                Commands.sequence(
-                        // traj_startToIJ.resetOdometry(), //rotateBy(180);
-                        new InstantCommand(() -> s_Swerve.setHeading(Rotation2d.fromDegrees(0))),
-                        traj_startToEF.cmd(),
-                        new InstantCommand(() -> ArmPosition.setPosition(ArmPosition.L2)),
-                        new AlignToApril(AlignPosition.LeftOffset, true).withTimeout(3),
-                        new ManipulateCoral(false),
-                        new InstantCommand(() -> ArmPosition.setPosition(ArmPosition.StartingConfig)),
-                        traj_EFtoHP.cmd(),
-                        // new AlignToApril(AlignPosition.CenterOffset, false).withTimeout(3),
-                        new AutoPickupPiece(0).withTimeout(4),
-                        new ManipulateCoral(true),
-                        traj_HPtoEF.cmd(),
-                        new InstantCommand(() -> ArmPosition.setPosition(ArmPosition.L2)),
-                        new AlignToApril(AlignPosition.RightOffset, true).withTimeout(4),
-                        new ManipulateCoral(false),
-                        new InstantCommand(() -> ArmPosition.setPosition(ArmPosition.StartingConfig)),
-                        traj_KLtoHP.cmd(),
-                        // new AlignToApril(AlignPosition.CenterOffset, false),
-                        new AutoPickupPiece(0).withTimeout(4),
-                        new ManipulateCoral(true),
-                        traj_HPtoKL.cmd(),
-                        new InstantCommand(() -> ArmPosition.setPosition(ArmPosition.L2)),
-                        new AlignToApril(AlignPosition.RightOffset, true),
-                        new ManipulateCoral(false),
-                        new InstantCommand(() -> ArmPosition.setPosition(ArmPosition.StartingConfig))
-                        ));
+            Commands.sequence(
+                // traj_startToIJ.resetOdometry(),
+                // new InstantCommand(() ->
+                // ArmPosition.setPosition(ArmPosition.StartingConfig)),
+                new InstantCommand(() -> s_Swerve.setHeading(Rotation2d.fromDegrees(0))),
+                traj_startToEF.cmd().withTimeout(1),
+                new InstantCommand(() -> s_Swerve.drive(new Translation2d(0, 0), 0, true, true)),
+                new InstantCommand(() -> ArmPosition.setPosition(ArmPosition.L4)),
+                // new AlignToApril(AlignPosition.LeftOffset, true, 0).withTimeout(0.1),
+                // new AlignToApril(AlignPosition.LeftOffset, true, 0).withTimeout(0.1),
+                new AlignToApril(AlignPosition.LeftOffset, true, 0).withTimeout(1),
+                new AlignToApril(AlignPosition.LeftOffset, true, 0).withTimeout(0.15),
+                new ManipulateCoral(false),
+                new ResetArm(),
+                new InstantCommand(() -> switchPipelines(0)),
+                traj_EFto3.cmd(),
+                new InstantCommand(() -> s_Swerve.drive(new Translation2d(0, 0), 0, true, true)),
+                new AutoPopPickup(0).withTimeout(2.4),
+                new InstantCommand(() -> switchPipelines(0)),
+                traj_3ToAB.cmd(),
+                new InstantCommand(() -> s_Swerve.drive(new Translation2d(0, 0), 0, true, true)),
+                // new AlignToApril(AlignPosition.RightOffset, true, 0).withTimeout(2.5),
+                new InstantCommand(() -> ArmPosition.setPosition(ArmPosition.L4)),
+                new AlignToApril(AlignPosition.LeftOffset, true, 0).withTimeout(4),
+                new AlignToApril(AlignPosition.LeftOffset, true, 0).withTimeout(0.25),
+                new ManipulateCoral(false),
+                new ResetArm(),
+                new InstantCommand(() -> switchPipelines(0)),
+                traj_ABto2.cmd(),
+                new InstantCommand(() -> s_Swerve.drive(new Translation2d(0, 0), 0, true, true)),
+                new AutoPopPickup(0).withTimeout(2.7),
+                new InstantCommand(() -> switchPipelines(0)),
+                traj_2ToAB.cmd(),
+                new InstantCommand(() -> s_Swerve.drive(new Translation2d(0, 0), 0, true, true)),
+                new AlignToApril(AlignPosition.RightOffset, true, 0).withTimeout(2.5),
+                new AlignToApril(AlignPosition.RightOffset, true, 0).withTimeout(0.15),
+                new InstantCommand(() -> ArmPosition.setPosition(ArmPosition.L4)),
+                new ManipulateCoral(false),
+                new InstantCommand(() -> ArmPosition.setPosition(ArmPosition.StartingConfig)),
+                new AlignToApril(AlignPosition.CenterOffset, true, 0).withTimeout(3),
+                new InstantCommand(() -> ArmPosition.setPosition(ArmPosition.HighAlgae)),
+                new InstantCommand(() -> IntakeSubsystem.getInstance().setIntakeSpeed(0, 0.5))
 
-
+        ));
         return routine;
     }
-    public AutoRoutine twoPieceIJAutoL2() {
-        AutoRoutine routine = autoFactory.newRoutine("threePiece");
+
+    // MARK: Lollipop IJ Pickup
+    public AutoRoutine lollipopIJAutoPickup() {
+        // System.out.println("this is before the auto routine");
+        AutoRoutine routine = autoFactory.newRoutine("lollipopIJ");
+
+        // System.out.println("this is the top of the auto code");
 
         // Load the routine's trajectories
         AutoTrajectory traj_startToIJ = routine.trajectory("startToIJ");
-        AutoTrajectory traj_IJtoHP = routine.trajectory("IJToHP");
-        AutoTrajectory traj_HPtoKL = routine.trajectory("HPtoKL");
-        AutoTrajectory traj_KLtoHP = routine.trajectory("KLtoHP");
+        AutoTrajectory traj_IJto1 = routine.trajectory("IJtoOne");
+        
+        AutoTrajectory traj_1ToAB = routine.trajectory("oneToAB");
+        AutoTrajectory traj_ABto2 = routine.trajectory("ABtoTwo");
+        AutoTrajectory traj_2ToAB = routine.trajectory("twoToAB");
 
         // When the routine begins, reset odometry and start the first trajectory
         routine.active().onTrue(
-                Commands.sequence(
-                        // traj_startToIJ.resetOdometry(), //rotateBy(180);
-                        new InstantCommand(() -> s_Swerve.setHeading(Rotation2d.fromDegrees(0))),//traj_startToIJ.getRawTrajectory().getInitialPose(isRed()).get().getRotation())),
-                        traj_startToIJ.cmd(),
-                        new InstantCommand(() -> ArmPosition.setPosition(ArmPosition.L2)),
-                        new AlignToApril(AlignPosition.RightOffset, true),
-                        new ManipulateCoral(false),
-                        new InstantCommand(() -> ArmPosition.setPosition(ArmPosition.StartingConfig)),
-                        traj_IJtoHP.cmd(),
-                        // new AlignToApril(AlignPosition.CenterOffset, false),
-                        new AutoPickupPiece(0).withTimeout(4),
-                        // new ManipulateCoral(true),
-                        traj_HPtoKL.cmd(),
-                        new InstantCommand(() -> ArmPosition.setPosition(ArmPosition.L2)),
-                        new AlignToApril(AlignPosition.LeftOffset, true),
-                        new ManipulateCoral(false),
-                        new InstantCommand(() -> ArmPosition.setPosition(ArmPosition.StartingConfig)),
-                        traj_KLtoHP.cmd(),
-                        // new AlignToApril(AlignPosition.CenterOffset, false),
-                        new AutoPickupPiece(0).withTimeout(4),
-                        // new ManipulateCoral(true),
-                        traj_HPtoKL.cmd(),
-                        new InstantCommand(() -> ArmPosition.setPosition(ArmPosition.L2)),
-                        new AlignToApril(AlignPosition.RightOffset, true),
-                        new ManipulateCoral(false),
-                        new InstantCommand(() -> ArmPosition.setPosition(ArmPosition.StartingConfig))
-                        ));
+            Commands.sequence(
+                // traj_startToIJ.resetOdometry(),
+                // new InstantCommand(() ->
+                // ArmPosition.setPosition(ArmPosition.StartingConfig)),
+                new InstantCommand(() -> s_Swerve.setHeading(Rotation2d.fromDegrees(0))),
+                traj_startToIJ.cmd().withTimeout(1),
+                new InstantCommand(() -> s_Swerve.drive(new Translation2d(0, 0), 0, true, true)),
+                new InstantCommand(() -> ArmPosition.setPosition(ArmPosition.L4)),
+                // new AlignToApril(AlignPosition.LeftOffset, true, 0).withTimeout(0.1),
+                // new AlignToApril(AlignPosition.LeftOffset, true, 0).withTimeout(0.1),
+                new AlignToApril(AlignPosition.RightOffset, true, 0).withTimeout(1),
+                new AlignToApril(AlignPosition.RightOffset, true, 0).withTimeout(0.15),
+                new ManipulateCoral(false),
+                new ResetArm(),
+                new InstantCommand(() -> switchPipelines(0)),
+                traj_IJto1.cmd(),
+                new InstantCommand(() -> s_Swerve.drive(new Translation2d(0, 0), 0, true, true)),
+                new AutoPopPickup(0).withTimeout(2.4),
+                new InstantCommand(() -> switchPipelines(0)),
+                traj_1ToAB.cmd(),
+                new InstantCommand(() -> s_Swerve.drive(new Translation2d(0, 0), 0, true, true)),
+                // new AlignToApril(AlignPosition.RightOffset, true, 0).withTimeout(2.5),
+                new InstantCommand(() -> ArmPosition.setPosition(ArmPosition.L4)),
+                new AlignToApril(AlignPosition.RightOffset, true, 0).withTimeout(4),
+                new AlignToApril(AlignPosition.RightOffset, true, 0).withTimeout(0.25),
+                new ManipulateCoral(false),
+                new ResetArm(),
+                new InstantCommand(() -> switchPipelines(0)),
+                traj_ABto2.cmd(),
+                new InstantCommand(() -> s_Swerve.drive(new Translation2d(0, 0), 0, true, true)),
+                new AutoPopPickup(0).withTimeout(2.7),
+                new InstantCommand(() -> switchPipelines(0)),
+                traj_2ToAB.cmd(),
+                new InstantCommand(() -> s_Swerve.drive(new Translation2d(0, 0), 0, true, true)),
+                new AlignToApril(AlignPosition.LeftOffset, true, 0).withTimeout(2.5),
+                new AlignToApril(AlignPosition.LeftOffset, true, 0).withTimeout(0.15),
+                new InstantCommand(() -> ArmPosition.setPosition(ArmPosition.L4)),
+                new ManipulateCoral(false),
+                new InstantCommand(() -> ArmPosition.setPosition(ArmPosition.StartingConfig)),
+                new AlignToApril(AlignPosition.CenterOffset, true, 0).withTimeout(3),
+                new InstantCommand(() -> ArmPosition.setPosition(ArmPosition.HighAlgae)),
+                new InstantCommand(() -> IntakeSubsystem.getInstance().setIntakeSpeed(0, 0.5))
 
-
+        ));
         return routine;
     }
 
+    public AutoRoutine demoCircle() {
+        // System.out.println("this is before the auto routine");
+        AutoRoutine routine = autoFactory.newRoutine("demo");
+
+        // System.out.println("this is the top of the auto code");
+
+        // Load the routine's trajectories
+        AutoTrajectory traj_circle = routine.trajectory("DemoCircle");
+
+        // When the routine begins, reset odometry and start the first trajectory
+        routine.active().onTrue(
+            Commands.sequence(
+                new InstantCommand(() -> s_Swerve.setHeading(Rotation2d.fromDegrees(0))),
+                traj_circle.cmd()
+        ));
+        return routine;
+    }
 
 }

@@ -1,5 +1,7 @@
 package frc.robot.subsystems;
 
+import com.ctre.phoenix6.Orchestra;
+import com.ctre.phoenix6.configs.AudioConfigs;
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.Follower;
@@ -8,6 +10,7 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.revrobotics.spark.SparkMax;
 
+import frc.robot.CTREConfigs;
 import frc.robot.Constants;
 import frc.robot.Constants.ArmPosition;
 
@@ -46,6 +49,13 @@ public class ExtensionSubsystem extends SubsystemBase {
         extensionMaster = new TalonFX(50); // SparkMax(50, MotorType.kBrushless);
         extensionFollower = new TalonFX(51); // SparkMax(51, MotorType.kBrushless);
 
+        AudioConfigs audioConfigs = new AudioConfigs().withAllowMusicDurDisable(true);
+
+        extensionFollower.getConfigurator().apply(audioConfigs);
+        extensionMaster.getConfigurator().apply(audioConfigs);
+
+
+
         extensionMaster.setNeutralMode(NeutralModeValue.Brake);
         extensionFollower.setNeutralMode(NeutralModeValue.Brake);
 
@@ -72,6 +82,12 @@ public class ExtensionSubsystem extends SubsystemBase {
 
         pidController = new ProfiledPIDController(0.25, 0, 0, new TrapezoidProfile.Constraints(200, 100));
         pidController.setTolerance(0.1);
+    }
+
+    public void addInstruments(Orchestra orchestra){
+        orchestra.addInstrument(extensionFollower);
+        orchestra.addInstrument(extensionMaster);
+
     }
 
     public void setPosition() {
@@ -127,6 +143,11 @@ public class ExtensionSubsystem extends SubsystemBase {
         return Math.abs(encoder - ArmPosition.getPosition().extension) <= 2.5;
     }
 
+    public static boolean nearSetpointAuto() {
+        double encoder = extensionSubsystem.getExtensionEncoder();
+        return Math.abs(encoder - ArmPosition.getPosition().extension) <= 7.5;
+    }
+
     public void setSetpoint(double setpoint) {
         ArmPosition.setPosition(ArmPosition.Manual);
         lastExtensionPosition = ArmPosition.Manual;
@@ -170,6 +191,10 @@ public class ExtensionSubsystem extends SubsystemBase {
 
     public ArmPosition getArmPosition() {
         return lastExtensionPosition;
+    }
+
+    public void resetPID() {
+        pidController.reset(getExtensionEncoder());
     }
 
     @Override
